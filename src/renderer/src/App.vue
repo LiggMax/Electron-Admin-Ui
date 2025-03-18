@@ -1,30 +1,52 @@
 <script setup>
-// 主应用组件
+import TitleBar from './components/TitleBar.vue'
 </script>
 
 <template>
-  <router-view></router-view>
+  <div class="app-container">
+    <TitleBar />
+    <div class="content-container">
+      <router-view></router-view>
+    </div>
+  </div>
 </template>
 
 <style lang="less">
-body {
+html, body {
   margin: 0;
   padding: 0;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background-image: url('./assets/images/loginbackground.png'); /* 使用PNG图片作为背景 */
-  background-size: cover; /* 确保背景图片覆盖整个页面 */
-  background-position: center; /* 背景图片居中 */
-  background-repeat: no-repeat; /* 防止背景图片重复 */
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  position: relative;
 }
 
 * {
   box-sizing: border-box;
+}
+
+body {
+  background-image: url('./assets/images/loginbackground.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.content-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 // 移除背景装饰元素

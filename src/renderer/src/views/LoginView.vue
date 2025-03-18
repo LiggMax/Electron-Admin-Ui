@@ -1,8 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+// 暂时注释掉未使用的路由相关代码
+// import { useRouter } from 'vue-router'
+// const router = useRouter()
 
-const router = useRouter()
 const username = ref('')
 const password = ref('')
 const rememberUser = ref(false)
@@ -14,6 +15,8 @@ const login = () => {
     password: password.value,
     rememberUser: rememberUser.value
   })
+  // 后续可添加路由跳转
+  // router.push('/dashboard')
 }
 </script>
 
@@ -73,20 +76,18 @@ const login = () => {
   align-items: center;
   justify-content: center;
   perspective: 1000px;
-  background-image: url('../assets/images/loginbackground.png'); /* 请将此处替换为你自己的PNG图片文件名 */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .login-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.98);
   width: 800px;
   height: 480px;
-  border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   overflow: hidden;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.5s ease-out;
 }
 
 .login-left {
@@ -199,6 +200,17 @@ const login = () => {
 
   &:hover {
     background-color: #40a9ff;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
