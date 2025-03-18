@@ -76,12 +76,16 @@ const login = () => {
   align-items: center;
   justify-content: center;
   perspective: 1000px;
+  overflow: hidden;
+  padding: 10px; /* 添加内边距确保登录卡片不会太靠近窗口边缘 */
 }
 
 .login-card {
   background: rgba(255, 255, 255, 0.98);
   width: 800px;
+  max-width: 90%;
   height: 480px;
+  max-height: 90%;
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;

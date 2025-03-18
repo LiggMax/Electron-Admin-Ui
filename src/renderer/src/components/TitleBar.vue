@@ -81,10 +81,7 @@ const handleClose = () => {
   -webkit-app-region: drag;
   user-select: none;
   padding: 0 12px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
   z-index: 1000;
 }
 

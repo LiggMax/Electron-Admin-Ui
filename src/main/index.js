@@ -13,6 +13,8 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true,
     frame: false,
+    transparent: process.platform !== 'linux', // Linux上不支持透明
+    backgroundColor: process.platform === 'linux' ? '#4169E1' : '#00ffffff',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -62,6 +64,13 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+}
+
+// 在Windows平台上设置圆角和透明支持
+if (process.platform === 'win32') {
+  app.commandLine.appendSwitch('enable-transparent-visuals')
+  // 暂时注释掉禁用硬件加速，看看是否能解决问题
+  // app.disableHardwareAcceleration()
 }
 
 // This method will be called when Electron has finished
