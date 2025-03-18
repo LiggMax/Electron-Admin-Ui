@@ -1,5 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+// svg图标
+import minimizeIcon from '../assets/svg/minimize.svg'
+import maximizeIcon from '../assets/svg/Maximize-1.svg'
+import restoreIcon from '../assets/svg/Maximize-2.svg'
+import closeIcon from '../assets/svg/Shut down.svg'
 
 const isMaximized = ref(false)
 
@@ -33,39 +38,19 @@ const handleClose = () => {
       <span class="title">卡商平台</span>
     </div>
     <div class="window-controls">
-      <button class="control-button minimize" @click="handleMinimize" title="最小化">
-        <svg width="12" height="12" viewBox="0 0 12 12">
-          <rect x="1" y="5.5" width="10" height="1" fill="currentColor" />
-        </svg>
+      <button class="control-button minimize" title="最小化" @click="handleMinimize">
+        <img :src="minimizeIcon" class="svg-icon" alt="最小化" />
       </button>
-      <button class="control-button maximize" @click="handleMaximize" :title="isMaximized ? '向下还原' : '最大化'">
-        <svg v-if="!isMaximized" width="12" height="12" viewBox="0 0 12 12">
-          <rect
-            x="1.5"
-            y="1.5"
-            width="9"
-            height="9"
-            stroke="currentColor"
-            fill="none"
-            stroke-width="1"
-          />
-        </svg>
-        <svg v-else width="12" height="12" viewBox="0 0 12 12">
-          <path
-            d="M3.5,1.5v2h-2v7h7v-2h2v-7H3.5z M7.5,9.5h-5v-5h5V9.5z M9.5,7.5h-1v-5h-5v-1h6V7.5z"
-            fill="currentColor"
-          />
-        </svg>
+      <button
+        class="control-button maximize"
+        :title="isMaximized ? '向下还原' : '最大化'"
+        @click="handleMaximize"
+      >
+        <img v-if="!isMaximized" :src="maximizeIcon" class="svg-icon" alt="最大化" />
+        <img v-else :src="restoreIcon" class="svg-icon" alt="还原" />
       </button>
-      <button class="control-button close" @click="handleClose" title="关闭">
-        <svg width="12" height="12" viewBox="0 0 12 12">
-          <path
-            d="M2.4,1.4l8.2,8.2 M1.4,9.6l8.2-8.2"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          />
-        </svg>
+      <button class="control-button close" title="关闭" @click="handleClose">
+        <img :src="closeIcon" class="svg-icon" alt="关闭" />
       </button>
     </div>
   </div>
@@ -117,8 +102,14 @@ const handleClose = () => {
   }
 
   &.close:hover {
-    background-color: rgba(232, 17, 35, 0.9);
+    background-color: rgba(255, 255, 255, 0.26);
     color: white;
+  }
+
+  .svg-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(10); /* 使SVG图标变白 */
   }
 }
 </style>
