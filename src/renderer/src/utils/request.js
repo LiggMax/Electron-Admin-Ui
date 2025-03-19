@@ -1,10 +1,10 @@
 /**
- * 请求工具类 - 全面采用主进程发送请求
+ * 请求工具类 - 默认通过主进程发送请求
  * 完全避开CSP限制和CORS问题
  */
-
-// 基础URL
-const BASE_URL = 'http://127.0.0.1:8090'
+import {ElMessage} from 'element-plus'
+// 注意: 这里不需要定义BASE_URL，由主进程的httpService.js处理
+// 主进程中已定义 DEFAULT_BASE_URL = 'http://127.0.0.1:8090'
 
 /**
  * 通过主进程发送HTTP请求
@@ -13,34 +13,44 @@ const BASE_URL = 'http://127.0.0.1:8090'
  */
 const requestViaMainProcess = async (options) => {
   try {
-    console.log('通过主进程发送请求:', options)
+    console.log('主进程请求:', options)
 
+    // 确保URL正确，无需处理API基础路径，交给主进程处理
+    // 如果URL是完整的http://开头的URL，则直接使用
+    // 如果不是，主进程会自动添加BASE_URL
     if (!options.url.startsWith('http')) {
-      options.url = BASE_URL + options.url
+      // 保持URL原样，主进程会处理BASE_URL
+      // 主进程会自动添加 http://127.0.0.1:8090
     }
 
     // 调用预加载脚本中暴露的http请求方法
     const result = await window.api.http.request(options)
 
-    console.log('主进程请求响应:', result)
+    console.log('主进程响应:', result)
 
     // 处理响应
     if (result.statusCode === 200) {
       const data = result.data
 
       // 业务状态码检查
-      if (typeof data === 'object' && data.code === 200) {
-        return data
-      } else if (typeof data === 'object' && data.code !== 200) {
+      if (typeof data === 'object' && data.code !== 200) {
+        ElMessage.error(data.message || '业务错误')
         throw new Error(data.message || '业务错误')
       }
 
       return data
     }
 
-    throw new Error(`HTTP错误: ${result.statusCode}`)
+    const errorMsg = `HTTP错误: ${result.statusCode}`
+    ElMessage.error(errorMsg)
+    throw new Error(errorMsg)
   } catch (error) {
     console.error('请求失败:', error)
+
+    if (error.message) {
+      message.error(error.message)
+    }
+
     throw error
   }
 }

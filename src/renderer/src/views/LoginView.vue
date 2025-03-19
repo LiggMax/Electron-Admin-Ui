@@ -1,12 +1,8 @@
 <script setup>
 import { ref } from 'vue'
-// import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-// import { useAuthStore } from '../store/userAuth'
 import { userLoginService } from '../api/userLogin'
 
-// const router = useRouter()
-// const authStore = useAuthStore()
 
 // 表单数据
 const loginForm = ref({
@@ -106,10 +102,7 @@ const handleLogin = async () => {
               <span>记住用户名</span>
             </label>
 
-            <label class="request-method-label">
-              <input v-model="useMainProcess" type="checkbox" :disabled="loading" />
-              <span>使用主进程发送请求</span>
-            </label>
+
           </div>
 
           <button class="login-button" :disabled="loading" @click="handleLogin">

@@ -85,25 +85,4 @@ body {
   align-items: center;
   overflow: hidden;
 }
-
-// 移除背景装饰元素
-// body::before,
-// body::after {
-//   content: '';
-//   position: absolute;
-//   width: 200px;
-//   height: 200px;
-//   border: 2px solid rgba(255, 255, 255, 0.1);
-//   transform: rotate(45deg);
-// }
-
-// body::before {
-//   top: 10%;
-//   left: 15%;
-// }
-
-// body::after {
-//   bottom: 10%;
-//   right: 15%;
-// }
 </style>
