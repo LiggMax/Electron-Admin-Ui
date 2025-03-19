@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { userLoginService } from '../api/userLogin'
 
+// 获取路由实例
+const router = useRouter()
 
 // 表单数据
 const loginForm = ref({
@@ -48,8 +51,8 @@ const handleLogin = async () => {
     }
     loginForm.value.password = '' // 清空密码
 
-    // 后续可以添加路由跳转
-    // router.push('/dashboard')
+    // 登录成功后跳转到首页
+    router.push('/home')
   } catch (error) {
     // 使用Element Plus的消息弹窗展示错误信息
     ElMessage.error(error.message || '登录失败，请稍后重试')
