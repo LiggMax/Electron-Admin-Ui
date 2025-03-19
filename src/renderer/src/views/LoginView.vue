@@ -1,22 +1,60 @@
 <script setup>
 import { ref } from 'vue'
-// 暂时注释掉未使用的路由相关代码
 // import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+// import { useAuthStore } from '../store/userAuth'
+import { userLoginService } from '../api/userLogin'
+
 // const router = useRouter()
+// const authStore = useAuthStore()
 
-const username = ref('')
-const password = ref('')
-const rememberUser = ref(false)
+// 表单数据
+const loginForm = ref({
+  account: '',
+  password: '',
+  rememberUser: false
+})
 
-const login = () => {
-  // 登录逻辑
-  console.log('登录请求:', {
-    username: username.value,
-    password: password.value,
-    rememberUser: rememberUser.value
-  })
-  // 后续可添加路由跳转
-  // router.push('/dashboard')
+// 加载状态和错误信息
+const loading = ref(false)
+const errorMsg = ref('')
+
+/**
+ * 执行登录
+ */
+const handleLogin = async () => {
+  // 表单验证
+  if (!loginForm.value.account.trim()) {
+    errorMsg.value = '请输入账户名称'
+    return
+  }
+  if (!loginForm.value.password.trim()) {
+    errorMsg.value = '请输入账户密码'
+    return
+  }
+
+  errorMsg.value = '' // 清空错误信息
+  loading.value = true // 设置加载状态
+
+  try {
+    await userLoginService(loginForm.value)
+    // 登录成功提示
+    ElMessage.success('登录成功')
+
+    // 如果不需要记住用户名，清除账户
+    if (!loginForm.value.rememberUser) {
+      loginForm.value.account = ''
+    }
+    loginForm.value.password = '' // 清空密码
+
+    // 后续可以添加路由跳转
+    // router.push('/dashboard')
+  } catch (error) {
+    console.error('登录失败:', error)
+    errorMsg.value = error.message || '登录失败，请稍后重试'
+  } finally {
+    loading.value = false // 无论成功失败都结束加载状态
+  }
 }
 </script>
 
@@ -30,15 +68,19 @@ const login = () => {
         <h1 class="login-title">欢迎使用卡商平台</h1>
 
         <div class="login-form">
+          <!-- 错误提示 -->
+          <div v-if="errorMsg" class="error-message">{{ errorMsg }}</div>
+
           <div class="form-item">
             <div class="input-icon">
               <img src="../assets/images/user.png" alt="user" class="icon-image" />
             </div>
             <input
-              v-model="username"
+              v-model="loginForm.account"
               type="text"
               placeholder="请输入账户名称"
               class="login-input"
+              :disabled="loading"
             />
           </div>
 
@@ -47,21 +89,26 @@ const login = () => {
               <img src="../assets/images/password.png" alt="password" class="icon-image" />
             </div>
             <input
-              v-model="password"
+              v-model="loginForm.password"
               type="password"
               placeholder="请输入账户密码"
               class="login-input"
+              :disabled="loading"
+              @keyup.enter="handleLogin"
             />
           </div>
 
           <div class="form-item remember-row">
             <label class="remember-label">
-              <input v-model="rememberUser" type="checkbox" />
+              <input v-model="loginForm.rememberUser" type="checkbox" :disabled="loading" />
               <span>记住用户名</span>
             </label>
           </div>
 
-          <button class="login-button" @click="login">登录</button>
+          <button class="login-button" :disabled="loading" @click="handleLogin">
+            <span v-if="loading">登录中...</span>
+            <span v-else>登录</span>
+          </button>
         </div>
       </div>
     </div>
@@ -128,6 +175,16 @@ const login = () => {
   width: 100%;
 }
 
+.error-message {
+  background-color: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
 .form-item {
   margin-bottom: 20px;
   position: relative;
@@ -171,6 +228,11 @@ const login = () => {
   &::placeholder {
     color: #bbb;
   }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
 }
 
 .remember-row {
@@ -202,8 +264,13 @@ const login = () => {
   cursor: pointer;
   transition: all 0.3s;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: #40a9ff;
+  }
+
+  &:disabled {
+    background-color: #d9d9d9;
+    cursor: not-allowed;
   }
 }
 

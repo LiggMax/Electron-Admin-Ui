@@ -8,6 +8,10 @@ const api = {
     minimize: () => ipcRenderer.send('window-minimize'),
     maximize: () => ipcRenderer.send('window-maximize'),
     close: () => ipcRenderer.send('window-close')
+  },
+  // 添加HTTP请求API，通过主进程发送
+  http: {
+    request: (options) => ipcRenderer.invoke('http-request', options)
   }
 }
 

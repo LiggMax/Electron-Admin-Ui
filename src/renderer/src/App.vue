@@ -14,7 +14,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-container" :class="{ 'maximized': isMaximized }">
+  <div class="app-container" :class="{ maximized: isMaximized }">
     <div class="app-window">
       <TitleBar />
       <div class="content-container">
@@ -25,7 +25,8 @@ onMounted(() => {
 </template>
 
 <style lang="less">
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
