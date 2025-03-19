@@ -4,10 +4,7 @@ import com.ligg.electronservice.pojo.Result;
 import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping
 @RestController
@@ -21,9 +18,10 @@ public class LoginController {
      * 登录
      * return: token
      */
+    @CrossOrigin
     @PostMapping("/login")
     public Result<?> login(@RequestParam String account,
-                                @RequestParam String password){
+                           @RequestParam String password){
        User userInfo = userService.findByUser(account,password);
        if (userInfo == null){
            return Result.error(400,"账号或密码错误");
