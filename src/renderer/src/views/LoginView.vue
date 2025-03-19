@@ -15,9 +15,11 @@ const loginForm = ref({
   rememberUser: false
 })
 
-// 加载状态和错误信息
+// 是否使用主进程发送请求
+const useMainProcess = ref(false)
+
+// 加载状态
 const loading = ref(false)
-const errorMsg = ref('')
 
 /**
  * 执行登录
@@ -25,19 +27,22 @@ const errorMsg = ref('')
 const handleLogin = async () => {
   // 表单验证
   if (!loginForm.value.account.trim()) {
-    errorMsg.value = '请输入账户名称'
+    ElMessage.error('请输入账户名称')
     return
   }
   if (!loginForm.value.password.trim()) {
-    errorMsg.value = '请输入账户密码'
+    ElMessage.error('请输入账户密码')
     return
   }
 
-  errorMsg.value = '' // 清空错误信息
   loading.value = true // 设置加载状态
 
   try {
-    await userLoginService(loginForm.value)
+    console.log(`使用${useMainProcess.value ? '主进程' : 'Axios'}方式发送登录请求`)
+
+    const res = await userLoginService(loginForm.value)
+    console.log('登录成功:', res)
+
     // 登录成功提示
     ElMessage.success('登录成功')
 
@@ -50,8 +55,8 @@ const handleLogin = async () => {
     // 后续可以添加路由跳转
     // router.push('/dashboard')
   } catch (error) {
-    console.error('登录失败:', error)
-    errorMsg.value = error.message || '登录失败，请稍后重试'
+    // 使用Element Plus的消息弹窗展示错误信息
+    ElMessage.error(error.message || '登录失败，请稍后重试')
   } finally {
     loading.value = false // 无论成功失败都结束加载状态
   }
@@ -68,9 +73,6 @@ const handleLogin = async () => {
         <h1 class="login-title">欢迎使用卡商平台</h1>
 
         <div class="login-form">
-          <!-- 错误提示 -->
-          <div v-if="errorMsg" class="error-message">{{ errorMsg }}</div>
-
           <div class="form-item">
             <div class="input-icon">
               <img src="../assets/images/user.png" alt="user" class="icon-image" />
@@ -102,6 +104,11 @@ const handleLogin = async () => {
             <label class="remember-label">
               <input v-model="loginForm.rememberUser" type="checkbox" :disabled="loading" />
               <span>记住用户名</span>
+            </label>
+
+            <label class="request-method-label">
+              <input v-model="useMainProcess" type="checkbox" :disabled="loading" />
+              <span>使用主进程发送请求</span>
             </label>
           </div>
 
@@ -175,16 +182,6 @@ const handleLogin = async () => {
   width: 100%;
 }
 
-.error-message {
-  background-color: rgba(255, 77, 79, 0.1);
-  color: #ff4d4f;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
 .form-item {
   margin-bottom: 20px;
   position: relative;
@@ -237,11 +234,12 @@ const handleLogin = async () => {
 
 .remember-row {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
 }
 
-.remember-label {
+.remember-label,
+.request-method-label {
   font-size: 14px;
   color: #666;
   display: flex;
