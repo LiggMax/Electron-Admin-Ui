@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, ipcMain, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from './assets/icon.png?asset'
 import httpService from './services/httpService'
 
 // 注册HTTP服务
