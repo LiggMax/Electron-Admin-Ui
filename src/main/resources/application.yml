@@ -11,6 +11,10 @@ spring:
       enabled: true #启用multipart文件上传
       max-file-size: 500MB #最大单文件大小
       max-request-size: 500MB #最大HTTP请求
+  data:
+    redis:
+      port: 6379
+      password: 200309
 server:
   port: 8090
   servlet:
