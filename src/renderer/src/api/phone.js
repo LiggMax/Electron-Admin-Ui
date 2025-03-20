@@ -8,5 +8,5 @@ export const getPhoneList = (paramsData) =>{
   for (let key in paramsData){
     params.append(key, paramsData[key]);
   }
-  return request.get('/phone', params)
+  return request.get('/phone/phoneList', {params: params})
 }

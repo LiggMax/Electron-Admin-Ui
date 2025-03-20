@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, inject } from 'vue'
+import { getPhoneList } from '../api/phone'
 
 // 获取全局消息服务
 const message = inject('message')
@@ -31,13 +32,12 @@ const countryOptions = [
 // 表格数据
 const tableData = ref([
   {
-    id: '1001',
-    cardNumber: '6225 **** **** 1234',
-    transactionAmount: 10000.0,
-    paymentMethod: '支付宝',
-    transactionTime: '2023-05-15 14:30:22',
-    status: '成功',
-    operator: '张三'
+    phoneId: '1001',
+    phoneNumber: '199*****909',
+    lineStatus: 1,
+    countryCode: '中国香港',
+    registrationTime: '2023-05-15 14:30:22',
+    status: '1'
   },
   {
     id: '1002',
@@ -56,69 +56,6 @@ const tableData = ref([
     transactionTime: '2023-05-15 11:45:33',
     status: '失败',
     operator: '王五'
-  },
-  {
-    id: '1004',
-    cardNumber: '6222 **** **** 3456',
-    transactionAmount: 12000.0,
-    paymentMethod: '支付宝',
-    transactionTime: '2023-05-14 16:20:18',
-    status: '成功',
-    operator: '赵六'
-  },
-  {
-    id: '1005',
-    cardNumber: '6221 **** **** 7890',
-    transactionAmount: 6000.0,
-    paymentMethod: '微信支付',
-    transactionTime: '2023-05-14 09:10:45',
-    status: '成功',
-    operator: '张三'
-  },
-  {
-    id: '1006',
-    cardNumber: '6220 **** **** 1357',
-    transactionAmount: 9000.0,
-    paymentMethod: '银联',
-    transactionTime: '2023-05-13 15:30:22',
-    status: '处理中',
-    operator: '李四'
-  },
-  {
-    id: '1007',
-    cardNumber: '6219 **** **** 2468',
-    transactionAmount: 15000.0,
-    paymentMethod: '支付宝',
-    transactionTime: '2023-05-13 11:05:38',
-    status: '成功',
-    operator: '王五'
-  },
-  {
-    id: '1008',
-    cardNumber: '6218 **** **** 3579',
-    transactionAmount: 7500.0,
-    paymentMethod: '微信支付',
-    transactionTime: '2023-05-12 14:40:12',
-    status: '失败',
-    operator: '赵六'
-  },
-  {
-    id: '1009',
-    cardNumber: '6217 **** **** 4680',
-    transactionAmount: 11000.0,
-    paymentMethod: '银联',
-    transactionTime: '2023-05-12 10:15:30',
-    status: '成功',
-    operator: '张三'
-  },
-  {
-    id: '1010',
-    cardNumber: '6216 **** **** 5791',
-    transactionAmount: 4500.0,
-    paymentMethod: '支付宝',
-    transactionTime: '2023-05-11 16:55:08',
-    status: '成功',
-    operator: '李四'
   }
 ])
 
@@ -129,12 +66,8 @@ const pagination = reactive({
   total: 100
 })
 
-// 搜索表单
-const searchForm = reactive({
-  country: '',      // 国家/地区
-  status: '',       // 状态
-  operator: ''      // 操作员
-})
+const countryCode =ref('')// 国家地区
+const usageStatus = ref('')
 
 // 状态选项
 const statusOptions = [
@@ -194,11 +127,9 @@ const handleBatchOperation = (operation) => {
   console.log(`批量${operation}`, multipleSelection.value)
 }
 
-// 分页变化
-const handleSizeChange = (size) => {
-  pagination.pageSize = size
-  // 重新加载数据
-}
+const pageNum = ref(1)// 当前页码
+const total = ref(22)// 总数
+const pageSize = ref(10)// 每页条数
 
 const handleCurrentChange = (page) => {
   pagination.currentPage = page
@@ -209,6 +140,22 @@ const handleCurrentChange = (page) => {
 const exportData = () => {
   console.log('导出数据')
 }
+/**
+ * 获取卡号数据列表
+ */
+const getCardDataList = async () => {
+  // 这里应该实现获取卡号数据列表的逻辑
+  let params ={
+    pageNum: pageNum.value,
+    pageSize: pageSize.value,
+    countryCode: countryCode.value ? countryCode.value : '',
+    usageStatus: usageStatus.value ? usageStatus.value : ''
+  }
+  let result = await getPhoneList(params)
+  total.value = result.data.total
+  tableData.value = result.data.items
+}
+getCardDataList()
 </script>
 
 <template>
@@ -243,9 +190,9 @@ const exportData = () => {
     <div class="filter-bar">
       <div class="filter-items">
         <div class="filter-item">
-          <span class="label">国家/地区：</span>
+          <span class="label">国家：</span>
           <el-select
-            v-model="searchForm.country"
+            v-model="countryCode"
             placeholder="请选择"
             clearable
             size="small"
@@ -261,9 +208,9 @@ const exportData = () => {
         </div>
 
         <div class="filter-item">
-          <span class="label">交易状态：</span>
+          <span class="label">状态：</span>
           <el-select
-            v-model="searchForm.status"
+            v-model="UsageStatus"
             placeholder="请选择"
             clearable
             size="small"
@@ -294,11 +241,11 @@ const exportData = () => {
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="40"></el-table-column>
-        <el-table-column prop="id" label="序号" width="80"></el-table-column>
-        <el-table-column prop="cardNumber" label="手机号码" width="180"></el-table-column>
-        <el-table-column prop="transactionAmount" label="线路状态" width="120"></el-table-column>
-        <el-table-column prop="paymentMethod" label="号码归属国家" width="120"></el-table-column>
-        <el-table-column prop="transactionTime" label="注册时间" width="180"></el-table-column>
+        <el-table-column prop="phoneId" label="序号" width="80"></el-table-column>
+        <el-table-column prop="phoneNumber" label="手机号码" width="180"></el-table-column>
+        <el-table-column prop="lineStatus" label="线路状态" width="120"></el-table-column>
+        <el-table-column prop="countryCode" label="号码归属国家" width="120"></el-table-column>
+        <el-table-column prop="registrationTime" label="注册时间" width="180"></el-table-column>
         <el-table-column prop="status" label="状态" width="80">
           <template #default="scope">
             <el-tag
@@ -313,7 +260,6 @@ const exportData = () => {
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="operator" label="操作员" width="80"></el-table-column>
         <el-table-column label="操作">
           <template #default="scope">
             <el-button size="mini" type="text" @click="handleView(scope.row)">查看</el-button>
@@ -326,13 +272,15 @@ const exportData = () => {
       <!-- 分页 -->
       <div class="pagination">
         <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="pagination.currentPage"
           :page-sizes="[10, 20, 50, 100]"
           :page-size="pagination.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
+          :total="total"
         ></el-pagination>
       </div>
     </div>
