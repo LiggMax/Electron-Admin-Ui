@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -23,18 +22,18 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 查询用户信息
-     * @param account 账号
+     *
+     * @param account  账号
      * @param password 密码
      * @return 用户信息
      */
     @Override
     public User findByUser(String account, String password) {
-        return userMapper.findByUser(account,password);
+        return userMapper.findByUser(account, password);
     }
 
     /**
      * 获取token
-     * @param user 用户信息
      * @return token
      */
     @Override
@@ -45,7 +44,9 @@ public class UserServiceImpl implements UserService {
         claims.put("username", user.getAccount());
         String token = JWTUtil.getToken(claims);
         //将token存储到redis中,过期时间6小时
-        redisTemplate.opsForValue().set("user:" + user.getUserId() + "Token", token,6, TimeUnit.HOURS);
+        redisTemplate.opsForValue()
+                .set("user:" + user.getUserId() + "Token", token,
+                        6, TimeUnit.HOURS);
         return token;
     }
 }
