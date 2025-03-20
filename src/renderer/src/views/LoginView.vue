@@ -1,7 +1,7 @@
 <script setup>
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { userLoginService } from '../api/userLogin'
+import { userLoginService, userLoginService1 } from '../api/userLogin'
 
 // 获取全局消息服务
 const message = inject('message')
@@ -41,7 +41,7 @@ const handleLogin = async () => {
   try {
     console.log(`使用${useMainProcess.value ? '主进程' : 'Axios'}方式发送登录请求`)
 
-    const res = await userLoginService(loginForm.value)
+    const res = await userLoginService1(loginForm.value)
     console.log('登录成功:', res)
 
     // 登录成功提示
