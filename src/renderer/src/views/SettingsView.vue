@@ -1,6 +1,8 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, reactive, inject } from 'vue'
+
+// 获取全局消息服务
+const message = inject('message')
 
 // 基本设置表单
 const basicForm = reactive({
@@ -44,25 +46,25 @@ const activeTab = ref('basic')
 
 // 保存基本设置
 const saveBasicSettings = () => {
-  ElMessage.success('基本设置已保存')
+  message.success('基本设置已保存')
   // 这里应该实现保存逻辑
 }
 
 // 保存安全设置
 const saveSecuritySettings = () => {
-  ElMessage.success('安全设置已保存')
+  message.success('安全设置已保存')
   // 这里应该实现保存逻辑
 }
 
 // 保存通知设置
 const saveNotificationSettings = () => {
-  ElMessage.success('通知设置已保存')
+  message.success('通知设置已保存')
   // 这里应该实现保存逻辑
 }
 
 // 重置账户密码
 const resetPassword = () => {
-  ElMessage.success('密码重置邮件已发送')
+  message.success('密码重置邮件已发送')
   // 这里应该实现重置密码逻辑
 }
 

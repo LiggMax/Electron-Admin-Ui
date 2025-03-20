@@ -1,8 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
 import { userLoginService } from '../api/userLogin'
+
+// 获取全局消息服务
+const message = inject('message')
 
 // 获取路由实例
 const router = useRouter()
@@ -26,11 +28,11 @@ const loading = ref(false)
 const handleLogin = async () => {
   // 表单验证
   if (!loginForm.value.account.trim()) {
-    ElMessage.error('请输入账户名称')
+    message.error('请输入账号')
     return
   }
   if (!loginForm.value.password.trim()) {
-    ElMessage.error('请输入账户密码')
+    message.error('请输入密码')
     return
   }
 
@@ -43,7 +45,7 @@ const handleLogin = async () => {
     console.log('登录成功:', res)
 
     // 登录成功提示
-    ElMessage.success('登录成功')
+    message.success('登录成功')
 
     // 如果不需要记住用户名，清除账户
     if (!loginForm.value.rememberUser) {
@@ -54,8 +56,8 @@ const handleLogin = async () => {
     // 登录成功后跳转到首页
     router.push('/home')
   } catch (error) {
-    // 使用Element Plus的消息弹窗展示错误信息
-    ElMessage.error(error.message || '登录失败，请稍后重试')
+    // 使用消息服务展示错误信息
+    message.error(error.message || '登录失败，请稍后重试')
   } finally {
     loading.value = false // 无论成功失败都结束加载状态
   }

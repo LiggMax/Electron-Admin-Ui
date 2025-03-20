@@ -1,6 +1,8 @@
 <script setup>
 import TitleBar from './components/TitleBar.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide } from 'vue'
+import zhCn from 'element-plus/dist/locale/zh-cn.min'
+import message from './utils/message'
 
 const isMaximized = ref(false)
 
@@ -11,17 +13,25 @@ onMounted(() => {
     })
   }
 })
+
+// 提供给所有组件使用
+provide('message', message)
+
+// Element Plus配置
+const config = {}
 </script>
 
 <template>
-  <div class="app-container" :class="{ maximized: isMaximized }">
-    <div class="app-window">
-      <TitleBar />
-      <div class="content-container">
-        <router-view></router-view>
+  <el-config-provider :locale="zhCn" :message="config">
+    <div class="app-container" :class="{ maximized: isMaximized }">
+      <div class="app-window">
+        <TitleBar />
+        <div class="content-container">
+          <router-view></router-view>
+        </div>
       </div>
     </div>
-  </div>
+  </el-config-provider>
 </template>
 
 <style lang="less">

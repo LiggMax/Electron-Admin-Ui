@@ -1,6 +1,8 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, reactive, inject } from 'vue'
+
+// 获取全局消息服务
+const message = inject('message')
 
 // 表格数据
 const tableData = ref([
@@ -159,7 +161,7 @@ const resetSearch = () => {
 // 批量操作
 const handleBatchOperation = (operation) => {
   if (multipleSelection.value.length === 0) {
-    ElMessage.warning('请先选择记录')
+    message.warning('请先选择记录')
     return
   }
   console.log(`批量${operation}`, multipleSelection.value)

@@ -1,34 +1,11 @@
-# app
+# 卡商平台
 
-An Electron application with Vue
+### 业务状态码
 
-## Recommended IDE Setup
+#### 404：服务异常
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+#### 401：未登录
 
-## Project Setup
+#### 400：响应错误信息
 
-### Install
-
-```bash
-$ npm install
-```
-
-### Development
-
-```bash
-$ npm run dev
-```
-
-### Build
-
-```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
-```
+#### 200：成功

@@ -2,7 +2,7 @@
  * 请求工具类 - 默认通过主进程发送请求
  * 完全避开CSP限制和CORS问题
  */
-import {ElMessage} from 'element-plus'
+import message from './message'
 // 注意: 这里不需要定义BASE_URL，由主进程的httpService.js处理
 // 主进程中已定义 DEFAULT_BASE_URL = 'http://127.0.0.1:8090'
 
@@ -34,7 +34,7 @@ const requestViaMainProcess = async (options) => {
 
       // 业务状态码检查
       if (typeof data === 'object' && data.code !== 200) {
-        ElMessage.error(data.message || '业务错误')
+        message.error(data.message || '业务错误')
         throw new Error(data.message || '业务错误')
       }
 
@@ -42,7 +42,7 @@ const requestViaMainProcess = async (options) => {
     }
 
     const errorMsg = `HTTP错误: ${result.statusCode}`
-    ElMessage.error(errorMsg)
+    message.error(errorMsg)
     throw new Error(errorMsg)
   } catch (error) {
     console.error('请求失败:', error)
