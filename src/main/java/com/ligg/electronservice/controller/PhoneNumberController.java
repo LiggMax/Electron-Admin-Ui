@@ -1,5 +1,6 @@
 package com.ligg.electronservice.controller;
 
+import com.ligg.electronservice.anno.Status;
 import com.ligg.electronservice.pojo.PageBean;
 import com.ligg.electronservice.pojo.Phone;
 import com.ligg.electronservice.pojo.Result;
@@ -25,9 +26,9 @@ public class PhoneNumberController {
             Integer pageNum,//当前页码
             Integer pageSize,//每页显示条数
             @RequestParam(required = false) String countryCode,//号码归属地
-            @RequestParam(required = false) Integer status //号码状态
+            @RequestParam(required = false) Integer usageStatus //号码状态
     ) {
-        PageBean<Phone> pageBean = phoneNumberService.phoneList(pageNum, pageSize, countryCode, status);
+        PageBean<Phone> pageBean = phoneNumberService.phoneList(pageNum, pageSize, countryCode, usageStatus);
         return Result.success(200, pageBean);
     }
 

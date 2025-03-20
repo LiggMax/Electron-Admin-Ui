@@ -8,11 +8,11 @@
         select *
         from phone_records
         <where>
-            <if test="countryCode != null and countryCode != '' ">
+            <if test="countryCode != '' ">
                 country_code = #{countryCode}
             </if>
-            <if test="status != null">
-                and status = #{status}
+            <if test="usageStatus != null">
+                and usageStatus = #{usageStatus}
             </if>
         </where>
     </select>

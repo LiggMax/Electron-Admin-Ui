@@ -24,10 +24,10 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
      * 3.调用mapper方法查询数据
      */
     @Override
-    public PageBean<Phone> phoneList(Integer pageNum, Integer pageSize, String countryCode, Integer status) {
+    public PageBean<Phone> phoneList(Integer pageNum, Integer pageSize, String countryCode, Integer usageStatus) {
         PageBean<Phone> pageBean = new PageBean<>();
         PageHelper.startPage(pageNum, pageSize);
-        List<Phone> phoneList = phoneNumberMapper.phoneList(countryCode, status);
+        List<Phone> phoneList = phoneNumberMapper.phoneList(countryCode, usageStatus);
         //Page中提供了方法，可获得PageHelper分页查询后,获得的总记录数和当前页数据.
         Page<Phone> page = (Page<Phone>) phoneList;
 

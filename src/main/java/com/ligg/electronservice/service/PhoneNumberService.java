@@ -10,8 +10,8 @@ public interface PhoneNumberService {
      * @param pageNum 当前页码
      * @param pageSize 每页显示条数
      * @param countryCode 号码归属地
-     * @param status 号码状态
+     * @param usageStatus 号码状态
      * @return 分页对象
      */
-    PageBean<Phone> phoneList(Integer pageNum, Integer pageSize, String countryCode, Integer status);
+    PageBean<Phone> phoneList(Integer pageNum, Integer pageSize, String countryCode, Integer usageStatus);
 }
