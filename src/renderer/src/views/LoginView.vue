@@ -1,7 +1,7 @@
 <script setup>
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { userLoginService, userLoginService1 } from '../api/userLogin'
+import { userLoginService1 } from '../api/userLogin'
 
 // 获取全局消息服务
 const message = inject('message')
@@ -106,8 +106,6 @@ const handleLogin = async () => {
               <input v-model="loginForm.rememberUser" type="checkbox" :disabled="loading" />
               <span>记住用户名</span>
             </label>
-
-
           </div>
 
           <button class="login-button" :disabled="loading" @click="handleLogin">
@@ -121,6 +119,8 @@ const handleLogin = async () => {
 </template>
 
 <style lang="less" scoped>
+// 删除未使用的.login-root类
+
 .login-container {
   width: 100%;
   height: 100%;
@@ -130,6 +130,13 @@ const handleLogin = async () => {
   perspective: 1000px;
   overflow: hidden;
   padding: 10px; /* 添加内边距确保登录卡片不会太靠近窗口边缘 */
+  position: relative;
+  z-index: 1;
+  // 将背景图样式从.login-root移到这里
+  background-image: url('../assets/images/loginbackground.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .login-card {

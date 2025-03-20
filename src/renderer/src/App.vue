@@ -74,10 +74,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-image: url('./assets/images/loginbackground.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-color: #f5f7fa;
+  position: relative;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   position: relative;
 

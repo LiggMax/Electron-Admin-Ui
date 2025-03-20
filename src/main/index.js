@@ -2,10 +2,10 @@ import { app, shell, BrowserWindow, ipcMain, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from './assets/icon.png?asset'
-import httpService from './services/httpService'
-
-// 注册HTTP服务
-httpService.registerIpcHandlers()
+// import httpService from './services/httpService'
+//
+// // 注册HTTP服务
+// httpService.registerIpcHandlers()
 
 function createWindow() {
   // Create the browser window.

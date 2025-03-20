@@ -92,7 +92,7 @@ const handleMenuClick = (path) => {
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  
+
   .logo {
     color: #fff;
     font-size: 18px;
@@ -114,7 +114,7 @@ const handleMenuClick = (path) => {
     cursor: pointer;
     transition: all 0.3s;
     margin: 4px 0;
-    
+
     i {
       font-size: 16px;
       margin-right: 10px;
@@ -129,9 +129,9 @@ const handleMenuClick = (path) => {
     }
 
     &.active {
-      background-color: #1890ff;
+      background-color: rgba(255, 255, 255, 0.09);
       color: #fff;
     }
   }
 }
-</style> 
+</style>

@@ -35,7 +35,6 @@ const handleClose = () => {
 <template>
   <div class="title-bar">
     <div class="title-bar-drag">
-      <span class="title">卡商平台</span>
     </div>
     <div class="window-controls">
       <button class="control-button minimize" title="最小化" @click="handleMinimize">
@@ -59,7 +58,7 @@ const handleClose = () => {
 <style lang="less" scoped>
 .title-bar {
   height: 36px;
-  background: transparent;
+  background-color: #2e55ea;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -68,6 +67,7 @@ const handleClose = () => {
   padding: 0 12px;
   width: 100%;
   z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .title-bar-drag {
