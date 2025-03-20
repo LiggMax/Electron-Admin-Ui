@@ -37,25 +37,7 @@ const tableData = ref([
     lineStatus: 1,
     countryCode: '中国香港',
     registrationTime: '2023-05-15 14:30:22',
-    status: '1'
-  },
-  {
-    id: '1002',
-    cardNumber: '6224 **** **** 5678',
-    transactionAmount: 5000.0,
-    paymentMethod: '微信支付',
-    transactionTime: '2023-05-15 13:25:10',
-    status: '处理中',
-    operator: '李四'
-  },
-  {
-    id: '1003',
-    cardNumber: '6223 **** **** 9012',
-    transactionAmount: 8000.0,
-    paymentMethod: '银联',
-    transactionTime: '2023-05-15 11:45:33',
-    status: '失败',
-    operator: '王五'
+    usageStatus: '1'
   }
 ])
 
@@ -67,14 +49,13 @@ const pagination = reactive({
 })
 
 const countryCode =ref('')// 国家地区
-const usageStatus = ref('')
+const usageStatus = ref('') // 使用状态
 
-// 状态选项
+// 线路状态
 const statusOptions = [
   { label: '全部', value: '' },
-  { label: '成功', value: '成功' },
-  { label: '处理中', value: '处理中' },
-  { label: '失败', value: '失败' }
+  { label: '未使用', value: 0 },
+  { label: '已使用', value: 1 }
 ]
 
 // 操作员选项
@@ -143,6 +124,15 @@ const exportData = () => {
 /**
  * 获取卡号数据列表
  */
+const formatStatus = (status, type) => {
+  if (type === 'line') {
+    return status === 1 ? '在线' : '离线';
+  }
+  if (type === 'usage') {
+    return status === 1 ? '已使用' : '未使用';
+  }
+};
+
 const getCardDataList = async () => {
   // 这里应该实现获取卡号数据列表的逻辑
   let params ={
@@ -210,7 +200,7 @@ getCardDataList()
         <div class="filter-item">
           <span class="label">状态：</span>
           <el-select
-            v-model="UsageStatus"
+            v-model="usageStatus"
             placeholder="请选择"
             clearable
             size="small"
@@ -243,21 +233,16 @@ getCardDataList()
         <el-table-column type="selection" width="40"></el-table-column>
         <el-table-column prop="phoneId" label="序号" width="80"></el-table-column>
         <el-table-column prop="phoneNumber" label="手机号码" width="180"></el-table-column>
-        <el-table-column prop="lineStatus" label="线路状态" width="120"></el-table-column>
+        <el-table-column label="线路状态" width="120">
+          <template #default="scope">
+            {{ formatStatus(scope.row.lineStatus, 'line') }}
+          </template>
+        </el-table-column>
         <el-table-column prop="countryCode" label="号码归属国家" width="120"></el-table-column>
         <el-table-column prop="registrationTime" label="注册时间" width="180"></el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column label="状态" width="80">
           <template #default="scope">
-            <el-tag
-              :type="
-                scope.row.status === '成功'
-                  ? 'success'
-                  : scope.row.status === '处理中'
-                    ? 'warning'
-                    : 'danger'
-              "
-              >{{ scope.row.status }}
-            </el-tag>
+            {{ formatStatus(scope.row.usageStatus, 'usage') }}
           </template>
         </el-table-column>
         <el-table-column label="操作">
