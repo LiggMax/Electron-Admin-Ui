@@ -4,12 +4,36 @@ import { ref, reactive, inject } from 'vue'
 // 获取全局消息服务
 const message = inject('message')
 
+// 顶部接码项目选项
+const projectOptions = [
+  { label: '全部项目', value: 'all' },
+  { label: '淘宝', value: 'taobao' },
+  { label: '京东', value: 'jd' },
+  { label: '拼多多', value: 'pdd' },
+  { label: '抖音', value: 'douyin' }
+]
+
+// 选中的接码项目
+const selectedProject = ref('all')
+
+// 国家选项
+const countryOptions = [
+  { label: '全部地区', value: '' },
+  { label: '中国', value: 'CN' },
+  { label: '美国', value: 'US' },
+  { label: '英国', value: 'UK' },
+  { label: '日本', value: 'JP' },
+  { label: '韩国', value: 'KR' },
+  { label: '俄罗斯', value: 'RU' },
+  { label: '其他', value: 'OTHER' }
+]
+
 // 表格数据
 const tableData = ref([
   {
     id: '1001',
     cardNumber: '6225 **** **** 1234',
-    transactionAmount: 10000.00,
+    transactionAmount: 10000.0,
     paymentMethod: '支付宝',
     transactionTime: '2023-05-15 14:30:22',
     status: '成功',
@@ -18,7 +42,7 @@ const tableData = ref([
   {
     id: '1002',
     cardNumber: '6224 **** **** 5678',
-    transactionAmount: 5000.00,
+    transactionAmount: 5000.0,
     paymentMethod: '微信支付',
     transactionTime: '2023-05-15 13:25:10',
     status: '处理中',
@@ -27,7 +51,7 @@ const tableData = ref([
   {
     id: '1003',
     cardNumber: '6223 **** **** 9012',
-    transactionAmount: 8000.00,
+    transactionAmount: 8000.0,
     paymentMethod: '银联',
     transactionTime: '2023-05-15 11:45:33',
     status: '失败',
@@ -36,7 +60,7 @@ const tableData = ref([
   {
     id: '1004',
     cardNumber: '6222 **** **** 3456',
-    transactionAmount: 12000.00,
+    transactionAmount: 12000.0,
     paymentMethod: '支付宝',
     transactionTime: '2023-05-14 16:20:18',
     status: '成功',
@@ -45,7 +69,7 @@ const tableData = ref([
   {
     id: '1005',
     cardNumber: '6221 **** **** 7890',
-    transactionAmount: 6000.00,
+    transactionAmount: 6000.0,
     paymentMethod: '微信支付',
     transactionTime: '2023-05-14 09:10:45',
     status: '成功',
@@ -54,7 +78,7 @@ const tableData = ref([
   {
     id: '1006',
     cardNumber: '6220 **** **** 1357',
-    transactionAmount: 9000.00,
+    transactionAmount: 9000.0,
     paymentMethod: '银联',
     transactionTime: '2023-05-13 15:30:22',
     status: '处理中',
@@ -63,7 +87,7 @@ const tableData = ref([
   {
     id: '1007',
     cardNumber: '6219 **** **** 2468',
-    transactionAmount: 15000.00,
+    transactionAmount: 15000.0,
     paymentMethod: '支付宝',
     transactionTime: '2023-05-13 11:05:38',
     status: '成功',
@@ -72,7 +96,7 @@ const tableData = ref([
   {
     id: '1008',
     cardNumber: '6218 **** **** 3579',
-    transactionAmount: 7500.00,
+    transactionAmount: 7500.0,
     paymentMethod: '微信支付',
     transactionTime: '2023-05-12 14:40:12',
     status: '失败',
@@ -81,7 +105,7 @@ const tableData = ref([
   {
     id: '1009',
     cardNumber: '6217 **** **** 4680',
-    transactionAmount: 11000.00,
+    transactionAmount: 11000.0,
     paymentMethod: '银联',
     transactionTime: '2023-05-12 10:15:30',
     status: '成功',
@@ -90,7 +114,7 @@ const tableData = ref([
   {
     id: '1010',
     cardNumber: '6216 **** **** 5791',
-    transactionAmount: 4500.00,
+    transactionAmount: 4500.0,
     paymentMethod: '支付宝',
     transactionTime: '2023-05-11 16:55:08',
     status: '成功',
@@ -107,10 +131,9 @@ const pagination = reactive({
 
 // 搜索表单
 const searchForm = reactive({
-  cardNumber: '',
-  timeRange: '',
-  status: '',
-  operator: ''
+  country: '',      // 国家/地区
+  status: '',       // 状态
+  operator: ''      // 操作员
 })
 
 // 状态选项
@@ -147,12 +170,16 @@ const handleEdit = (row) => {
 
 // 搜索
 const handleSearch = () => {
-  console.log('搜索条件', searchForm)
+  console.log('搜索条件', {
+    project: selectedProject.value,
+    ...searchForm
+  })
   // 实际应该调用API进行搜索
 }
 
 // 重置搜索
 const resetSearch = () => {
+  selectedProject.value = 'all'
   Object.keys(searchForm).forEach(key => {
     searchForm[key] = ''
   })
@@ -186,167 +213,127 @@ const exportData = () => {
 
 <template>
   <div class="home-container">
-    <!-- 头部 -->
-    <div class="page-header">
-      <div class="title">卡商平台管理系统</div>
-      <div class="actions">
-        <i class="el-icon-refresh"></i>
-        <i class="el-icon-setting"></i>
-        <i class="el-icon-message"></i>
-        <i class="el-icon-user"></i>
+    <!-- 顶部标题区 -->
+    <div class="header-title">
+      <span>卡商平台管理系统</span>
+    </div>
+
+    <!-- 接码项目独立一栏 -->
+    <div class="project-selector-bar">
+      <div class="project-item">
+        <span class="label project-label">接码项目：</span>
+        <el-select
+          v-model="selectedProject"
+          placeholder="请选择项目"
+          clearable
+          size="small"
+          class="select-with-width"
+        >
+          <el-option
+            v-for="item in projectOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
       </div>
     </div>
 
-    <!-- 主内容区 -->
-    <div class="main-content">
-      <!-- 搜索区域 -->
-      <div class="search-area">
-        <el-form :model="searchForm" inline>
-          <el-form-item label="卡号">
-            <el-input v-model="searchForm.cardNumber" placeholder="请输入卡号" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="交易时间">
-            <el-date-picker
-              v-model="searchForm.timeRange"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item label="交易状态">
-            <el-select v-model="searchForm.status" placeholder="请选择" clearable>
-              <el-option
-                v-for="item in statusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="操作员">
-            <el-select v-model="searchForm.operator" placeholder="请选择" clearable>
-              <el-option
-                v-for="item in operatorOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
-            <el-button @click="resetSearch">重置</el-button>
-          </el-form-item>
-        </el-form>
+    <!-- 搜索筛选区 -->
+    <div class="filter-bar">
+      <div class="filter-items">
+        <div class="filter-item">
+          <span class="label">国家/地区：</span>
+          <el-select
+            v-model="searchForm.country"
+            placeholder="请选择"
+            clearable
+            size="small"
+            class="select-with-width"
+          >
+            <el-option
+              v-for="item in countryOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </div>
+
+        <div class="filter-item">
+          <span class="label">交易状态：</span>
+          <el-select
+            v-model="searchForm.status"
+            placeholder="请选择"
+            clearable
+            size="small"
+            class="select-with-width"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </div>
+
+        <div class="filter-buttons">
+          <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
+          <el-button size="small" @click="resetSearch">重置</el-button>
+        </div>
       </div>
+    </div>
 
-      <!-- 表格区域 -->
-      <div class="table-area">
-        <div class="table-header">
-          <div class="left">
-            <el-button type="primary" size="small" icon="el-icon-plus">新增交易</el-button>
-            <el-button type="danger" size="small" icon="el-icon-delete" @click="handleBatchOperation('删除')">批量删除</el-button>
-            <el-button type="success" size="small" icon="el-icon-check" @click="handleBatchOperation('审核')">批量审核</el-button>
-          </div>
-          <div class="right">
-            <el-button type="info" size="small" icon="el-icon-download" @click="exportData">导出数据</el-button>
-          </div>
-        </div>
+    <!-- 表格区域 -->
+    <div class="table-container">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="40"></el-table-column>
+        <el-table-column prop="id" label="序号" width="80"></el-table-column>
+        <el-table-column prop="cardNumber" label="手机号码" width="180"></el-table-column>
+        <el-table-column prop="transactionAmount" label="线路状态" width="120"></el-table-column>
+        <el-table-column prop="paymentMethod" label="号码归属国家" width="120"></el-table-column>
+        <el-table-column prop="transactionTime" label="注册时间" width="180"></el-table-column>
+        <el-table-column prop="status" label="状态" width="80">
+          <template #default="scope">
+            <el-tag
+              :type="
+                scope.row.status === '成功'
+                  ? 'success'
+                  : scope.row.status === '处理中'
+                    ? 'warning'
+                    : 'danger'
+              "
+              >{{ scope.row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="operator" label="操作员" width="80"></el-table-column>
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button size="mini" type="text" @click="handleView(scope.row)">查看</el-button>
+            <el-button size="mini" type="text" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button size="mini" type="text" style="color: #f56c6c">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-        <el-table
-          :data="tableData"
-          border
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column
-            type="selection"
-            width="55"
-          ></el-table-column>
-          <el-table-column
-            prop="id"
-            label="交易ID"
-            width="80"
-          ></el-table-column>
-          <el-table-column
-            prop="cardNumber"
-            label="卡号"
-            width="180"
-          ></el-table-column>
-          <el-table-column
-            prop="transactionAmount"
-            label="交易金额"
-            width="120"
-          >
-            <template #default="scope">
-              <span>¥ {{ scope.row.transactionAmount.toFixed(2) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="paymentMethod"
-            label="支付方式"
-            width="120"
-          ></el-table-column>
-          <el-table-column
-            prop="transactionTime"
-            label="交易时间"
-            width="180"
-          ></el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态"
-            width="100"
-          >
-            <template #default="scope">
-              <el-tag
-                :type="scope.row.status === '成功' ? 'success' : scope.row.status === '处理中' ? 'warning' : 'danger'"
-              >{{ scope.row.status }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="operator"
-            label="操作员"
-            width="100"
-          ></el-table-column>
-          <el-table-column
-            label="操作"
-            width="150"
-          >
-            <template #default="scope">
-              <el-button
-                size="mini"
-                type="text"
-                @click="handleView(scope.row)"
-              >查看</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                @click="handleEdit(scope.row)"
-              >编辑</el-button>
-              <el-button
-                size="mini"
-                type="text"
-                style="color: #F56C6C"
-              >删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <!-- 分页 -->
-        <div class="pagination">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="pagination.currentPage"
-            :page-sizes="[10, 20, 50, 100]"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.total"
-          ></el-pagination>
-        </div>
+      <!-- 分页 -->
+      <div class="pagination">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="pagination.currentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pagination.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="pagination.total"
+        ></el-pagination>
       </div>
     </div>
   </div>
@@ -358,71 +345,106 @@ const exportData = () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #f0f2f5;
+  background-color: #f8f8f8;
 }
 
-.page-header {
+/* 顶部标题区 */
+.header-title {
   height: 50px;
   background-color: #4169E1;
   color: #fff;
+  font-size: 18px;
+  font-weight: bold;
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-  .title {
-    font-size: 18px;
-    font-weight: 500;
-  }
+/* 接码项目选择栏 */
+.project-selector-bar {
+  height: 50px;
+  background-color: #fff;
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
 
-  .actions {
+  .project-item {
     display: flex;
-    gap: 15px;
+    align-items: center;
 
-    i {
-      font-size: 18px;
-      cursor: pointer;
+    .label {
+      font-size: 14px;
+      color: #606266;
+      white-space: nowrap;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    .project-label {
+      font-size: 15px;
+      color: #303133;
+    }
+
+    .select-with-width {
+      width: 180px;
     }
   }
 }
 
-.main-content {
-  flex: 1;
-  padding: 15px;
-  overflow: auto;
-}
-
-.search-area {
+/* 筛选栏样式 */
+.filter-bar {
+  height: 50px;
   background-color: #fff;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
 
-.table-area {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-  .table-header {
+  .filter-items {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    width: 100%;
 
-    .left {
+    .filter-item {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+
+      .label {
+        font-size: 14px;
+        color: #606266;
+        white-space: nowrap;
+        margin-right: 8px;
+      }
+
+      .select-with-width {
+        width: 180px;
+      }
+    }
+
+    .filter-buttons {
       display: flex;
       gap: 10px;
     }
   }
 }
 
+/* 表格容器 */
+.table-container {
+  background-color: #fff;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  flex: 1;
+  overflow: auto;
+}
+
+/* 分页区域 */
 .pagination {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
-</style> 
+</style>
