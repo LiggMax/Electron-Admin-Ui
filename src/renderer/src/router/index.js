@@ -22,26 +22,10 @@ const routes = [
         name: 'Home',
         component: HomeView
       },
-      // 其他页面路由可以在这里添加
       {
-        path: 'products',
-        name: 'Products',
-        component: () => import('@/views/ProductsView.vue')
-      },
-      {
-        path: 'orders',
-        name: 'Orders',
-        component: () => import('@/views/OrdersView.vue')
-      },
-      {
-        path: 'finance',
-        name: 'Finance',
-        component: () => import('@/views/FinanceView.vue')
-      },
-      {
-        path: 'settings',
-        name: 'Settings',
-        component: () => import('@/views/SettingsView.vue')
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('@/views/ProfileView.vue')
       }
     ]
   }

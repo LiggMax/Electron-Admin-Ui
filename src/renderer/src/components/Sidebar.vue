@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import Home from '@/assets/svg/menu/Home.svg'
+import User from '@/assets/svg/menu/User.svg'
 
 // 获取路由实例和当前路由
 const router = useRouter()
@@ -16,32 +18,14 @@ const menuItems = ref([
   {
     id: 1,
     title: '主页面',
-    icon: 'el-icon-house',
+    icon: Home,
     path: '/home'
   },
   {
     id: 2,
-    title: '商品管理',
-    icon: 'el-icon-goods',
-    path: '/products'
-  },
-  {
-    id: 3,
-    title: '订单管理',
-    icon: 'el-icon-shopping-cart-full',
-    path: '/orders'
-  },
-  {
-    id: 4,
-    title: '财务管理',
-    icon: 'el-icon-money',
-    path: '/finance'
-  },
-  {
-    id: 5,
-    title: '系统设置',
-    icon: 'el-icon-setting',
-    path: '/settings'
+    title: '个人中心',
+    icon: User,
+    path: '/profile'
   }
 ])
 
@@ -67,7 +51,7 @@ const handleMenuClick = (path) => {
         :class="{ active: activeIndex === item.path }"
         @click="handleMenuClick(item.path)"
       >
-        <i :class="item.icon"></i>
+        <img :src="item.icon" alt="icon" class="menu-icon" />
         <span class="menu-title">{{ item.title }}</span>
       </div>
     </div>
@@ -76,7 +60,7 @@ const handleMenuClick = (path) => {
 
 <style lang="less" scoped>
 .sidebar {
-  width: 200px;
+  width: 160px;
   height: 100%;
   background-color: #001529;
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
@@ -115,8 +99,9 @@ const handleMenuClick = (path) => {
     transition: all 0.3s;
     margin: 4px 0;
 
-    i {
-      font-size: 16px;
+    .menu-icon {
+      width: 16px;
+      height: 16px;
       margin-right: 10px;
     }
 
