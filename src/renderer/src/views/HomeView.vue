@@ -82,23 +82,6 @@ const handleEdit = (row) => {
   console.log('编辑', row)
 }
 
-// 搜索
-const handleSearch = () => {
-  console.log('搜索条件', {
-    project: selectedProject.value,
-    ...searchForm
-  })
-  // 实际应该调用API进行搜索
-}
-
-// 重置搜索
-const resetSearch = () => {
-  selectedProject.value = 'all'
-  Object.keys(searchForm).forEach(key => {
-    searchForm[key] = ''
-  })
-}
-
 // 批量操作
 const handleBatchOperation = (operation) => {
   if (multipleSelection.value.length === 0) {
@@ -113,8 +96,29 @@ const total = ref(22)// 总数
 const pageSize = ref(10)// 每页条数
 
 const handleCurrentChange = (page) => {
-  pagination.currentPage = page
-  // 重新加载数据
+  pageNum.value = page
+  getCardDataList()
+}
+
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  pageNum.value = 1
+  getCardDataList()
+}
+
+// 搜索
+const handleSearch = () => {
+  pageNum.value = 1
+  getCardDataList()
+}
+
+// 重置搜索
+const resetSearch = () => {
+  selectedProject.value = 'all'
+  countryCode.value = ''
+  usageStatus.value = ''
+  pageNum.value = 1
+  getCardDataList()
 }
 
 // 导出数据
@@ -231,7 +235,11 @@ getCardDataList()
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="40"></el-table-column>
-        <el-table-column prop="phoneId" label="序号" width="80"></el-table-column>
+        <el-table-column label="序号" width="80">
+          <template #default="scope">
+            {{ (pageNum - 1) * pageSize + scope.$index + 1 }}
+          </template>
+        </el-table-column>
         <el-table-column prop="phoneNumber" label="手机号码" width="180"></el-table-column>
         <el-table-column label="线路状态" width="120">
           <template #default="scope">
@@ -261,9 +269,7 @@ getCardDataList()
           v-model:page-size="pageSize"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="pagination.currentPage"
           :page-sizes="[10, 20, 50, 100]"
-          :page-size="pagination.pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         ></el-pagination>
@@ -275,10 +281,12 @@ getCardDataList()
 <style lang="less" scoped>
 .home-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  min-width: 1200px;
   display: flex;
   flex-direction: column;
   background-color: #f8f8f8;
+  overflow: auto;
 }
 
 /* 顶部标题区 */
@@ -333,32 +341,36 @@ getCardDataList()
   display: flex;
   align-items: center;
   padding: 0 20px;
+  min-width: 800px;
 
   .filter-items {
     display: flex;
     align-items: center;
+    gap: 20px;
     width: 100%;
-
+  
     .filter-item {
       display: flex;
       align-items: center;
-      margin-right: 20px;
-
+      flex-shrink: 0;
+  
       .label {
         font-size: 14px;
         color: #606266;
         white-space: nowrap;
         margin-right: 8px;
       }
-
+  
       .select-with-width {
         width: 180px;
+        flex-shrink: 0;
       }
     }
-
+  
     .filter-buttons {
       display: flex;
       gap: 10px;
+      flex-shrink: 0;
     }
   }
 }
@@ -371,13 +383,24 @@ getCardDataList()
   border-radius: 4px;
   border: 1px solid #ebeef5;
   flex: 1;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 800px;
+  overflow: hidden;
+
+  .el-table {
+    flex: 1;
+    overflow: auto;
+  }
 }
 
 /* 分页区域 */
 .pagination {
-  margin-top: 20px;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 </style>
