@@ -9,7 +9,7 @@
         from phone_records
         <where>
             <if test="countryCode != '' ">
-                country_code = #{countryCode}
+                country_code like concat('%', #{countryCode}, '%')
             </if>
             <if test="usageStatus != null">
                 and usageStatus = #{usageStatus}
