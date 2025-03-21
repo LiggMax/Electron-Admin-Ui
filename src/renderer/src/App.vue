@@ -41,24 +41,43 @@ body {
   padding: 0;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
   height: 100vh;
-  width: 100vw;
-  overflow-x: hidden; /* 禁止水平滚动 */
-  overflow-y: hidden; /* 默认禁止垂直滚动，由内部容器控制 */
+  overflow: hidden;
   background: transparent;
-  user-select: none; /* 防止文本被选中 */
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  user-select: none; /* 防止所有元素内容被选中 */
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(144, 147, 153, 0.3);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(144, 147, 153, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 body {
   background: transparent;
-  max-width: 100vw; /* 确保不会超出视口宽度 */
-  overflow-x: hidden; /* 再次确保禁用水平滚动 */
 }
 
 .app-container {
@@ -85,7 +104,6 @@ body {
   background-color: #f5f7fa;
   position: relative;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-  user-select: none;
 
   .maximized & {
     border-radius: 0;
@@ -96,74 +114,11 @@ body {
   flex: 1;
   width: 100%;
   display: flex;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: auto;
   padding: 0;
   margin: 0;
   position: relative;
   top: 0;
   left: 0;
-  user-select: none;
-}
-
-/* 全局禁用文本选择的视觉反馈 */
-::selection {
-  background: transparent;
-}
-
-/* 对于表格、输入框等元素，只有当用户需要复制文本时才允许选择 */
-input, textarea, [contenteditable="true"] {
-  user-select: text;
-}
-
-/* 修改滚动条样式，完全隐藏水平滚动条 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 0;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* 全局表格样式，防止水平滚动 */
-.el-table {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
-}
-
-/* 防止任何元素产生水平滚动 */
-.el-container, 
-.el-main, 
-.el-card, 
-.el-row,
-.el-form,
-.el-tabs__content,
-.el-dialog__body {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
-}
-
-/* 确保输入框不会引起布局问题 */
-.el-input,
-.el-select,
-.el-date-editor {
-  max-width: 100%;
-}
-
-/* 确保任何内容区域都不会有水平滚动条 */
-div, section, article, aside, table {
-  overflow-x: hidden;
-  max-width: 100%;
 }
 </style>

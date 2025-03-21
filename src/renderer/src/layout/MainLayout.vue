@@ -20,20 +20,16 @@ import Sidebar from '../components/Sidebar.vue'
   overflow: hidden;
   margin: 0;
   padding: 0;
-  user-select: none;
 }
 
 .main-container {
   flex: 1;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s;
   margin: 0;
   padding: 0;
   background-color: #fff;
-  user-select: none;
-  max-width: 100%;
 }
 </style> 

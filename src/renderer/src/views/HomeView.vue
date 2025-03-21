@@ -279,7 +279,7 @@ getCardDataList()
 <style lang="less" scoped>
 .home-container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   min-width: 1200px;
   display: flex;
   flex-direction: column;
@@ -395,10 +395,20 @@ getCardDataList()
 /* 分页区域 */
 .pagination {
   margin-top: 15px;
-  padding: 10px;
+  padding: 10px 0;
   background-color: #fff;
   border-top: 1px solid #ebeef5;
   display: flex;
   justify-content: flex-start;
+  
+  :deep(.el-pagination) {
+    width: 100%;
+    padding: 0;
+    justify-content: flex-start;
+    
+    .el-pagination__sizes {
+      margin-right: 15px;
+    }
+  }
 }
 </style>
