@@ -25,7 +25,8 @@ import Sidebar from '../components/Sidebar.vue'
 
 .main-container {
   flex: 1;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s;
@@ -33,5 +34,6 @@ import Sidebar from '../components/Sidebar.vue'
   padding: 0;
   background-color: #fff;
   user-select: none;
+  max-width: 100%;
 }
 </style> 

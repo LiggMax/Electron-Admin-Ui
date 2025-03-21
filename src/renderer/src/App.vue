@@ -41,7 +41,9 @@ body {
   padding: 0;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
   height: 100vh;
-  overflow: hidden;
+  width: 100vw;
+  overflow-x: hidden; /* 禁止水平滚动 */
+  overflow-y: hidden; /* 默认禁止垂直滚动，由内部容器控制 */
   background: transparent;
   user-select: none; /* 防止文本被选中 */
 }
@@ -55,6 +57,8 @@ body {
 
 body {
   background: transparent;
+  max-width: 100vw; /* 确保不会超出视口宽度 */
+  overflow-x: hidden; /* 再次确保禁用水平滚动 */
 }
 
 .app-container {
@@ -92,7 +96,8 @@ body {
   flex: 1;
   width: 100%;
   display: flex;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 0;
   margin: 0;
   position: relative;
@@ -111,10 +116,10 @@ input, textarea, [contenteditable="true"] {
   user-select: text;
 }
 
-/* 修改滚动条样式，减少用户误操作的可能性 */
+/* 修改滚动条样式，完全隐藏水平滚动条 */
 ::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
+  height: 0;
 }
 
 ::-webkit-scrollbar-track {
@@ -128,5 +133,37 @@ input, textarea, [contenteditable="true"] {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* 全局表格样式，防止水平滚动 */
+.el-table {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* 防止任何元素产生水平滚动 */
+.el-container, 
+.el-main, 
+.el-card, 
+.el-row,
+.el-form,
+.el-tabs__content,
+.el-dialog__body {
+  overflow-x: hidden !important;
+  max-width: 100% !important;
+}
+
+/* 确保输入框不会引起布局问题 */
+.el-input,
+.el-select,
+.el-date-editor {
+  max-width: 100%;
+}
+
+/* 确保任何内容区域都不会有水平滚动条 */
+div, section, article, aside, table {
+  overflow-x: hidden;
+  max-width: 100%;
 }
 </style>
