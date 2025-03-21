@@ -291,7 +291,7 @@ getCardDataList()
 .header-title {
   height: 50px;
   background-color: rgb(255, 255, 255);
-  color: #fff;
+  color: #000000;
   font-size: 18px;
   font-weight: bold;
   display: flex;

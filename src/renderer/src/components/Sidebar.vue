@@ -9,7 +9,7 @@ const router = useRouter()
 const route = useRoute()
 
 // 添加侧边栏折叠状态，默认展开
-const collapsed = ref(false)
+const collapsed = ref(true)
 
 // 切换侧边栏折叠状态
 const toggleCollapse = () => {

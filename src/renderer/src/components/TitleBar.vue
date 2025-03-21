@@ -122,6 +122,7 @@ const handleClose = () => {
   -webkit-app-region: no-drag;
   width: 110px;
   justify-content: flex-end;
+  padding-right: 10px;
 }
 
 .control-button {
@@ -135,7 +136,7 @@ const handleClose = () => {
   cursor: pointer;
   color: #e0e0e0;
   border-radius: 4px;
-  margin-left: 2px;
+  margin-left: 4px;
   transition: all 0.2s;
 
   &:hover {
