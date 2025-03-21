@@ -20,6 +20,7 @@ import Sidebar from '../components/Sidebar.vue'
   overflow: hidden;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 .main-container {
@@ -31,5 +32,6 @@ import Sidebar from '../components/Sidebar.vue'
   margin: 0;
   padding: 0;
   background-color: #fff;
+  user-select: none;
 }
 </style> 
