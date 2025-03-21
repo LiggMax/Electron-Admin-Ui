@@ -290,7 +290,7 @@ getCardDataList()
 /* 顶部标题区 */
 .header-title {
   height: 50px;
-  background-color: #7a99ed;
+  background-color: rgb(255, 255, 255);
   color: #fff;
   font-size: 18px;
   font-weight: bold;

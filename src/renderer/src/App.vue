@@ -47,6 +47,8 @@ body {
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -77,7 +79,6 @@ body {
   background-color: #f5f7fa;
   position: relative;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-  position: relative;
 
   .maximized & {
     border-radius: 0;
@@ -87,10 +88,12 @@ body {
 .content-container {
   flex: 1;
   width: 100%;
-  height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  top: 0;
+  left: 0;
 }
 </style>

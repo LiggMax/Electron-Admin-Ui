@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 // svg图标
 import minimizeIcon from '../assets/svg/minimize.svg'
 import maximizeIcon from '../assets/svg/Maximize-1.svg'
@@ -7,6 +8,19 @@ import restoreIcon from '../assets/svg/Maximize-2.svg'
 import closeIcon from '../assets/svg/Shut down.svg'
 
 const isMaximized = ref(false)
+const route = useRoute()
+
+// 计算当前页面标题
+const pageTitle = computed(() => {
+  switch (route.path) {
+    case '/home':
+      return '卡商端 - 首页'
+    case '/profile':
+      return '卡商端 - 个人中心'
+    default:
+      return ''
+  }
+})
 
 // 在组件挂载时监听窗口状态变化
 onMounted(() => {
@@ -34,8 +48,12 @@ const handleClose = () => {
 
 <template>
   <div class="title-bar">
-    <div class="title-bar-drag">
+    <div class="logo-section">
+      <span class="app-logo">{{ pageTitle }}</span>
     </div>
+<!--    <div class="title-section">-->
+<!--      <span class="page-title">{{ pageTitle }}</span>-->
+<!--    </div>-->
     <div class="window-controls">
       <button class="control-button minimize" title="最小化" @click="handleMinimize">
         <img :src="minimizeIcon" class="svg-icon" alt="最小化" />
@@ -57,29 +75,53 @@ const handleClose = () => {
 
 <style lang="less" scoped>
 .title-bar {
-  height: 36px;
+  height: 60px;
   background-color: #2e55ea;
   display: flex;
   justify-content: space-between;
   align-items: center;
   -webkit-app-region: drag;
   user-select: none;
-  padding: 0 12px;
   width: 100%;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  margin: 0;
 }
 
-.title-bar-drag {
-  padding-left: 12px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
+.logo-section {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+}
+
+.app-logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.title-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.5px;
+  text-align: center;
 }
 
 .window-controls {
   display: flex;
   -webkit-app-region: no-drag;
+  width: 110px;
+  justify-content: flex-end;
 }
 
 .control-button {
@@ -93,7 +135,7 @@ const handleClose = () => {
   cursor: pointer;
   color: #e0e0e0;
   border-radius: 4px;
-  margin-left: 6px;
+  margin-left: 2px;
   transition: all 0.2s;
 
   &:hover {

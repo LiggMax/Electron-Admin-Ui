@@ -18,12 +18,18 @@ import Sidebar from '../components/Sidebar.vue'
   height: 100%;
   display: flex;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .main-container {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   flex-direction: column;
+  transition: margin-left 0.3s;
+  margin: 0;
+  padding: 0;
+  background-color: #fff;
 }
 </style> 
