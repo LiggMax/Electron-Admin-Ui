@@ -2,12 +2,14 @@
 import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { userLoginService1 } from '../api/userLogin'
+import { userTokenStore } from '../store/token'
 
 // 获取全局消息服务
 const message = inject('message')
 
 // 获取路由实例
 const router = useRouter()
+const tokenStore = userTokenStore()
 
 // 表单数据
 const loginForm = ref({
@@ -43,7 +45,7 @@ const handleLogin = async () => {
 
     const res = await userLoginService1(loginForm.value)
     console.log('登录成功:', res)
-
+    tokenStore.setToken(res.data)
     // 登录成功提示
     message.success('登录成功')
 
@@ -119,8 +121,6 @@ const handleLogin = async () => {
 </template>
 
 <style lang="less" scoped>
-// 删除未使用的.login-root类
-
 .login-container {
   width: 100%;
   height: 100%;
@@ -132,7 +132,6 @@ const handleLogin = async () => {
   padding: 10px; /* 添加内边距确保登录卡片不会太靠近窗口边缘 */
   position: relative;
   z-index: 1;
-  // 将背景图样式从.login-root移到这里
   background-image: url('../assets/images/loginbackground.png');
   background-size: cover;
   background-position: center;
