@@ -21,18 +21,18 @@ public class LoginController {
      * return: token
      */
     @CrossOrigin
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public Result<?> login(@RequestParam String account,
                            @RequestParam String password){
        User userInfo = userService.findByUser(account,password);
        if (userInfo == null){
            return Result.error(400,"账号或密码错误");
        }
-       //判断用户是否登录
-        String userToken = redisTemplate.opsForValue().get("user:" + userInfo.getUserId() + "Token");
-        if (userToken != null){
-            return Result.success(200,userToken);
-        }
+//       //判断用户是否登录
+//        String userToken = redisTemplate.opsForValue().get("user:" + userInfo.getUserId() + "Token");
+//        if (userToken != null){
+//            return Result.success(200,userToken);
+//        }
        //生成Token
         String token = userService.getToken(userInfo);
         return Result.success(200,token);

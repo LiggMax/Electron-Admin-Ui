@@ -40,12 +40,12 @@ public class UserServiceImpl implements UserService {
     public String getToken(User user) {
         //创建载荷储存用户信息
         Map<String, Object> claims = new HashMap<>();//存储用户信息
-        claims.put("id", user.getUserId());
+        claims.put("userId", user.getUserId());
         claims.put("username", user.getAccount());
         String token = JWTUtil.getToken(claims);
         //将token存储到redis中,过期时间6小时
         redisTemplate.opsForValue()
-                .set("user:" + user.getUserId() + "Token", token,
+                .set("Token:" + user.getUserId(), token,
                         6, TimeUnit.HOURS);
         return token;
     }

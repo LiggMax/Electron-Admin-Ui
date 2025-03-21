@@ -17,8 +17,8 @@ spring:
       password:
 server:
   port: 8090
-  servlet:
-    context-path: /api
+#  servlet:
+#    context-path: /api
 mybatis:
   configuration:
     map-underscore-to-camel-case: true #开启自动驼峰命名
