@@ -20,13 +20,12 @@ const selectedProject = ref('all')
 // 国家选项
 const countryOptions = [
   { label: '全部地区', value: '' },
-  { label: '中国', value: 'CN' },
-  { label: '美国', value: 'US' },
-  { label: '英国', value: 'UK' },
-  { label: '日本', value: 'JP' },
-  { label: '韩国', value: 'KR' },
-  { label: '俄罗斯', value: 'RU' },
-  { label: '其他', value: 'OTHER' }
+  { label: '中国', value: '中国' },
+  { label: '美国', value: '美国' },
+  { label: '英国', value: '英国' },
+  { label: '日本', value: '日本' },
+  { label: '韩国', value: '韩国' },
+  { label: '俄罗斯', value: '俄罗斯' },
 ]
 
 // 表格数据
@@ -51,9 +50,8 @@ const pagination = reactive({
 const countryCode =ref('')// 国家地区
 const usageStatus = ref('') // 使用状态
 
-// 线路状态
+// 状态
 const statusOptions = [
-  { label: '全部', value: '' },
   { label: '未使用', value: 0 },
   { label: '已使用', value: 1 }
 ]
@@ -143,7 +141,7 @@ const getCardDataList = async () => {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
     countryCode: countryCode.value ? countryCode.value : '',
-    usageStatus: usageStatus.value ? usageStatus.value : ''
+    usageStatus: usageStatus.value
   }
   let result = await getPhoneList(params)
   total.value = result.data.total
@@ -348,25 +346,25 @@ getCardDataList()
     align-items: center;
     gap: 20px;
     width: 100%;
-  
+
     .filter-item {
       display: flex;
       align-items: center;
       flex-shrink: 0;
-  
+
       .label {
         font-size: 14px;
         color: #606266;
         white-space: nowrap;
         margin-right: 8px;
       }
-  
+
       .select-with-width {
         width: 180px;
         flex-shrink: 0;
       }
     }
-  
+
     .filter-buttons {
       display: flex;
       gap: 10px;
