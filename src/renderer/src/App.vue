@@ -30,6 +30,8 @@ const config = {}
           <router-view></router-view>
         </div>
       </div>
+      <!-- 边缘遮罩 -->
+      <div class="edge-mask" :class="{ hidden: isMaximized }"></div>
     </div>
   </el-config-provider>
 </template>
@@ -105,6 +107,17 @@ body {
   background-color: #f5f7fa;
   position: relative;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  isolation: isolate; /* 创建新的堆叠上下文 */
+
+  /* 使用伪元素确保圆角效果，防止内容溢出 */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
 
   .maximized & {
     border-radius: 0;
@@ -121,10 +134,5 @@ body {
   position: relative;
   top: 0;
   left: 0;
-}
-
-/* 修复弹窗蒙版延伸到窗口外的问题 */
-:deep(.el-overlay) {
-  inset: 10px !important; /* 使用5px的内边距，确保内容不会太靠近边缘 */
 }
 </style>
