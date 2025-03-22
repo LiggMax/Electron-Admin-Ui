@@ -8,5 +8,5 @@ export const userLoginService1 = (loginData) => {
   for (let key in loginData){
     params.append(key, loginData[key]);
   }
-  return request.post('/login', params)
+  return request.post('/account/login', params)
 }

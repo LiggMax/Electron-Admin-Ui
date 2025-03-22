@@ -56,10 +56,7 @@ const handleLogin = async () => {
     loginForm.value.password = '' // 清空密码
 
     // 登录成功后跳转到首页
-    router.push('/home')
-  } catch (error) {
-    // 使用消息服务展示错误信息
-    message.error(error.message || '登录失败，请稍后重试')
+    await router.push('/home')
   } finally {
     loading.value = false // 无论成功失败都结束加载状态
   }

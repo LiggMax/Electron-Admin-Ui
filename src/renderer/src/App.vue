@@ -88,6 +88,7 @@ body {
   flex-direction: column;
   position: relative;
   background: transparent;
+  overflow: hidden; /* 防止溢出 */
 
   &.maximized {
     padding: 0;
@@ -120,5 +121,10 @@ body {
   position: relative;
   top: 0;
   left: 0;
+}
+
+/* 修复弹窗蒙版延伸到窗口外的问题 */
+:deep(.el-overlay) {
+  inset: 10px !important; /* 使用5px的内边距，确保内容不会太靠近边缘 */
 }
 </style>

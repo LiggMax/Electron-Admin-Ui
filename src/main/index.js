@@ -23,7 +23,7 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      webSecurity: false, // 禁用web安全策略，解决跨域问题
+      webSecurity: true, // 禁用web安全策略，解决跨域问题
       allowRunningInsecureContent: true // 允许运行不安全内容
     }
   })

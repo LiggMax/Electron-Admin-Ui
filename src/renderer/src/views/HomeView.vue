@@ -1,17 +1,21 @@
 <script setup>
-import { ref, reactive, inject } from 'vue'
+import { ref, inject } from 'vue'
 import { getPhoneList } from '../api/phone'
+import UploadDialog from '../components/UploadDialog.vue'
 
 // 获取全局消息服务
 const message = inject('message')
 
+// 上传弹窗可见性
+const uploadDialogVisible = ref(false)
+
 // 顶部接码项目选项
 const projectOptions = [
   { label: '全部项目', value: 'all' },
-  { label: '淘宝', value: 'taobao' },
-  { label: '京东', value: 'jd' },
-  { label: '拼多多', value: 'pdd' },
-  { label: '抖音', value: 'douyin' }
+  { label: 'Facebook', value: 'Facebook' },
+  { label: 'TikTok', value: 'TikTok' },
+  { label: 'Instagram', value: 'Instagram' },
+  { label: 'YouTube', value: 'YouTube' }
 ]
 
 // 选中的接码项目
@@ -25,7 +29,7 @@ const countryOptions = [
   { label: '英国', value: '英国' },
   { label: '日本', value: '日本' },
   { label: '韩国', value: '韩国' },
-  { label: '俄罗斯', value: '俄罗斯' },
+  { label: '俄罗斯', value: '俄罗斯' }
 ]
 
 // 表格数据
@@ -40,29 +44,20 @@ const tableData = ref([
   }
 ])
 
-// 分页设置
-const pagination = reactive({
-  currentPage: 1,
-  pageSize: 10,
-  total: 100
-})
+// // 分页设置
+// const pagination = reactive({
+//   currentPage: 1,
+//   pageSize: 10,
+//   total: 100
+// })
 
-const countryCode =ref('')// 国家地区
+const countryCode = ref('') // 国家地区
 const usageStatus = ref('') // 使用状态
 
 // 状态
 const statusOptions = [
   { label: '未使用', value: 0 },
   { label: '已使用', value: 1 }
-]
-
-// 操作员选项
-const operatorOptions = [
-  { label: '全部', value: '' },
-  { label: '张三', value: '张三' },
-  { label: '李四', value: '李四' },
-  { label: '王五', value: '王五' },
-  { label: '赵六', value: '赵六' }
 ]
 
 // 表格多选
@@ -81,23 +76,25 @@ const handleEdit = (row) => {
 }
 
 // 批量操作
-const handleBatchOperation = (operation) => {
-  if (multipleSelection.value.length === 0) {
-    message.warning('请先选择记录')
-    return
-  }
-  console.log(`批量${operation}`, multipleSelection.value)
-}
+// const handleBatchOperation = (operation) => {
+//   if (multipleSelection.value.length === 0) {
+//     message.warning('请先选择记录')
+//     return
+//   }
+//   console.log(`批量${operation}`, multipleSelection.value)
+// }
 
-const pageNum = ref(1)// 当前页码
-const total = ref(22)// 总数
-const pageSize = ref(10)// 每页条数
+const pageNum = ref(1) // 当前页码
+const total = ref(22) // 总数
+const pageSize = ref(10) // 每页条数
 
+// 分页切换
 const handleCurrentChange = (page) => {
   pageNum.value = page
   getCardDataList()
 }
 
+// 分页切换
 const handleSizeChange = (size) => {
   pageSize.value = size
   pageNum.value = 1
@@ -119,25 +116,21 @@ const resetSearch = () => {
   getCardDataList()
 }
 
-// 导出数据
-const exportData = () => {
-  console.log('导出数据')
-}
 /**
  * 获取卡号数据列表
  */
 const formatStatus = (status, type) => {
   if (type === 'line') {
-    return status === 1 ? '在线' : '离线';
+    return status === 1 ? '在线' : '离线'
   }
   if (type === 'usage') {
-    return status === 1 ? '已使用' : '未使用';
+    return status === 1 ? '已使用' : '未使用'
   }
-};
+}
 
 const getCardDataList = async () => {
-  // 这里应该实现获取卡号数据列表的逻辑
-  let params ={
+  // 获取卡号数据列表的逻辑
+  let params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
     countryCode: countryCode.value ? countryCode.value : '',
@@ -147,6 +140,18 @@ const getCardDataList = async () => {
   total.value = result.data.total
   tableData.value = result.data.items
 }
+
+// 上传
+const handleUpload = () => {
+  uploadDialogVisible.value = true
+  // 触发上传弹窗关闭后的回调
+  setTimeout(() => {
+    if (Math.random() > 0.5) {
+      message.success('数据导入成功')
+    }
+  }, 1000)
+}
+
 getCardDataList()
 </script>
 
@@ -221,6 +226,12 @@ getCardDataList()
           <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
           <el-button size="small" @click="resetSearch">重置</el-button>
         </div>
+        <!--上传按钮-->
+        <div class="upload-button">
+          <el-button type="custom-green" size="small" @click="handleUpload" class="custom-upload-btn">
+            <img src="../assets/svg/add.svg" alt="" class="uploadIcon"> 上传
+          </el-button>
+        </div>
       </div>
     </div>
 
@@ -273,6 +284,9 @@ getCardDataList()
         ></el-pagination>
       </div>
     </div>
+    
+    <!-- 上传弹窗 -->
+    <UploadDialog v-model:visible="uploadDialogVisible" />
   </div>
 </template>
 
@@ -285,6 +299,32 @@ getCardDataList()
   flex-direction: column;
   background-color: #f8f8f8;
   overflow: auto;
+}
+
+.uploadIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+}
+
+.custom-upload-btn {
+  background-color: #1890ff; /* 自定义按钮颜色 */
+  border-color: #1890ff;
+  color: white;
+  padding: 8px 16px; /* 调整内边距改变大小 */
+  font-size: 14px;
+  height: auto; /* 覆盖Element Plus默认高度 */
+}
+
+.custom-upload-btn:hover {
+  background-color: rgba(24, 144, 255, 0.94); /* 悬停时的颜色 */
+  border-color: rgba(24, 144, 255, 0.94);
+  color: white;
+}
+
+.custom-upload-btn:focus {
+  background-color: #67c23a;
+  border-color: #67c23a;
 }
 
 /* 顶部标题区 */
@@ -370,6 +410,10 @@ getCardDataList()
       gap: 10px;
       flex-shrink: 0;
     }
+
+    .upload-button {
+      margin-left: 50px;
+    }
   }
 }
 
@@ -400,15 +444,17 @@ getCardDataList()
   border-top: 1px solid #ebeef5;
   display: flex;
   justify-content: flex-start;
-  
+
   :deep(.el-pagination) {
     width: 100%;
     padding: 0;
     justify-content: flex-start;
-    
+
     .el-pagination__sizes {
       margin-right: 15px;
     }
   }
 }
+
+/* 弹窗样式已在App.vue中全局定义 */
 </style>
