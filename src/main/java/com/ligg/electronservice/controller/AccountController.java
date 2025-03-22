@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping
 @RestController
-public class LoginController {
+@RequestMapping("/api/account")
+public class AccountController {
 
     @Autowired
     private UserService userService;
@@ -20,15 +20,14 @@ public class LoginController {
      * 登录
      * return: token
      */
-    @CrossOrigin
-    @PostMapping("/api/login")
+    @PostMapping("/login")
     public Result<?> login(@RequestParam String account,
                            @RequestParam String password){
        User userInfo = userService.findByUser(account,password);
        if (userInfo == null){
            return Result.error(400,"账号或密码错误");
        }
-//       //判断用户是否登录
+//       //判断用户Token是否存在
 //        String userToken = redisTemplate.opsForValue().get("user:" + userInfo.getUserId() + "Token");
 //        if (userToken != null){
 //            return Result.success(200,userToken);

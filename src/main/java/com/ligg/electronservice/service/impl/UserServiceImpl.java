@@ -49,4 +49,11 @@ public class UserServiceImpl implements UserService {
                         6, TimeUnit.HOURS);
         return token;
     }
+
+    @Override
+    public User findByUserInfo() {
+
+
+        return null;
+    }
 }

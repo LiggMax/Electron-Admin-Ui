@@ -13,4 +13,9 @@ public interface UserService {
      * 获取token
      */
     String getToken(User user);
+
+    /**
+     * 获取用户信息
+     */
+    User findByUserInfo();
 }
