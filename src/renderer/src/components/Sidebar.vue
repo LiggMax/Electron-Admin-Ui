@@ -71,7 +71,7 @@ const handleMenuClick = (path) => {
 
 <style lang="less" scoped>
 .sidebar {
-  width: 160px;
+  width: 150px;
   height: 100%; /* 使用全高度 */
   background-color: #001529;
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);

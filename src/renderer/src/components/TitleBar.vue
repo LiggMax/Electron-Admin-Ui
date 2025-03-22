@@ -8,19 +8,19 @@ import restoreIcon from '../assets/svg/Maximize-2.svg'
 import closeIcon from '../assets/svg/Shut down.svg'
 
 const isMaximized = ref(false)
-const route = useRoute()
+// const route = useRoute()
 
 // 计算当前页面标题
-const pageTitle = computed(() => {
-  switch (route.path) {
-    case '/home':
-      return '卡商端 - 首页'
-    case '/profile':
-      return '卡商端 - 个人中心'
-    default:
-      return ''
-  }
-})
+// const pageTitle = computed(() => {
+//   switch (route.path) {
+//     case '/home':
+//       return '卡商端 - 首页'
+//     case '/profile':
+//       return '卡商端 - 个人中心'
+//     default:
+//       return ''
+//   }
+// })
 
 // 在组件挂载时监听窗口状态变化
 onMounted(() => {
@@ -48,12 +48,12 @@ const handleClose = () => {
 
 <template>
   <div class="title-bar">
-    <div class="logo-section">
-      <span class="app-logo">{{ pageTitle }}</span>
-    </div>
-<!--    <div class="title-section">-->
-<!--      <span class="page-title">{{ pageTitle }}</span>-->
+<!--    <div class="logo-section">-->
+<!--      <span class="app-logo">{{ pageTitle }}</span>-->
 <!--    </div>-->
+    <div class="title-section">
+<!--      <span class="page-title">{{ pageTitle }}</span>-->
+    </div>
     <div class="window-controls">
       <button class="control-button minimize" title="最小化" @click="handleMinimize">
         <img :src="minimizeIcon" class="svg-icon" alt="最小化" />
@@ -75,12 +75,12 @@ const handleClose = () => {
 
 <style lang="less" scoped>
 .title-bar {
-  height: 60px;
+  height: 30px;
   background-color: #2e55ea;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  -webkit-app-region: drag;
+  -webkit-app-region: drag;//拖动
   user-select: none;
   width: 100%;
   z-index: 1000;

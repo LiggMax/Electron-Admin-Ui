@@ -135,4 +135,11 @@ body {
   top: 0;
   left: 0;
 }
+
+html, body, #app, .app-window {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 </style>

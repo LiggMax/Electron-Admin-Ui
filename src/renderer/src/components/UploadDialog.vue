@@ -153,7 +153,7 @@ const handleSubmit = () => {
       <div class="upload-container">
         <div class="upload-area" @drop.prevent="handleDrop" @dragover.prevent>
           <div class="upload-icon-container">
-            <img src="../assets/images/uploadFlie.png" alt="上传" class="folder-icon" />
+            <img src="../assets/images/uploadFlier.png" alt="上传" class="folder-icon" />
           </div>
           <div class="upload-text">点击或拖拽文件到此处上传</div>
           <input type="file" class="file-input" multiple @change="handleFileSelect" />
