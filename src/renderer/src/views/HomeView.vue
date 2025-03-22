@@ -284,7 +284,7 @@ getCardDataList()
         ></el-pagination>
       </div>
     </div>
-    
+
     <!-- 上传弹窗 -->
     <UploadDialog v-model:visible="uploadDialogVisible" />
   </div>
@@ -320,11 +320,6 @@ getCardDataList()
   background-color: rgba(24, 144, 255, 0.94); /* 悬停时的颜色 */
   border-color: rgba(24, 144, 255, 0.94);
   color: white;
-}
-
-.custom-upload-btn:focus {
-  background-color: #67c23a;
-  border-color: #67c23a;
 }
 
 /* 顶部标题区 */

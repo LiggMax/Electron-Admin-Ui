@@ -126,7 +126,7 @@ const handleLogin = async () => {
   justify-content: center;
   perspective: 1000px;
   overflow: hidden;
-  padding: 10px; /* 添加内边距确保登录卡片不会太靠近窗口边缘 */
+  padding: 15px; /* 添加内边距确保登录卡片不会太靠近窗口边缘 */
   position: relative;
   z-index: 1;
   background-image: url('../assets/images/loginbackground.png');
