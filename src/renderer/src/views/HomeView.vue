@@ -153,15 +153,22 @@ const formatStatus = (status, type) => {
 const loading = ref(false)
 
 const getCardDataList = async () => {
-  // 不再在这里设置loading状态，因为已经在事件处理函数中设置了
   try {
     // 获取卡号数据列表的逻辑
     let params = {
       pageNum: pageNum.value,
       pageSize: pageSize.value,
-      countryCode: countryCode.value ? countryCode.value : '',
-      usageStatus: usageStatus.value
+      countryCode: countryCode.value || '',
+      usageStatus: usageStatus.value === undefined ? '' : usageStatus.value,
+      project: selectedProject.value === 'all' ? '' : selectedProject.value
     }
+
+    // 移除所有undefined或null的参数
+    Object.keys(params).forEach(key => {
+      if (params[key] === undefined || params[key] === null) {
+        params[key] = ''
+      }
+    })
 
     // 确保至少显示加载状态一定时间，避免闪烁
     const minLoadingTime = 600 // 最小加载时间（毫秒）
