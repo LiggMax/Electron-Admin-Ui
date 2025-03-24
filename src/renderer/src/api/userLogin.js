@@ -18,3 +18,9 @@ export const getUserInfoService = () => {
   return request.get('/user/userInfo')
 }
 
+/**
+ * 退出登录
+ */
+export const userLogoutService = () => {
+  return request.get('/user/logout')
+}

@@ -1,10 +1,10 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfoService } from '../api/userLogin'
+import { getUserInfoService, userLogoutService } from '../api/userLogin'
 import defaultAvatar from '../assets/images/user.png'
 import useUserInfoStore from '../store/userInfo'
-
+import message from '../utils/message'
 const userInfoStore = useUserInfoStore()
 // 定义props
 const props = defineProps({
@@ -46,6 +46,14 @@ const getUserInfo = async () => {
   userInfo.value = res.data
   // 将用户信息存储到 store 中
   userInfoStore.setInfo(res.data)
+}
+const logout = async () => {
+  const res = await userLogoutService()
+  // 清除用户信息
+  userInfoStore.removeInfo()
+  // 跳转到登录页
+  message.success(res.data)
+  await router.push('/login')
 }
 
 // 页面加载时获取用户信息
@@ -124,7 +132,7 @@ onMounted(() => {
             <el-dropdown-menu>
               <el-dropdown-item @click="goToProfile">个人中心</el-dropdown-item>
               <el-dropdown-item>设置</el-dropdown-item>
-              <el-dropdown-item divided>退出登录</el-dropdown-item>
+              <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
