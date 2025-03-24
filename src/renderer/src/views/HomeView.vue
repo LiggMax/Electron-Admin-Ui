@@ -410,6 +410,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 
   .content-area {
     flex: 1;
@@ -663,6 +665,8 @@ onMounted(() => {
           padding: 8px 0 !important;
           height: 48px !important;
           font-size: 14px;
+          user-select: none;
+          -webkit-user-select: none;
         }
       }
 
@@ -822,6 +826,8 @@ onMounted(() => {
   :deep(.el-input__inner) {
     height: 30px !important;
     line-height: 30px !important;
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   :deep(.el-select .el-input__wrapper) {
