@@ -8,19 +8,17 @@ import restoreIcon from '../assets/svg/Maximize-2.svg'
 import closeIcon from '../assets/svg/Shut down.svg'
 
 const isMaximized = ref(false)
-// const route = useRoute()
+const route = useRoute()
 
-// 计算当前页面标题
-// const pageTitle = computed(() => {
-//   switch (route.path) {
-//     case '/home':
-//       return '卡商端 - 首页'
-//     case '/profile':
-//       return '卡商端 - 个人中心'
-//     default:
-//       return ''
-//   }
-// })
+// 根据路由计算标题栏样式
+const titleBarClass = computed(() => {
+  // 登录页使用蓝色
+  if (route.path === '/login') {
+    return 'login-theme'
+  }
+  // 其他页面使用主题色
+  return 'main-theme'
+})
 
 // 在组件挂载时监听窗口状态变化
 onMounted(() => {
@@ -47,12 +45,8 @@ const handleClose = () => {
 </script>
 
 <template>
-  <div class="title-bar">
-<!--    <div class="logo-section">-->
-<!--      <span class="app-logo">{{ pageTitle }}</span>-->
-<!--    </div>-->
+  <div class="title-bar" :class="titleBarClass">
     <div class="title-section">
-<!--      <span class="page-title">{{ pageTitle }}</span>-->
     </div>
     <div class="window-controls">
       <button class="control-button minimize" title="最小化" @click="handleMinimize">
@@ -76,7 +70,6 @@ const handleClose = () => {
 <style lang="less" scoped>
 .title-bar {
   height: 30px;
-  background-color: #2e55ea;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -84,22 +77,31 @@ const handleClose = () => {
   user-select: none;
   width: 100%;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 0;
   margin: 0;
-}
+  transition: all 0.3s ease;
+  position: relative;
 
-.logo-section {
-  width: 200px;
-  display: flex;
-  align-items: center;
-  padding-left: 16px;
-}
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    pointer-events: none;
+  }
 
-.app-logo {
-  font-size: 16px;
-  font-weight: 600;
-  color: white;
+  // 登录页主题
+  &.login-theme {
+    background-color: #2e55ea;
+  }
+
+  // 主页面主题
+  &.main-theme {
+    background-color: #2196f3;
+  }
 }
 
 .title-section {
@@ -107,14 +109,6 @@ const handleClose = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.page-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 0.5px;
-  text-align: center;
 }
 
 .window-controls {
