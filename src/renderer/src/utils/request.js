@@ -2,9 +2,14 @@ import axios from 'axios';
 import { ElMessage } from "element-plus";
 import { userTokenStore } from '../store/token'
 import { inject } from 'vue'
+//导入路由
+import router from '../router'
 //定义一个变量,记录公共的前缀  ,  baseURL
 const baseURL = 'http://127.0.0.1:8090/api';
-const instance = axios.create({baseURL})
+const instance = axios.create({
+  baseURL,
+  timeout: 20000 // 设置20秒超时
+})
 //添加请求拦截器
 instance.interceptors.request.use(
   config => {
@@ -45,6 +50,8 @@ instance.interceptors.response.use(
         ElMessage.error('请先登录');
         //清除token
         userTokenStore().removeToken();
+        //跳转到登录页面
+        router.push('/login')
       } else if (err.response.status === 404) {
         ElMessage.error('请求的资源不存在');
       } else if (err.response.status === 500) {

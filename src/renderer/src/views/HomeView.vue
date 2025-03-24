@@ -6,7 +6,6 @@ import AppHeader from '../components/AppHeader.vue'
 import {
   Edit as ElIconEdit,
   Delete as ElIconDelete,
-  View as ElIconView
 } from '@element-plus/icons-vue'
 
 // 获取全局消息服务
