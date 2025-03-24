@@ -555,8 +555,9 @@ onMounted(() => {
           color: #606266;
           white-space: nowrap;
           margin-right: 8px;
+          display: inline-flex;
+          align-items: center;
           height: 32px;
-          line-height: 32px;
         }
 
         .select-with-width {
@@ -786,24 +787,20 @@ onMounted(() => {
   :deep(.el-input),
   :deep(.el-button) {
     transform: none !important;
-    height: 32px !important;
-    line-height: 32px !important;
   }
 
   :deep(.el-input__wrapper) {
-    height: 32px !important;
+    line-height: 1;
+    padding: 1px 11px;
   }
 
   :deep(.el-input__inner) {
-    height: 32px !important;
-    line-height: 32px !important;
+    height: 30px !important;
+    line-height: 30px !important;
   }
 
-  :deep(.el-button) {
-    &.el-button--small {
-      padding: 0 15px !important;
-      font-size: 12px !important;
-    }
+  :deep(.el-select .el-input__wrapper) {
+    padding: 0 11px;
   }
 
   /* 表格操作按钮下拉菜单样式 */
