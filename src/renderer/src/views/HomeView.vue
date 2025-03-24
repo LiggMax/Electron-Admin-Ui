@@ -252,7 +252,7 @@ getCardDataList()
           <el-table-column prop="phoneNumber" label="手机号码" min-width="120" show-overflow-tooltip></el-table-column>
           <el-table-column label="线路状态" min-width="90" align="center">
             <template #default="scope">
-              <span :class="[ scope.row.lineStatus === 1 ? 'online' : 'offline']">
+              <span :class="[scope.row.lineStatus === 1 ? 'online' : 'offline']">
                 {{ formatStatus(scope.row.lineStatus, 'line') }}
               </span>
             </template>
@@ -261,7 +261,7 @@ getCardDataList()
           <el-table-column prop="registrationTime" label="注册时间" min-width="160" show-overflow-tooltip></el-table-column>
           <el-table-column label="状态" min-width="80" align="center">
             <template #default="scope">
-              <span :class="[ scope.row.usageStatus === 1 ? 'used' : 'unused']">
+              <span :class="[scope.row.usageStatus === 1 ? 'used' : 'unused']">
                 {{ formatStatus(scope.row.usageStatus, 'usage') }}
               </span>
             </template>
@@ -585,55 +585,9 @@ getCardDataList()
     .pagination-container {
       max-width: 100%;
     }
-
-    .filter-items {
-      flex-wrap: wrap;
-      height: auto !important;
-      padding: 5px 0;
-
-      .filter-item,
-      .filter-buttons,
-      .upload-button {
-        margin-bottom: 5px;
-      }
-
-      .upload-button {
-        margin-left: 20px;
-      }
-    }
   }
 
   @media screen and (max-width: 768px) {
-    .filter-bar {
-      height: auto;
-      min-height: 50px;
-      max-height: none;
-      padding-bottom: 10px;
-    }
-
-    .filter-items {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-
-      .filter-item {
-        width: 100%;
-
-        .select-with-width {
-          width: calc(100% - 60px);
-        }
-      }
-
-      .filter-buttons,
-      .upload-button {
-        margin-top: 5px;
-      }
-
-      .upload-button {
-        margin-left: 0;
-      }
-    }
-
     .operation-buttons {
       display: flex;
       flex-direction: column;
