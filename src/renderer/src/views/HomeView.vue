@@ -241,31 +241,38 @@ getCardDataList()
           border
           style="width: 100%"
           @selection-change="handleSelectionChange"
+          class="data-table"
         >
           <el-table-column type="selection" width="40"></el-table-column>
-          <el-table-column label="序号" width="80">
+          <el-table-column label="序号" width="60" align="center">
             <template #default="scope">
               {{ (pageNum - 1) * pageSize + scope.$index + 1 }}
             </template>
           </el-table-column>
-          <el-table-column prop="phoneNumber" label="手机号码" width="180"></el-table-column>
-          <el-table-column label="线路状态" width="120">
+          <el-table-column prop="phoneNumber" label="手机号码" min-width="120" show-overflow-tooltip></el-table-column>
+          <el-table-column label="线路状态" min-width="90" align="center">
             <template #default="scope">
-              {{ formatStatus(scope.row.lineStatus, 'line') }}
+              <span :class="[ scope.row.lineStatus === 1 ? 'online' : 'offline']">
+                {{ formatStatus(scope.row.lineStatus, 'line') }}
+              </span>
             </template>
           </el-table-column>
-          <el-table-column prop="countryCode" label="号码归属国家" width="120"></el-table-column>
-          <el-table-column prop="registrationTime" label="注册时间" width="180"></el-table-column>
-          <el-table-column label="状态" width="80">
+          <el-table-column prop="countryCode" label="号码归属国家" min-width="100" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="registrationTime" label="注册时间" min-width="160" show-overflow-tooltip></el-table-column>
+          <el-table-column label="状态" min-width="80" align="center">
             <template #default="scope">
-              {{ formatStatus(scope.row.usageStatus, 'usage') }}
+              <span :class="[ scope.row.usageStatus === 1 ? 'used' : 'unused']">
+                {{ formatStatus(scope.row.usageStatus, 'usage') }}
+              </span>
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" min-width="150" fixed="right">
             <template #default="scope">
-              <el-button size="mini" type="text" @click="handleView(scope.row)">查看</el-button>
-              <el-button size="mini" type="text" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button size="mini" type="text" style="color: #f56c6c">删除</el-button>
+              <div class="operation-buttons">
+                <el-button size="small" type="primary" text @click="handleView(scope.row)">查看</el-button>
+                <el-button size="small" type="primary" text @click="handleEdit(scope.row)">编辑</el-button>
+                <el-button size="small" type="danger" text>删除</el-button>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -282,6 +289,7 @@ getCardDataList()
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
           popper-class="pagination-popper"
+          background
         ></el-pagination>
       </div>
 
@@ -305,6 +313,9 @@ getCardDataList()
     display: flex;
     flex-direction: column;
     position: relative;
+    align-items: center;
+    height: calc(100% - 60px);
+    min-height: 500px;
   }
 
   .uploadIcon {
@@ -343,15 +354,20 @@ getCardDataList()
   /* 接码项目选择栏 */
   .project-selector-bar {
     height: 50px;
+    min-height: 50px;
+    max-height: 50px;
     background-color: #fff;
     border-bottom: 1px solid #ebeef5;
     display: flex;
     align-items: center;
     padding: 0 20px;
+    width: 100%;
+    max-width: 1200px;
 
     .project-item {
       display: flex;
       align-items: center;
+      height: 32px;
 
       .label {
         font-size: 14px;
@@ -359,6 +375,8 @@ getCardDataList()
         white-space: nowrap;
         margin-right: 8px;
         font-weight: bold;
+        height: 32px;
+        line-height: 32px;
       }
 
       .project-label {
@@ -375,29 +393,36 @@ getCardDataList()
   /* 筛选栏样式 */
   .filter-bar {
     height: 50px;
+    min-height: 50px;
+    max-height: 50px;
     background-color: #fff;
     border-bottom: 1px solid #ebeef5;
     display: flex;
     align-items: center;
     padding: 0 20px;
-    min-width: 800px;
+    width: 100%;
+    max-width: 1200px;
 
     .filter-items {
       display: flex;
       align-items: center;
       gap: 20px;
       width: 100%;
+      height: 100%;
 
       .filter-item {
         display: flex;
         align-items: center;
         flex-shrink: 0;
+        height: 32px;
 
         .label {
           font-size: 14px;
           color: #606266;
           white-space: nowrap;
           margin-right: 8px;
+          height: 32px;
+          line-height: 32px;
         }
 
         .select-with-width {
@@ -410,10 +435,12 @@ getCardDataList()
         display: flex;
         gap: 10px;
         flex-shrink: 0;
+        height: 32px;
       }
 
       .upload-button {
         margin-left: 50px;
+        height: 32px;
       }
     }
   }
@@ -421,40 +448,232 @@ getCardDataList()
   /* 表格容器 */
   .table-container {
     background-color: #fff;
-    margin: 10px;
+    margin: 10px 0;
     padding: 15px;
     border-radius: 4px;
     border: 1px solid #ebeef5;
+    width: 100%;
+    max-width: 1200px;
     flex: 1;
-    min-width: 800px;
     overflow: auto;
+    min-height: 300px;
+    max-height: calc(100vh - 250px);
+    display: flex;
+    flex-direction: column;
+
+    .data-table {
+      width: 100%;
+
+      :deep(.el-table__header) {
+        th {
+          background-color: #f5f7fa;
+          height: 40px !important;
+          padding: 6px 0 !important;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+
+      :deep(.el-table__body) {
+        td {
+          padding: 8px 0 !important;
+          height: 48px !important;
+          font-size: 14px;
+        }
+      }
+
+      :deep(.el-table__row) {
+        height: 48px !important;
+
+        &:hover {
+          background-color: #f5f7fa;
+        }
+      }
+    }
+
+    /* 状态标签样式 */
+    .status-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+
+      &.online {
+        background-color: #e1f3d8;
+        color: #67c23a;
+      }
+
+      &.offline {
+        background-color: #fde2e2;
+        color: #f56c6c;
+      }
+    }
+
+    .usage-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+
+      &.used {
+        background-color: #e6f7ff;
+        color: #1890ff;
+      }
+
+      &.unused {
+        background-color: #f4f4f5;
+        color: #909399;
+      }
+    }
+
+    .operation-buttons {
+      display: flex;
+      justify-content: space-around;
+
+      :deep(.el-button) {
+        padding: 4px 8px;
+        margin: 0 2px;
+      }
+    }
   }
 
   /* 分页区域 */
   .pagination-container {
-    margin: 10px;
+    margin: 10px 0;
     padding: 10px 15px;
     background-color: #fff;
     border: 1px solid #ebeef5;
     border-radius: 4px;
     display: flex;
     justify-content: flex-start;
-    min-width: 800px;
+    width: 100%;
+    max-width: 1200px;
     position: sticky;
     bottom: 0;
-    left: 0;
     z-index: 10;
+    height: 52px;
 
     :deep(.el-pagination) {
       width: 100%;
       padding: 0;
       justify-content: flex-start;
+      height: 32px;
 
       .el-pagination__sizes {
         margin-right: 15px;
       }
+
+      .el-pagination__jump {
+        margin-left: 15px;
+      }
+
+      .btn-prev,
+      .btn-next,
+      .number {
+        min-width: 32px;
+        height: 32px;
+        line-height: 32px;
+      }
     }
   }
 
+  /* 媒体查询 - 确保在小屏幕上表单元素不会缩得太小 */
+  @media screen and (max-width: 1280px) {
+    .project-selector-bar,
+    .filter-bar,
+    .table-container,
+    .pagination-container {
+      max-width: 100%;
+    }
+
+    .filter-items {
+      flex-wrap: wrap;
+      height: auto !important;
+      padding: 5px 0;
+
+      .filter-item,
+      .filter-buttons,
+      .upload-button {
+        margin-bottom: 5px;
+      }
+
+      .upload-button {
+        margin-left: 20px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .filter-bar {
+      height: auto;
+      min-height: 50px;
+      max-height: none;
+      padding-bottom: 10px;
+    }
+
+    .filter-items {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+
+      .filter-item {
+        width: 100%;
+
+        .select-with-width {
+          width: calc(100% - 60px);
+        }
+      }
+
+      .filter-buttons,
+      .upload-button {
+        margin-top: 5px;
+      }
+
+      .upload-button {
+        margin-left: 0;
+      }
+    }
+
+    .operation-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      :deep(.el-button) {
+        margin: 2px 0;
+      }
+    }
+  }
+
+  /* 控制表单元素大小不随页面缩放而改变 */
+  :deep(.el-select),
+  :deep(.el-input),
+  :deep(.el-button) {
+    transform: scale(1) !important;
+    transform-origin: left center;
+    height: 32px !important;
+    line-height: 32px !important;
+  }
+
+  :deep(.el-input__wrapper) {
+    height: 32px !important;
+  }
+
+  :deep(.el-input__inner) {
+    height: 32px !important;
+    line-height: 32px !important;
+  }
+
+  :deep(.el-button) {
+    &.el-button--small {
+      padding: 0 15px !important;
+      font-size: 12px !important;
+    }
+  }
+
+  /* 确保各区域内容不会超出 */
+  :deep(.el-table__body-wrapper) {
+    overflow-y: auto !important;
+  }
 }
 </style>
