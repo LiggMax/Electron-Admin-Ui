@@ -37,14 +37,20 @@ const config = {}
 </template>
 
 <style lang="less">
-html,
-body {
+#app {
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+html, body {
   margin: 0;
   padding: 0;
-  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
   height: 100vh;
-  overflow: hidden;
   background: transparent;
+  overflow: hidden;
 }
 
 * {

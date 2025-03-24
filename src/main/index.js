@@ -17,16 +17,21 @@ function createWindow() {
     show: false,
     autoHideMenuBar: true,
     frame: false,
-    transparent: process.platform !== 'linux', // Linux上不支持透明
-    backgroundColor: process.platform === 'linux' ? '#4169E1' : '#00ffffff',
+    transparent: true,
+    backgroundColor: '#00000000',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,// 启用sandbox模式
-      webSecurity: true,// 允许加载不安全的资源
-      allowRunningInsecureContent: true // 允许运行不安全的网页
+      sandbox: false,
+      webSecurity: true,
+      allowRunningInsecureContent: true
     }
   })
+
+  // 设置窗口圆角
+  if (process.platform === 'win32') {
+    mainWindow.setBackgroundColor('#00000000');
+  }
 
   // 添加窗口控制事件处理
   ipcMain.on('window-minimize', () => {
@@ -75,9 +80,9 @@ function createWindow() {
 // 在Windows平台上设置圆角和透明支持
 if (process.platform === 'win32') {
   app.commandLine.appendSwitch('enable-transparent-visuals')
-  // 禁用CORS
   app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
-  app.disableHardwareAcceleration()
+  // 注释掉硬件加速禁用，因为这可能影响性能
+  // app.disableHardwareAcceleration()
 }
 
 // This method will be called when Electron has finished

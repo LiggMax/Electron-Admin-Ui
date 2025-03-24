@@ -135,7 +135,7 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .app-header {
-  height: 56px;
+  height: 75px;
   display: flex;
   justify-content: space-between;
   align-items: center;
