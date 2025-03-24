@@ -3,6 +3,11 @@ import { ref, inject } from 'vue'
 import { getPhoneList } from '../api/phone'
 import UploadDialog from '../components/UploadDialog.vue'
 import AppHeader from '../components/AppHeader.vue'
+import {
+  Edit as ElIconEdit,
+  Delete as ElIconDelete,
+  View as ElIconView
+} from '@element-plus/icons-vue'
 
 // 获取全局消息服务
 const message = inject('message')
@@ -35,22 +40,7 @@ const countryOptions = [
 
 // 表格数据
 const tableData = ref([
-  {
-    phoneId: '1001',
-    phoneNumber: '199*****909',
-    lineStatus: 1,
-    countryCode: '中国香港',
-    registrationTime: '2023-05-15 14:30:22',
-    usageStatus: '1'
-  }
 ])
-
-// // 分页设置
-// const pagination = reactive({
-//   currentPage: 1,
-//   pageSize: 10,
-//   total: 100
-// })
 
 const countryCode = ref('') // 国家地区
 const usageStatus = ref('') // 使用状态
@@ -76,14 +66,19 @@ const handleEdit = (row) => {
   console.log('编辑', row)
 }
 
-// 批量操作
-// const handleBatchOperation = (operation) => {
-//   if (multipleSelection.value.length === 0) {
-//     message.warning('请先选择记录')
-//     return
-//   }
-//   console.log(`批量${operation}`, multipleSelection.value)
-// }
+// 删除处理
+const handleDelete = (row) => {
+  message.confirm(`确定要删除手机号为"${row.phoneNumber}"的记录吗？`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(() => {
+    message.success('删除成功')
+    getCardDataList()
+  }).catch(() => {
+    message.info('已取消删除')
+  })
+}
 
 const pageNum = ref(1) // 当前页码
 const total = ref(22) // 总数
@@ -266,13 +261,21 @@ getCardDataList()
               </span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" min-width="150" fixed="right">
+          <el-table-column label="操作" min-width="100" fixed="right" align="center">
             <template #default="scope">
-              <div class="operation-buttons">
-                <el-button size="small" type="primary" text @click="handleView(scope.row)">查看</el-button>
-                <el-button size="small" type="primary" text @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button size="small" type="danger" text>删除</el-button>
-              </div>
+              <el-dropdown trigger="click">
+                <span class="text-button">查看</span>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item @click="handleEdit(scope.row)">
+                      <el-icon><el-icon-edit /></el-icon>编辑
+                    </el-dropdown-item>
+                    <el-dropdown-item divided type="danger" @click="handleDelete(scope.row)">
+                      <el-icon><el-icon-delete /></el-icon>删除
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </template>
           </el-table-column>
         </el-table>
@@ -466,7 +469,7 @@ getCardDataList()
 
       :deep(.el-table__header) {
         th {
-          background-color: #f5f7fa;
+          background-color: #f0f0f0;
           height: 40px !important;
           padding: 6px 0 !important;
           font-size: 14px;
@@ -628,6 +631,38 @@ getCardDataList()
   /* 确保各区域内容不会超出 */
   :deep(.el-table__body-wrapper) {
     overflow-y: auto !important;
+  }
+
+  /* 表格操作按钮下拉菜单样式 */
+  :deep(.el-dropdown) {
+    vertical-align: middle;
+  }
+
+  .text-button {
+    color: #409EFF;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .text-button:hover {
+    color: #66b1ff;
+    text-decoration: underline;
+  }
+
+  :deep(.el-dropdown-menu__item) {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+
+    .el-icon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+
+    &.is-disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 }
 </style>

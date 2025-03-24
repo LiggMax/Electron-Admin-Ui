@@ -10,7 +10,7 @@ import icon from './assets/icon.png?asset'
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
+    width: 1100,
     height: 670,
     minHeight: 500,
     minWidth: 800,
