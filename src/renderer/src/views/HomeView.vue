@@ -149,6 +149,20 @@ const formatStatus = (status, type) => {
   }
 }
 
+/**
+ * 格式化日期
+ * @param {string} dateStr - 日期字符串
+ * @returns {string} 格式化后的日期
+ */
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${year}/${month}/${day}`;
+}
+
 // 数据加载状态
 const loading = ref(false)
 
@@ -333,7 +347,11 @@ onMounted(() => {
             </template>
           </el-table-column>
           <el-table-column prop="countryCode" label="号码归属国家" min-width="100" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="registrationTime" label="注册时间" min-width="160" show-overflow-tooltip></el-table-column>
+          <el-table-column label="注册时间" min-width="160" show-overflow-tooltip>
+            <template #default="scope">
+              {{ formatDate(scope.row.registrationTime) }}
+            </template>
+          </el-table-column>
           <el-table-column label="状态" min-width="80" align="center">
             <template #default="scope">
               <span :class="[ scope.row.usageStatus === 1 ? 'used' : 'unused']">
