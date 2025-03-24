@@ -62,7 +62,6 @@ const handleLogin = async () => {
     console.log(`使用${useMainProcess.value ? '主进程' : 'Axios'}方式发送登录请求`)
 
     const res = await userLoginService1(loginForm.value)
-    console.log('登录成功:', res)
     tokenStore.setToken(res.data)
     // 登录成功提示
     await message.success('登录成功')

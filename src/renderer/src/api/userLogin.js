@@ -2,7 +2,7 @@ import request from '../utils/request'
 
 /**
  * 用户登录
- */
+*/
 export const userLoginService1 = (loginData) => {
   const params = new URLSearchParams()
   for (let key in loginData){
@@ -10,3 +10,11 @@ export const userLoginService1 = (loginData) => {
   }
   return request.post('/account/login', params)
 }
+
+/**
+ * 获取用户基本信息
+ */
+export const getUserInfoService = () => {
+  return request.get('/user/userInfo')
+}
+

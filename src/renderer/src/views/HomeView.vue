@@ -340,9 +340,6 @@ onMounted(() => {
                 <span class="text-button">查看</span>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item @click="handleView(scope.row)">
-                      <el-icon><el-icon-view /></el-icon>查看
-                    </el-dropdown-item>
                     <el-dropdown-item @click="handleEdit(scope.row)">
                       <el-icon><el-icon-edit /></el-icon>编辑
                     </el-dropdown-item>

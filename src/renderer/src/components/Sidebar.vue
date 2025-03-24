@@ -31,7 +31,7 @@ const menuItems = ref([
   },
   {
     id: 2,
-    title: '个人中心',
+    title: '用户中心',
     icon: User,
     path: '/profile'
   }
