@@ -89,8 +89,9 @@ const handleClose = () => {
     right: 0;
     bottom: -1px;
     height: 1px;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent);
     pointer-events: none;
+    opacity: 0.3;
   }
 
   // 登录页主题
