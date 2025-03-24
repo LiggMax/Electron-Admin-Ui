@@ -17,6 +17,7 @@ public class User {
     @JsonIgnore
     private String password;
     private String email;
+    private String userAvatar;
     private LocalDateTime createdAt;//创建时间
     private LocalDateTime updatedAt;//更新时间
 }

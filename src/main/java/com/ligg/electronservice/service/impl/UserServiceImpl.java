@@ -4,6 +4,7 @@ import com.ligg.electronservice.mapper.UserMapper;
 import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
 import com.ligg.electronservice.utils.JWTUtil;
+import com.ligg.electronservice.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -50,10 +51,17 @@ public class UserServiceImpl implements UserService {
         return token;
     }
 
+    /**
+     * 清除token
+     */
     @Override
-    public User findByUserInfo() {
+    public void clearToken() {
+        Map<String, Object> map = ThreadLocalUtil.get();
+            String userId = (String) map.get("userId");
+            redisTemplate.delete("Token:" + userId);
+    }
 
-
-        return null;
+    public User findByUserInfo(String userId) {
+        return userMapper.findByUserInfo(userId);
     }
 }

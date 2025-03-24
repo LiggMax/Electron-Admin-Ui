@@ -15,7 +15,11 @@ public interface UserService {
     String getToken(User user);
 
     /**
+     * 清除缓存中的token
+     */
+    void clearToken();
+    /**
      * 获取用户信息
      */
-    User findByUserInfo();
+    User findByUserInfo(String userId);
 }

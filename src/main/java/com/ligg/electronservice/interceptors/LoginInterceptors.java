@@ -1,6 +1,7 @@
 package com.ligg.electronservice.interceptors;
 
 import com.ligg.electronservice.utils.JWTUtil;
+import com.ligg.electronservice.utils.ThreadLocalUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +37,18 @@ public class LoginInterceptors implements HandlerInterceptor {
             if (redisUserToken == null){
                 throw new RuntimeException();
             }
+            Map<String, Object> claims = JWTUtil.parseTokenWithValidation(Token);
+            ThreadLocalUtil.set(claims);
             return true;
         } catch (Exception e) {
             response.setStatus(401);
             return false;
         }
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        //清除ThreadLocal数据
+        ThreadLocalUtil.remove();
     }
 }
