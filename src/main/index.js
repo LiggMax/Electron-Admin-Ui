@@ -22,9 +22,9 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      webSecurity: true, // 禁用web安全策略，解决跨域问题
-      allowRunningInsecureContent: true // 允许运行不安全内容
+      sandbox: false,// 启用sandbox模式
+      webSecurity: true,// 允许加载不安全的资源
+      allowRunningInsecureContent: true // 允许运行不安全的网页
     }
   })
 
@@ -63,19 +63,6 @@ function createWindow() {
     return { action: 'deny' }
   })
 
-  // 设置CSP头，允许XHR请求
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        // 更宽松的CSP策略，完全允许connect-src
-        'Content-Security-Policy': [
-          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src * data:; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
-        ]
-      }
-    })
-  })
-
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -90,14 +77,23 @@ if (process.platform === 'win32') {
   app.commandLine.appendSwitch('enable-transparent-visuals')
   // 禁用CORS
   app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
-  // 暂时注释掉禁用硬件加速，看看是否能解决问题
-  // app.disableHardwareAcceleration()
+  app.disableHardwareAcceleration()
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // 设置 CSP
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https: http: *; connect-src *"]
+      }
+    })
+  })
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
