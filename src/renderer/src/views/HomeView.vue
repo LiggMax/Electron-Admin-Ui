@@ -269,19 +269,20 @@ getCardDataList()
             </template>
           </el-table-column>
         </el-table>
+      </div>
 
-        <!-- 分页 -->
-        <div class="pagination">
-          <el-pagination
-            v-model:current-page="pageNum"
-            v-model:page-size="pageSize"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-          ></el-pagination>
-        </div>
+      <!-- 分页 -->
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          popper-class="pagination-popper"
+        ></el-pagination>
       </div>
 
       <!-- 上传弹窗 -->
@@ -301,6 +302,9 @@ getCardDataList()
     flex: 1;
     overflow: auto;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
   }
 
   .uploadIcon {
@@ -422,25 +426,24 @@ getCardDataList()
     border-radius: 4px;
     border: 1px solid #ebeef5;
     flex: 1;
-    display: flex;
-    flex-direction: column;
     min-width: 800px;
-    overflow: hidden;
-
-    .el-table {
-      flex: 1;
-      overflow: auto;
-    }
+    overflow: auto;
   }
 
   /* 分页区域 */
-  .pagination {
-    margin-top: 15px;
-    padding: 10px 0;
+  .pagination-container {
+    margin: 10px;
+    padding: 10px 15px;
     background-color: #fff;
-    border-top: 1px solid #ebeef5;
+    border: 1px solid #ebeef5;
+    border-radius: 4px;
     display: flex;
     justify-content: flex-start;
+    min-width: 800px;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
 
     :deep(.el-pagination) {
       width: 100%;
@@ -453,6 +456,5 @@ getCardDataList()
     }
   }
 
-  /* 弹窗样式已在App.vue中全局定义 */
 }
 </style>
