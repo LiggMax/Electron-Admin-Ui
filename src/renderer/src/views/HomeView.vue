@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, nextTick, onMounted } from 'vue'
 import { getPhoneList } from '../api/phone'
 import UploadDialog from '../components/UploadDialog.vue'
 import AppHeader from '../components/AppHeader.vue'
@@ -39,9 +39,7 @@ const countryOptions = [
 ]
 
 // 表格数据
-const tableData = ref([
-])
-
+const tableData = ref([])
 const countryCode = ref('') // 国家地区
 const usageStatus = ref('') // 使用状态
 
@@ -84,32 +82,59 @@ const pageNum = ref(1) // 当前页码
 const total = ref(22) // 总数
 const pageSize = ref(10) // 每页条数
 
-// 分页切换
-const handleCurrentChange = (page) => {
-  pageNum.value = page
-  getCardDataList()
+// 防抖函数
+const debounce = (fn, delay) => {
+  let timer = null
+  return function(...args) {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      fn.apply(this, args)
+    }, delay)
+  }
 }
 
-// 分页切换
-const handleSizeChange = (size) => {
-  pageSize.value = size
-  pageNum.value = 1
-  getCardDataList()
-}
+// 分页切换 - 使用防抖
+const handleCurrentChange = debounce((page) => {
+  loading.value = true  // 立即显示加载状态
+  // 使用nextTick确保DOM更新后再进行数据获取
+  nextTick(() => {
+    pageNum.value = page
+    getCardDataList()
+  })
+}, 300)
 
-// 搜索
-const handleSearch = () => {
-  pageNum.value = 1
-  getCardDataList()
-}
+// 分页切换 - 使用防抖
+const handleSizeChange = debounce((size) => {
+  loading.value = true  // 立即显示加载状态
+  // 使用nextTick确保DOM更新后再进行数据获取
+  nextTick(() => {
+    pageSize.value = size
+    pageNum.value = 1
+    getCardDataList()
+  })
+}, 300)
+
+// 搜索 - 使用防抖
+const handleSearch = debounce(() => {
+  loading.value = true  // 立即显示加载状态
+  // 使用nextTick确保DOM更新后再进行数据获取
+  nextTick(() => {
+    pageNum.value = 1
+    getCardDataList()
+  })
+}, 300)
 
 // 重置搜索
 const resetSearch = () => {
-  selectedProject.value = 'all'
-  countryCode.value = ''
-  usageStatus.value = ''
-  pageNum.value = 1
-  getCardDataList()
+  loading.value = true  // 立即显示加载状态
+  // 使用nextTick确保DOM更新后再进行数据获取
+  nextTick(() => {
+    selectedProject.value = 'all'
+    countryCode.value = ''
+    usageStatus.value = ''
+    pageNum.value = 1
+    getCardDataList()
+  })
 }
 
 /**
@@ -124,17 +149,46 @@ const formatStatus = (status, type) => {
   }
 }
 
+// 数据加载状态
+const loading = ref(false)
+
 const getCardDataList = async () => {
-  // 获取卡号数据列表的逻辑
-  let params = {
-    pageNum: pageNum.value,
-    pageSize: pageSize.value,
-    countryCode: countryCode.value ? countryCode.value : '',
-    usageStatus: usageStatus.value
+  // 不再在这里设置loading状态，因为已经在事件处理函数中设置了
+  try {
+    // 获取卡号数据列表的逻辑
+    let params = {
+      pageNum: pageNum.value,
+      pageSize: pageSize.value,
+      countryCode: countryCode.value ? countryCode.value : '',
+      usageStatus: usageStatus.value
+    }
+
+    // 确保至少显示加载状态一定时间，避免闪烁
+    const minLoadingTime = 600 // 最小加载时间（毫秒）
+    const startTime = Date.now()
+
+    let result = await getPhoneList(params)
+
+    const elapsedTime = Date.now() - startTime
+    const remainingTime = Math.max(0, minLoadingTime - elapsedTime)
+
+    // 如果加载太快，则等待一段时间再更新UI，避免闪烁
+    setTimeout(() => {
+      // 先更新数据
+      total.value = result.data.total
+      tableData.value = result.data.items
+
+      // 数据更新后再关闭loading状态
+      nextTick(() => {
+        loading.value = false
+      })
+    }, remainingTime)
+  } catch (error) {
+    setTimeout(() => {
+      loading.value = false
+    }, 600) // 确保错误状态也有显示最小时间
+    console.error('获取数据失败', error)
   }
-  let result = await getPhoneList(params)
-  total.value = result.data.total
-  tableData.value = result.data.items
 }
 
 // 上传
@@ -148,7 +202,16 @@ const handleUpload = () => {
   }, 1000)
 }
 
-getCardDataList()
+// 组件挂载后执行
+onMounted(() => {
+  // 设置初始加载状态
+  loading.value = true
+
+  // 延迟加载数据，避免初始渲染压力
+  setTimeout(() => {
+    getCardDataList()
+  }, 100)
+})
 </script>
 
 <template>
@@ -156,6 +219,14 @@ getCardDataList()
     <AppHeader title="卡商端-首页" />
     <!-- 内容区 -->
     <div class="content-area">
+      <!-- 全局加载状态指示器 -->
+      <div class="global-loading-mask" v-if="loading">
+        <div class="global-loading-indicator">
+          <div class="spinner-icon"></div>
+          <span class="loading-text">正在加载数据中...</span>
+        </div>
+      </div>
+
       <!-- 接码项目独立一栏 -->
       <div class="project-selector-bar">
         <div class="project-item">
@@ -237,6 +308,8 @@ getCardDataList()
           style="width: 100%"
           @selection-change="handleSelectionChange"
           class="data-table"
+          height="100%"
+          v-bind="{ 'scroll-wheel-enabled': true }"
         >
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column label="序号" width="60" align="center">
@@ -247,7 +320,7 @@ getCardDataList()
           <el-table-column prop="phoneNumber" label="手机号码" min-width="120" show-overflow-tooltip></el-table-column>
           <el-table-column label="线路状态" min-width="90" align="center">
             <template #default="scope">
-              <span :class="[scope.row.lineStatus === 1 ? 'online' : 'offline']">
+              <span :class="[ scope.row.lineStatus === 1 ? 'online' : 'offline']">
                 {{ formatStatus(scope.row.lineStatus, 'line') }}
               </span>
             </template>
@@ -256,7 +329,7 @@ getCardDataList()
           <el-table-column prop="registrationTime" label="注册时间" min-width="160" show-overflow-tooltip></el-table-column>
           <el-table-column label="状态" min-width="80" align="center">
             <template #default="scope">
-              <span :class="[scope.row.usageStatus === 1 ? 'used' : 'unused']">
+              <span :class="[ scope.row.usageStatus === 1 ? 'used' : 'unused']">
                 {{ formatStatus(scope.row.usageStatus, 'usage') }}
               </span>
             </template>
@@ -267,6 +340,9 @@ getCardDataList()
                 <span class="text-button">查看</span>
                 <template #dropdown>
                   <el-dropdown-menu>
+                    <el-dropdown-item @click="handleView(scope.row)">
+                      <el-icon><el-icon-view /></el-icon>查看
+                    </el-dropdown-item>
                     <el-dropdown-item @click="handleEdit(scope.row)">
                       <el-icon><el-icon-edit /></el-icon>编辑
                     </el-dropdown-item>
@@ -279,6 +355,9 @@ getCardDataList()
             </template>
           </el-table-column>
         </el-table>
+        <div class="empty-placeholder" v-if="!loading && tableData.length === 0">
+          <el-empty description="暂无数据"></el-empty>
+        </div>
       </div>
 
       <!-- 分页 -->
@@ -293,6 +372,7 @@ getCardDataList()
           :total="total"
           popper-class="pagination-popper"
           background
+          :disabled="loading"
         ></el-pagination>
       </div>
 
@@ -319,6 +399,57 @@ getCardDataList()
     align-items: center;
     height: calc(100% - 60px);
     min-height: 500px;
+    contain: content;
+    will-change: transform;
+  }
+
+  /* 全局加载状态样式 */
+  .global-loading-mask {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s;
+  }
+
+  .global-loading-indicator {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    animation: fadeInScale 0.3s ease-out;
+
+    .spinner-icon {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(24, 144, 255, 0.2);
+      border-top: 2px solid #1890ff;
+      border-radius: 50%;
+      animation: rotating 0.8s linear infinite;
+      margin-right: 12px;
+    }
+
+    .loading-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: #606266;
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   .uploadIcon {
@@ -328,16 +459,16 @@ getCardDataList()
   }
 
   .custom-upload-btn {
-    background-color: #1890ff; /* 自定义按钮颜色 */
+    background-color: #1890ff;
     border-color: #1890ff;
     color: white;
-    padding: 8px 16px; /* 调整内边距改变大小 */
+    padding: 8px 16px;
     font-size: 14px;
-    height: auto; /* 覆盖Element Plus默认高度 */
+    height: auto;
   }
 
   .custom-upload-btn:hover {
-    background-color: rgba(24, 144, 255, 0.94); /* 悬停时的颜色 */
+    background-color: rgba(24, 144, 255, 0.94);
     border-color: rgba(24, 144, 255, 0.94);
     color: white;
   }
@@ -366,6 +497,7 @@ getCardDataList()
     padding: 0 20px;
     width: 100%;
     max-width: 1200px;
+    will-change: transform;
 
     .project-item {
       display: flex;
@@ -405,6 +537,8 @@ getCardDataList()
     padding: 0 20px;
     width: 100%;
     max-width: 1200px;
+    contain: layout style;
+    will-change: transform;
 
     .filter-items {
       display: flex;
@@ -463,9 +597,28 @@ getCardDataList()
     max-height: calc(100vh - 250px);
     display: flex;
     flex-direction: column;
+    contain: content;
+    will-change: transform;
+    position: relative;
+
+    .empty-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
     .data-table {
       width: 100%;
+      will-change: transform;
+      // 表格在数据加载中或加载完成时的过渡
+      transition: opacity 0.3s ease;
+      opacity: 1;
+
+      // 当数据正在加载时，表格内容稍微淡出
+      &.loading {
+        opacity: 0.6;
+      }
 
       :deep(.el-table__header) {
         th {
@@ -475,6 +628,11 @@ getCardDataList()
           font-size: 14px;
           font-weight: 500;
         }
+      }
+
+      :deep(.el-table__body-wrapper) {
+        overflow-y: auto !important;
+        contain: content;
       }
 
       :deep(.el-table__body) {
@@ -555,12 +713,26 @@ getCardDataList()
     bottom: 0;
     z-index: 10;
     height: 52px;
+    will-change: transform;
+    contain: layout style;
+    transition: opacity 0.3s;
+
+    &:has(> .el-pagination[disabled="true"]) {
+      opacity: 0.6;
+      pointer-events: none;
+    }
 
     :deep(.el-pagination) {
       width: 100%;
       padding: 0;
       justify-content: flex-start;
       height: 32px;
+      transition: opacity 0.3s;
+
+      &[disabled="true"] {
+        opacity: 0.7;
+        pointer-events: none;
+      }
 
       .el-pagination__sizes {
         margin-right: 15px;
@@ -580,6 +752,15 @@ getCardDataList()
     }
   }
 
+  @keyframes rotating {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
   /* 媒体查询 - 确保在小屏幕上表单元素不会缩得太小 */
   @media screen and (max-width: 1280px) {
     .project-selector-bar,
@@ -587,6 +768,7 @@ getCardDataList()
     .table-container,
     .pagination-container {
       max-width: 100%;
+      contain: content;
     }
   }
 
@@ -606,8 +788,7 @@ getCardDataList()
   :deep(.el-select),
   :deep(.el-input),
   :deep(.el-button) {
-    transform: scale(1) !important;
-    transform-origin: left center;
+    transform: none !important;
     height: 32px !important;
     line-height: 32px !important;
   }
@@ -626,11 +807,6 @@ getCardDataList()
       padding: 0 15px !important;
       font-size: 12px !important;
     }
-  }
-
-  /* 确保各区域内容不会超出 */
-  :deep(.el-table__body-wrapper) {
-    overflow-y: auto !important;
   }
 
   /* 表格操作按钮下拉菜单样式 */
