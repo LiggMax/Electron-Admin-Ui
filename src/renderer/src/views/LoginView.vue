@@ -1,8 +1,9 @@
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { userLoginService1 } from '../api/userLogin'
 import { userTokenStore } from '../store/token'
+import CountdownTimer from '../utils/countdownTimer'
 
 // 获取全局消息服务
 const message = inject('message')
@@ -10,6 +11,10 @@ const message = inject('message')
 // 获取路由实例
 const router = useRouter()
 const tokenStore = userTokenStore()
+
+// 创建倒计时实例
+const loginTimer = new CountdownTimer()
+const countdown = loginTimer.getCountdown()
 
 // 表单数据
 const loginForm = ref({
@@ -24,10 +29,23 @@ const useMainProcess = ref(false)
 // 加载状态
 const loading = ref(false)
 
+// 倒计时文本
+const countdownText = computed(() => {
+  return countdown.value > 0 ? `请等待 ${countdown.value}s` : '登录'
+})
+
+// 按钮是否禁用
+const isButtonDisabled = computed(() => {
+  return loading.value || loginTimer.isRunning()
+})
+
 /**
  * 执行登录
  */
 const handleLogin = async () => {
+  // 如果正在加载或倒计时中，不执行操作
+  if (loading.value || loginTimer.isRunning()) return
+
   // 表单验证
   if (!loginForm.value.account.trim()) {
     message.error('请输入账号')
@@ -47,7 +65,7 @@ const handleLogin = async () => {
     console.log('登录成功:', res)
     tokenStore.setToken(res.data)
     // 登录成功提示
-    message.success('登录成功')
+    await message.success('登录成功')
 
     // 如果不需要记住用户名，清除账户
     if (!loginForm.value.rememberUser) {
@@ -57,10 +75,31 @@ const handleLogin = async () => {
 
     // 登录成功后跳转到首页
     await router.push('/home')
+  } catch (error) {
+    console.error('登录失败:', error)
+    // 开始倒计时 - 登录失败后3秒内不能再次点击
+    startLoginCooldown(3)
   } finally {
     loading.value = false // 无论成功失败都结束加载状态
   }
 }
+
+/**
+ * 启动登录按钮冷却倒计时
+ * @param {number} seconds 倒计时秒数
+ */
+const startLoginCooldown = (seconds) => {
+  loginTimer.start(seconds, {
+    onComplete: () => {
+      console.log('登录按钮冷却时间结束，可以再次点击')
+    }
+  })
+}
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  loginTimer.stop()
+})
 </script>
 
 <template>
@@ -107,8 +146,9 @@ const handleLogin = async () => {
             </label>
           </div>
 
-          <button class="login-button" :disabled="loading" @click="handleLogin">
+          <button class="login-button" :disabled="isButtonDisabled" @click="handleLogin">
             <span v-if="loading">登录中...</span>
+            <span v-else-if="countdown > 0">{{ countdownText }}</span>
             <span v-else>登录</span>
           </button>
         </div>
