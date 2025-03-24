@@ -143,7 +143,7 @@ const handleUpload = () => {
   // 触发上传弹窗关闭后的回调
   setTimeout(() => {
     if (Math.random() > 0.5) {
-      message.success('数据导入成功')
+      // message.success('数据导入成功')
     }
   }, 1000)
 }

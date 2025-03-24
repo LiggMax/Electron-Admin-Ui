@@ -100,7 +100,7 @@ body {
 .app-window {
   width: 100%;
   height: 100%;
-  border-radius: 10px; /* QQ音乐风格的圆角 */
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
