@@ -83,10 +83,12 @@ const total = ref(22) // 总数
 const pageSize = ref(10) // 每页条数
 
 // 防抖函数
-const debounce = (fn, delay) => {
+const debounce = (fn, delay = 300) => {
   let timer = null
   return function(...args) {
     if (timer) clearTimeout(timer)
+    // 立即设置加载状态
+    loading.value = true
     timer = setTimeout(() => {
       fn.apply(this, args)
     }, delay)
@@ -95,47 +97,31 @@ const debounce = (fn, delay) => {
 
 // 分页切换 - 使用防抖
 const handleCurrentChange = debounce((page) => {
-  loading.value = true  // 立即显示加载状态
-  // 使用nextTick确保DOM更新后再进行数据获取
-  nextTick(() => {
-    pageNum.value = page
-    getCardDataList()
-  })
-}, 300)
+  pageNum.value = page
+  getCardDataList()
+})
 
-// 分页切换 - 使用防抖
+// 每页条数切换 - 使用防抖
 const handleSizeChange = debounce((size) => {
-  loading.value = true  // 立即显示加载状态
-  // 使用nextTick确保DOM更新后再进行数据获取
-  nextTick(() => {
-    pageSize.value = size
-    pageNum.value = 1
-    getCardDataList()
-  })
-}, 300)
+  pageSize.value = size
+  pageNum.value = 1
+  getCardDataList()
+})
 
 // 搜索 - 使用防抖
 const handleSearch = debounce(() => {
-  loading.value = true  // 立即显示加载状态
-  // 使用nextTick确保DOM更新后再进行数据获取
-  nextTick(() => {
-    pageNum.value = 1
-    getCardDataList()
-  })
-}, 300)
+  pageNum.value = 1
+  getCardDataList()
+})
 
 // 重置搜索
-const resetSearch = () => {
-  loading.value = true  // 立即显示加载状态
-  // 使用nextTick确保DOM更新后再进行数据获取
-  nextTick(() => {
-    selectedProject.value = 'all'
-    countryCode.value = ''
-    usageStatus.value = ''
-    pageNum.value = 1
-    getCardDataList()
-  })
-}
+const resetSearch = debounce(() => {
+  selectedProject.value = 'all'
+  countryCode.value = ''
+  usageStatus.value = ''
+  pageNum.value = 1
+  getCardDataList()
+})
 
 /**
  * 获取卡号数据列表
@@ -567,7 +553,6 @@ onMounted(() => {
     .filter-items {
       display: flex;
       align-items: center;
-      gap: 20px;
       width: 100%;
       height: 100%;
 
@@ -576,6 +561,7 @@ onMounted(() => {
         align-items: center;
         flex-shrink: 0;
         height: 32px;
+        margin-right: 20px;
 
         .label {
           font-size: 14px;
@@ -595,13 +581,16 @@ onMounted(() => {
 
       .filter-buttons {
         display: flex;
-        gap: 10px;
         flex-shrink: 0;
         height: 32px;
+
+        .el-button {
+          margin-right: 10px;
+        }
       }
 
       .upload-button {
-        margin-left: 50px;
+        margin-left: auto;
         height: 32px;
       }
     }

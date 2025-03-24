@@ -165,13 +165,15 @@ onUnmounted(() => {
   justify-content: center;
   perspective: 1000px;
   overflow: hidden;
-  padding: 15px; /* 添加内边距确保登录卡片不会太靠近窗口边缘 */
+  padding: 15px;
   position: relative;
   z-index: 1;
   background-image: url('../assets/images/loginbackground.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .login-card {
@@ -200,6 +202,13 @@ onUnmounted(() => {
 .login-image {
   max-width: 100%;
   height: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
 }
 
 .login-right {
@@ -216,6 +225,8 @@ onUnmounted(() => {
   text-align: center;
   margin-bottom: 40px;
   font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .login-form {
@@ -244,6 +255,13 @@ onUnmounted(() => {
   width: 20px;
   height: 20px;
   object-fit: contain;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
 }
 
 .login-input {
@@ -255,6 +273,8 @@ onUnmounted(() => {
   font-size: 14px;
   color: #333;
   transition: all 0.3s;
+  user-select: text;
+  -webkit-user-select: text;
 
   &:focus {
     border-color: #1890ff;
@@ -285,6 +305,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 
   input {
     margin-right: 6px;
@@ -301,6 +323,8 @@ onUnmounted(() => {
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s;
+  user-select: none;
+  -webkit-user-select: none;
 
   &:hover:not(:disabled) {
     background-color: #40a9ff;

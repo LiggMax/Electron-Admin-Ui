@@ -37,7 +37,7 @@ const handleRecharge = () => {
       <div class="user-card">
         <div class="avatar-section">
           <img :src="userInfo.avatar ? userInfo.avatar : userAvatar " alt="用户头像" class="avatar" />
-          <h2 class="username">{{ userInfo.nickName }}</h2>
+          <h2 class="username">用户昵称：{{ userInfo.nickName }}</h2>
         </div>
         <div class="balance-section">
           <div class="balance-label">余额:</div>
