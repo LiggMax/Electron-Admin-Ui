@@ -5,6 +5,7 @@ import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
 import com.ligg.electronservice.utils.JWTUtil;
 import com.ligg.electronservice.utils.ThreadLocalUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 

@@ -12,8 +12,32 @@
                 country_code like concat('%', #{countryCode}, '%')
             </if>
             <if test="usageStatus != null">
-                and usageStatus = #{usageStatus}
+                and usage_status = #{usageStatus}
             </if>
         </where>
     </select>
+    
+    <!-- 检查手机号是否已存在 -->
+    <select id="checkPhoneExists" resultType="int">
+        select count(*)
+        from phone_records
+        where phone_number = #{phoneNumber}
+    </select>
+    
+    <!-- 批量插入手机号，使用INSERT IGNORE忽略唯一键冲突 -->
+    <insert id="batchInsertPhones" parameterType="java.util.List">
+        INSERT IGNORE INTO phone_records
+        (phone_number, country_code, line_status, registration_time, usage_status, project)
+        values
+        <foreach collection="phones" item="phone" separator=",">
+            (
+            #{phone.phoneNumber},
+            #{phone.countryCode},
+            #{phone.lineStatus},
+            #{phone.registrationTime},
+            #{phone.usageStatus},
+            #{phone.project}
+            )
+        </foreach>
+    </insert>
 </mapper>

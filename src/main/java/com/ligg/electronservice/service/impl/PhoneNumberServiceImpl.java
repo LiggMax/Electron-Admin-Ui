@@ -8,7 +8,10 @@ import com.ligg.electronservice.pojo.Phone;
 import com.ligg.electronservice.service.PhoneNumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -34,5 +37,55 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
         pageBean.setTotal(page.getTotal());
         pageBean.setItems(page.getResult());
         return pageBean;
+    }
+    
+    /**
+     * 批量添加手机号
+     * 
+     * @param phoneNumbers 手机号列表
+     * @param country 国家
+     * @param project 项目
+     * @return 成功添加的数量
+     */
+    @Override
+    @Transactional
+    public int batchAddPhoneNumbers(List<String> phoneNumbers, String country, String project) {
+        if (phoneNumbers == null || phoneNumbers.isEmpty()) {
+            return 0;
+        }
+
+        // 创建Phone对象列表
+        List<Phone> phones = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        
+        // 转换手机号并创建Phone对象
+        for (String phoneStr : phoneNumbers) {
+            try {
+                // 将字符串转换为Long类型的手机号
+                Long phoneNumber = Long.parseLong(phoneStr);
+                
+                // 创建新的Phone对象
+                Phone phone = new Phone();
+                phone.setPhoneNumber(phoneNumber);
+                phone.setCountryCode(country);      // 设置国家
+                phone.setLineStatus(1);             // 默认在线状态
+                phone.setUsageStatus(1);            // 默认使用状态为正常
+                phone.setRegistrationTime(now);     // 设置注册时间
+                phone.setProject(project);          // 设置项目
+                
+                phones.add(phone);
+            } catch (NumberFormatException e) {
+                // 忽略无法转换为数字的手机号
+                continue;
+            }
+        }
+        
+        // 如果没有有效的手机号需要添加，则直接返回0
+        if (phones.isEmpty()) {
+            return 0;
+        }
+        
+        // 批量插入手机号，使用INSERT IGNORE语法处理唯一键冲突
+        return phoneNumberMapper.batchInsertPhones(phones);
     }
 }
