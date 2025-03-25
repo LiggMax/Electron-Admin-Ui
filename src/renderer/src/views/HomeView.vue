@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, nextTick, onMounted } from 'vue'
+import { ref, inject, nextTick, onMounted, onUnmounted } from 'vue'
 import { getPhoneList } from '../api/phone'
 import UploadDialog from '../components/UploadDialog.vue'
 import AppHeader from '../components/AppHeader.vue'
@@ -208,8 +208,31 @@ const handleUpload = () => {
   }, 1000)
 }
 
-// 组件挂载后执行
+// 窗口大小调整防抖
+let resizeTimer = null
+const handleResize = () => {
+  if (resizeTimer) clearTimeout(resizeTimer)
+  resizeTimer = setTimeout(() => {
+    // 触发表格重新计算布局
+    if (tableRef.value) {
+      tableRef.value.doLayout()
+    }
+  }, 100)
+}
+
+// 表格行类名
+const tableRowClassName = ({ rowIndex }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
+// 表格引用
+const tableRef = ref(null)
+
+// 组件挂载和卸载时的事件处理
 onMounted(() => {
+  // 添加窗口大小变化监听
+  window.addEventListener('resize', handleResize)
+  
   // 设置初始加载状态
   loading.value = true
 
@@ -217,6 +240,13 @@ onMounted(() => {
   setTimeout(() => {
     getCardDataList()
   }, 100)
+})
+
+onUnmounted(() => {
+  // 移除窗口大小变化监听
+  window.removeEventListener('resize', handleResize)
+  // 清除定时器
+  if (resizeTimer) clearTimeout(resizeTimer)
 })
 </script>
 
@@ -316,6 +346,10 @@ onMounted(() => {
           class="data-table"
           height="100%"
           v-bind="{ 'scroll-wheel-enabled': true }"
+          :row-class-name="tableRowClassName"
+          :virtual-scrolling="true"
+          :estimate-row-height="48"
+          :cache="200"
         >
           <el-table-column type="selection" width="40"></el-table-column>
           <el-table-column label="序号" width="60" align="center">
@@ -410,6 +444,9 @@ onMounted(() => {
     min-height: 500px;
     contain: content;
     will-change: transform;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
   }
 
   /* 全局加载状态样式 */
@@ -644,8 +681,23 @@ onMounted(() => {
       }
 
       :deep(.el-table__body-wrapper) {
-        overflow-y: auto !important;
+        will-change: transform;
         contain: content;
+        overflow-y: auto !important;
+
+        &::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          border-radius: 3px;
+          background-color: rgba(144, 147, 153, 0.3);
+        }
+
+        &::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
       }
 
       :deep(.el-table__body) {
@@ -655,15 +707,25 @@ onMounted(() => {
           font-size: 14px;
           user-select: none;
           -webkit-user-select: none;
+          border-bottom: 1px solid #ebeef5;
+          transition: none;
         }
       }
 
       :deep(.el-table__row) {
         height: 48px !important;
 
-        &:hover {
-          background-color: #f5f7fa;
+        &:hover > td {
+          background-color: #f5f7fa !important;
         }
+      }
+
+      :deep(.even-row) {
+        background-color: #fafafa;
+      }
+
+      :deep(.odd-row) {
+        background-color: #ffffff;
       }
     }
 
