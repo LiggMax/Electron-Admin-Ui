@@ -5,6 +5,7 @@ import com.ligg.electronservice.pojo.PageBean;
 import com.ligg.electronservice.pojo.Phone;
 import com.ligg.electronservice.pojo.Result;
 import com.ligg.electronservice.service.PhoneNumberService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/phone")
 public class PhoneNumberController {
@@ -83,7 +85,7 @@ public class PhoneNumberController {
             return Result.success(200, resultData);
         } catch (Exception e) {
             // 异常处理
-            e.printStackTrace();
+            log.error("上传失败: " + e.getMessage());
             return Result.error(500, "上传失败: " + e.getMessage());
         }
     }

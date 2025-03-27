@@ -11,7 +11,7 @@
  Target Server Version : 80040 (8.0.40)
  File Encoding         : 65001
 
- Date: 25/03/2025 16:48:52
+ Date: 25/03/2025 18:13:32
 */
 
 SET NAMES utf8mb4;
@@ -30,8 +30,8 @@ CREATE TABLE `phone_records`  (
   `usage_status` int NULL DEFAULT 1 COMMENT '状态：1(正常)、0(停用）',
   `project` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '项目名称',
   PRIMARY KEY (`phone_id`) USING BTREE,
-  UNIQUE INDEX `idx_phone_number`(`phone_number`) USING BTREE COMMENT '手机号唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 16126 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_tr_0900_as_cs ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `idx_phone_number`(`phone_number` ASC) USING BTREE COMMENT '手机号唯一索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 16209 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_tr_0900_as_cs ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for users
@@ -47,6 +47,6 @@ CREATE TABLE `users`  (
   `updated_at` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `user_avatar` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_bin NULL DEFAULT NULL,
   INDEX `users_user_id_index`(`user_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_bin ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_bin ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

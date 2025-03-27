@@ -1,5 +1,7 @@
 package com.ligg.electronservice.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ligg.electronservice.mapper.UserMapper;
 import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
@@ -22,6 +24,8 @@ public class UserServiceImpl implements UserService {
     private StringRedisTemplate redisTemplate;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 查询用户信息
@@ -37,6 +41,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 获取token
+     *
      * @return token
      */
     @Override
@@ -59,11 +64,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void clearToken() {
         Map<String, Object> map = ThreadLocalUtil.get();
-            String userId = (String) map.get("userId");
-            redisTemplate.delete("Token:" + userId);
+        String userId = (String) map.get("userId");
+        redisTemplate.delete("Token:" + userId);
     }
 
-    public User findByUserInfo(String userId) {
-        return userMapper.findByUserInfo(userId);
+    @Override
+    public User findByUserInfo(String userId) throws JsonProcessingException {
+        String RedisUserInfo = redisTemplate.opsForValue().get("userInfo" + userId);
+        if (RedisUserInfo == null) {
+            User userInfo = userMapper.findByUserInfo(userId);
+            if (userInfo != null) {
+                redisTemplate.opsForValue().set("userInfo" + userId, objectMapper.writeValueAsString(userInfo), 6, TimeUnit.HOURS);
+                return userInfo;
+            }
+        }
+        return objectMapper.readValue(RedisUserInfo, User.class);
     }
 }

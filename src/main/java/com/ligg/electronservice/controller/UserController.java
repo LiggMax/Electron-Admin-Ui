@@ -1,6 +1,7 @@
 package com.ligg.electronservice.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ligg.electronservice.pojo.Result;
 import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
@@ -23,7 +24,7 @@ public class UserController {
      * 获取用户信息
      */
     @GetMapping("/userInfo")
-    public Result<User> getUserInfo() {
+    public Result<User> getUserInfo() throws JsonProcessingException {
         Map<String,Object> map = ThreadLocalUtil.get();
         String userId = (String) map.get("userId");
         User userInfo = userService.findByUserInfo(userId);

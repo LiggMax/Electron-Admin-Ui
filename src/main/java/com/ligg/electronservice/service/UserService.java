@@ -1,5 +1,6 @@
 package com.ligg.electronservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ligg.electronservice.pojo.User;
 
 public interface UserService {
@@ -7,7 +8,7 @@ public interface UserService {
     /**
      * 登录
      */
-    User findByUser(String account, String password);
+    User findByUser(String account, String password) throws JsonProcessingException;
 
     /**
      * 获取token
@@ -21,5 +22,5 @@ public interface UserService {
     /**
      * 获取用户信息
      */
-    User findByUserInfo(String userId);
+    User findByUserInfo(String userId) throws JsonProcessingException;
 }

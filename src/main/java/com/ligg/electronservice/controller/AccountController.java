@@ -1,5 +1,6 @@
 package com.ligg.electronservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ligg.electronservice.pojo.Result;
 import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
@@ -22,7 +23,7 @@ public class AccountController {
      */
     @PostMapping("/login")
     public Result<?> login(@RequestParam String account,
-                           @RequestParam String password){
+                           @RequestParam String password) throws JsonProcessingException {
        User userInfo = userService.findByUser(account,password);
        if (userInfo == null){
            return Result.error(400,"账号或密码错误");
