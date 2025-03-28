@@ -12,6 +12,15 @@ export const getPhoneList = (paramsData) =>{
 }
 
 /**
+ * 获取手机号详情信息
+ * @param {Number} phoneId - 手机号ID
+ * @returns {Promise} - 返回手机号详情的Promise
+ */
+export const getPhoneDetail = (phoneId) => {
+  return request.get(`/phone/phoneDetail?phoneId=${phoneId}`)
+}
+
+/**
  * 上传手机号码批量导入
  * @param {Object} data - 上传数据，包括国家、项目和文件数据
  * @returns {Promise} - 返回上传结果的Promise

@@ -1,15 +1,12 @@
 <script setup>
-import { ref, inject, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getPhoneList } from '../api/phone'
 import UploadDialog from '../components/UploadDialog.vue'
 import AppHeader from '../components/AppHeader.vue'
-import {
-  Edit as ElIconEdit,
-  Delete as ElIconDelete,
-} from '@element-plus/icons-vue'
 
-// 获取全局消息服务
-const message = inject('message')
+// 路由
+const router = useRouter()
 
 // 上传弹窗可见性
 const uploadDialogVisible = ref(false)
@@ -54,26 +51,13 @@ const handleSelectionChange = (selection) => {
   multipleSelection.value = selection
 }
 
-// 表格操作
+// 表格操作 - 查看详情
 const handleView = (row) => {
   console.log('查看详情', row)
-}
-
-const handleEdit = (row) => {
-  console.log('编辑', row)
-}
-
-// 删除处理
-const handleDelete = (row) => {
-  message.confirm(`确定要删除手机号为"${row.phoneNumber}"的记录吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    message.success('删除成功')
-    getCardDataList()
-  }).catch(() => {
-    message.info('已取消删除')
+  // 跳转到详情页面，携带手机号ID参数
+  router.push({
+    path: '/phone-detail',
+    query: { phoneId: row.phoneId }
   })
 }
 
@@ -203,7 +187,7 @@ const handleUpload = () => {
   // 触发上传弹窗关闭后的回调
   setTimeout(() => {
     if (Math.random() > 0.5) {
-      // message.success('数据导入成功')
+      // 不再使用message
     }
   }, 1000)
 }
@@ -232,7 +216,7 @@ const tableRef = ref(null)
 onMounted(() => {
   // 添加窗口大小变化监听
   window.addEventListener('resize', handleResize)
-  
+
   // 设置初始加载状态
   loading.value = true
 
@@ -380,19 +364,14 @@ onUnmounted(() => {
           </el-table-column>
           <el-table-column label="操作" min-width="100" fixed="right" align="center">
             <template #default="scope">
-              <el-dropdown trigger="click">
-                <span class="text-button">查看</span>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="handleEdit(scope.row)">
-                      <el-icon><el-icon-edit /></el-icon>编辑
-                    </el-dropdown-item>
-                    <el-dropdown-item divided type="danger" @click="handleDelete(scope.row)">
-                      <el-icon><el-icon-delete /></el-icon>删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
+              <el-button
+                type="text"
+                size="small"
+                @click="handleView(scope.row)"
+                class="text-button"
+              >
+                查看
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
