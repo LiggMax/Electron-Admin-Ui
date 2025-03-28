@@ -14,8 +14,6 @@ public class AccountController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private StringRedisTemplate redisTemplate;
 
     /**
      * 登录

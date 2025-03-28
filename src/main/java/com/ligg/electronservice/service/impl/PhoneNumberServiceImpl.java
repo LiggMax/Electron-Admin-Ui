@@ -53,7 +53,6 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
         if (phoneNumbers == null || phoneNumbers.isEmpty()) {
             return 0;
         }
-
         // 创建Phone对象列表
         List<Phone> phones = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
@@ -71,9 +70,8 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
                 phone.setLineStatus(1);             // 默认在线状态
                 phone.setUsageStatus(1);            // 默认使用状态为正常
                 phone.setRegistrationTime(now);     // 设置注册时间
-                phone.setProject(project);          // 设置项目
-                
-                phones.add(phone);
+
+                phones.add (phone);
             } catch (NumberFormatException e) {
                 // 忽略无法转换为数字的手机号
                 continue;
@@ -84,8 +82,13 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
         if (phones.isEmpty()) {
             return 0;
         }
-        
         // 批量插入手机号，使用INSERT IGNORE语法处理唯一键冲突
-        return phoneNumberMapper.batchInsertPhones(phones);
+        int result = phoneNumberMapper.batchInsertPhones(phones);
+        
+        // 插入项目关联信息
+        for (Phone phone : phones) {
+            phoneNumberMapper.insertPhoneProject(phone.getPhoneNumber(), project);
+        }
+        return result;
     }
 }

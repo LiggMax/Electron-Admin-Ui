@@ -20,7 +20,12 @@ public interface PhoneNumberMapper {
      * @return 插入成功的条数
      */
     int batchInsertPhones(@Param("phones") List<Phone> phones);
-    
+
+    /**
+     * 插入手机号项目
+     */
+    int insertPhoneProject(@Param("phoneNumber") Long phoneNumber, @Param("projectName") String projectName);
+
     /**
      * 检查手机号是否已存在
      * @param phoneNumber 手机号

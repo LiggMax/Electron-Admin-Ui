@@ -27,7 +27,7 @@
     <!-- 批量插入手机号，使用INSERT IGNORE忽略唯一键冲突 -->
     <insert id="batchInsertPhones" parameterType="java.util.List">
         INSERT IGNORE INTO phone_records
-        (phone_number, country_code, line_status, registration_time, usage_status, project)
+        (phone_number, country_code, line_status, registration_time, usage_status)
         values
         <foreach collection="phones" item="phone" separator=",">
             (
@@ -35,9 +35,14 @@
             #{phone.countryCode},
             #{phone.lineStatus},
             #{phone.registrationTime},
-            #{phone.usageStatus},
-            #{phone.project}
+            #{phone.usageStatus}
             )
         </foreach>
+    </insert>
+
+    <!-- 插入手机号和项目关联信息 -->
+    <insert id="insertPhoneProject">
+        insert into phone_project(phone_number, project_name)
+        values (#{phoneNumber}, #{projectName})
     </insert>
 </mapper>

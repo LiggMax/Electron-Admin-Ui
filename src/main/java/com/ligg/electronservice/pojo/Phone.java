@@ -16,5 +16,5 @@ public class Phone {
     private String countryCode;//号码归属地
     private LocalDateTime registrationTime;//注册时间
     private Integer usageStatus;//状态 1.正常、2.停用
-    private String project;        // 项目名称
+    private String projectName;        // 项目名称
 }

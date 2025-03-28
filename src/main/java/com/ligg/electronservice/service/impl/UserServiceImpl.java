@@ -70,11 +70,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUserInfo(String userId) throws JsonProcessingException {
-        String RedisUserInfo = redisTemplate.opsForValue().get("userInfo" + userId);
+        String RedisUserInfo = redisTemplate.opsForValue().get("userInfo:" + userId);
         if (RedisUserInfo == null) {
             User userInfo = userMapper.findByUserInfo(userId);
             if (userInfo != null) {
-                redisTemplate.opsForValue().set("userInfo" + userId, objectMapper.writeValueAsString(userInfo), 6, TimeUnit.HOURS);
+                redisTemplate.opsForValue().set("userInfo:" + userId, objectMapper.writeValueAsString(userInfo), 6, TimeUnit.HOURS);
                 return userInfo;
             }
         }
