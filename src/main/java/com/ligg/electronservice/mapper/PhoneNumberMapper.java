@@ -32,4 +32,9 @@ public interface PhoneNumberMapper {
      * @return 存在的数量
      */
     int checkPhoneExists(@Param("phoneNumber") Long phoneNumber);
+
+    /**
+     * 根据手机号id查询详情
+     */
+    List<Phone> queryByIdPhoneDetail(Integer phoneId);
 }

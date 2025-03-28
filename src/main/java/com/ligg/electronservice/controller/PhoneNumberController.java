@@ -37,6 +37,16 @@ public class PhoneNumberController {
     }
 
     /**
+     * 查询手机号详情
+     */
+    @GetMapping("/phoneDetail")
+    public Result<?> phoneDetail(Integer phoneId){
+        // 调用服务获取手机号详情（包含基本信息和项目列表）
+        Map<String, Object> phoneDetailData = phoneNumberService.phoneDetail(phoneId);
+        return Result.success(200, phoneDetailData);
+    }
+
+    /**
      * 批量上传手机号
      */
     @PostMapping("/upload")
