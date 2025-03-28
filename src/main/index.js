@@ -35,7 +35,6 @@ if (!gotTheLock) {
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),
         sandbox: false,
-        webSecurity: true,
         allowRunningInsecureContent: true
       }
     })
@@ -107,14 +106,14 @@ if (!gotTheLock) {
   // Some APIs can only be used after this event occurs.
   app.whenReady().then(() => {
     // 设置 CSP
-    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-      callback({
-        responseHeaders: {
-          ...details.responseHeaders,
-          'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https: http: *; connect-src *"]
-        }
-      })
-    })
+    // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    //   callback({
+    //     responseHeaders: {
+    //       ...details.responseHeaders,
+    //       'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https: http: *; connect-src *"]
+    //     }
+    //   })
+    // })
 
     // Set app user model id for windows
     electronApp.setAppUserModelId('com.electron')

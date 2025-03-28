@@ -3,15 +3,6 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  service: {
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8090',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
-  },
   main: {
     plugins: [externalizeDepsPlugin()]
   },
@@ -24,6 +15,14 @@ export default defineConfig({
       alias: {
         '@': resolve('src/renderer/src'),
         '@renderer': resolve('src/renderer/src')
+      }
+    },
+    server: {
+      "proxy": {
+        "/api": {
+          target: 'http://129.204.224.233:8866',
+          changeOrigin: true
+        }
       }
     },
     plugins: [vue()],

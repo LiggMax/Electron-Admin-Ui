@@ -11,7 +11,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: app
+  executableName: 卡商端
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

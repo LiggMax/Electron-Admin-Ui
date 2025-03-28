@@ -144,7 +144,7 @@ const validateFileContent = (content) => {
     invalidCount: invalidPhones.length,
     validPhones: validPhones,
     invalidPhones: invalidPhones,
-    isValid: invalidPhones.length === 0 && validPhones.length > 0 // 全部符合格式且至少有一个手机号
+    isValid: validPhones.length > 0 // 只要有有效手机号就可以上传
   }
 }
 
