@@ -111,7 +111,7 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
         if (phoneDetails != null && !phoneDetails.isEmpty()) {
             // 获取第一条记录的基本信息
             Phone baseInfo = phoneDetails.get(0);
-            
+
             // 构建基本信息
             Map<String, Object> phoneInfo = new HashMap<>();
             phoneInfo.put("phoneId", baseInfo.getPhoneId());
@@ -119,16 +119,16 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
             phoneInfo.put("countryCode", baseInfo.getCountryCode());
             phoneInfo.put("lineStatus", baseInfo.getLineStatus());
             phoneInfo.put("usageStatus", baseInfo.getUsageStatus());
-            phoneInfo.put("registrationTime", baseInfo.getRegistrationTime());
-            
+
             // 添加基本信息到结果
             resultMap.put("basicInfo", phoneInfo);
-            
+
             // 构建项目列表
             List<Map<String, String>> projectList = new ArrayList<>();
             for (Phone phone : phoneDetails) {
                 Map<String, String> projectMap = new HashMap<>();
                 projectMap.put("projectName", phone.getProjectName());
+                projectMap.put("registrationTime", String.valueOf(phone.getRegistrationTime()));
                 projectList.add(projectMap);
             }
             

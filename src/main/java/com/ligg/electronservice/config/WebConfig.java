@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
         //登录拦截器
         registry.addInterceptor(loginInterceptors)
                 .order(1)
-                .excludePathPatterns("/api/account/**")//放行路径
+                .excludePathPatterns("/api/account/**","/api/anime/**")//放行路径
                 .addPathPatterns("/api/**");//拦截路径
         //请求拦截器
         registry.addInterceptor(rateLimitInterceptor)
