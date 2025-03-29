@@ -8,6 +8,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.*;
 
@@ -15,8 +17,8 @@ import java.util.*;
 public class AnimeServiceImpl implements AnimeService {
     private static final Logger log = LoggerFactory.getLogger(AnimeServiceImpl.class);
 
-    private static final String XFDM_URL = "https://dm1.xfdm.pro";
-    private static final String XFDM_SEARCH_URL = "https://dm1.xfdm.pro/search.html?wd=";
+    private static final String XFDM_URL = "https://www.cycani.org/";
+    private static final String XFDM_SEARCH_URL = "https://www.cycani.org/search.html?wd=";
     
     // HTTP请求参数
     private static final int MAX_RETRIES = 3;               // 最大重试次数
@@ -62,7 +64,7 @@ public class AnimeServiceImpl implements AnimeService {
             return Collections.emptyMap();
         }
     }
-    
+
     /**
      * 搜索动漫并返回详情页URL
      */
@@ -280,5 +282,88 @@ public class AnimeServiceImpl implements AnimeService {
         }
         
         return routes;
+    }
+
+    @Override
+    public String getPlayVideoUrl(String url) {
+        log.info("开始获取视频播放地址: {}", url);
+        System.out.println("开始获取视频播放地址: " + url);
+        
+        try {
+            // 设置连接选项
+            Document document = Jsoup.connect(url)
+                    .timeout(READ_TIMEOUT)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                    .header("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+                    .followRedirects(true)
+                    .get();
+            
+            // 查找所有script标签
+            Elements scriptElements = document.select("script");
+            String videoUrl = null;
+            
+            // 遍历所有script标签，查找包含播放信息的脚本
+            for (Element script : scriptElements) {
+                String scriptContent = script.html();
+                // 查找播放器配置的脚本，包含var player_aaaa的脚本
+                if (scriptContent.contains("var player_aaaa")) {
+                    System.out.println("找到播放器配置脚本");
+                    
+                    // 提取播放地址 - 方法1：使用正则表达式
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"url\":\"(.*?)\"");
+                    java.util.regex.Matcher matcher = pattern.matcher(scriptContent);
+                    if (matcher.find()) {
+                        videoUrl = matcher.group(1);
+                        // 处理转义字符
+                        videoUrl = videoUrl.replace("\\/", "/");
+                    }
+                    
+                    // 方法2：提取JSON对象 (备用方法)
+                    if (videoUrl == null || videoUrl.isEmpty()) {
+                        int startIndex = scriptContent.indexOf("var player_aaaa=") + "var player_aaaa=".length();
+                        int endIndex = scriptContent.indexOf("</script>", startIndex);
+                        if (endIndex == -1) {
+                            endIndex = scriptContent.length();
+                        }
+                        
+                        String jsonStr = scriptContent.substring(startIndex, endIndex).trim();
+                        
+                        try {
+                            // 尝试解析JSON以获取更多信息
+                            // 需要处理JSON字符串，移除可能的尾部分号
+                            if (jsonStr.endsWith(";")) {
+                                jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+                            }
+                            
+                            ObjectMapper mapper = new ObjectMapper();
+                            JsonNode rootNode = mapper.readTree(jsonStr);
+                            
+                            // 获取视频URL
+                            videoUrl = rootNode.path("url").asText();
+                        } catch (Exception e) {
+                            log.error("JSON解析失败: {}", e.getMessage());
+                        }
+                    }
+                    
+                    // 找到后退出循环
+                    break;
+                }
+            }
+            
+            if (videoUrl != null && !videoUrl.isEmpty()) {
+                log.info("成功提取视频播放地址: {}", videoUrl);
+                return videoUrl;
+            } else {
+                log.warn("未能提取到视频播放地址");
+                return "";
+            }
+            
+        } catch (Exception e) {
+            log.error("获取视频播放地址失败: {}", e.getMessage());
+            System.out.println("获取视频播放地址失败: " + e.getMessage());
+            e.printStackTrace();
+            return "";
+        }
     }
 }

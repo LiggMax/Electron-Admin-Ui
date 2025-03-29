@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ligg.electronservice.service.anime.AnimeService;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +72,8 @@ class ElectronServiceApplicationTests {
                 String.class
         );
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(response.getBody());
             System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonNode));
         } catch (JsonProcessingException e) {
             log.error("序列化{}", e.getMessage());
@@ -257,6 +259,187 @@ class ElectronServiceApplicationTests {
         } catch (Exception e) {
             System.out.println("\n搜索过程发生错误: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getPlayVideo() {
+        String url = "https://dm1.xfdm.pro/watch/2660/1/1.html";
+        try {
+            // 设置连接选项
+            Connection connect = Jsoup.connect(url)
+                    .timeout(30000)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+                    .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                    .header("Accept-Language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
+                    .followRedirects(true);
+
+            // 发送请求并获取页面
+            Document document = connect.get();
+            
+            // 查找所有script标签
+            Elements scriptElements = document.select("script");
+            String videoUrl = null;
+            
+            System.out.println("开始解析视频播放地址...");
+            
+            // 遍历所有script标签，查找包含播放信息的脚本
+            for (Element script : scriptElements) {
+                String scriptContent = script.html();
+                // 查找播放器配置的脚本，包含var player_aaaa的脚本
+                if (scriptContent.contains("var player_aaaa")) {
+                    System.out.println("找到播放器配置脚本");
+                    
+                    // 提取播放地址 - 方法1：使用正则表达式
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"url\":\"(.*?)\"");
+                    java.util.regex.Matcher matcher = pattern.matcher(scriptContent);
+                    if (matcher.find()) {
+                        videoUrl = matcher.group(1);
+                        // 处理转义字符
+                        videoUrl = videoUrl.replace("\\/", "/");
+                        System.out.println("通过正则表达式提取到的视频地址: " + videoUrl);
+                    }
+                    
+                    // 方法2：提取JSON对象 (备用方法)
+                    int startIndex = scriptContent.indexOf("var player_aaaa=") + "var player_aaaa=".length();
+                    int endIndex = scriptContent.indexOf("</script>", startIndex);
+                    if (endIndex == -1) {
+                        endIndex = scriptContent.length();
+                    }
+                    
+                    String jsonStr = scriptContent.substring(startIndex, endIndex).trim();
+                    // 打印JSON字符串用于调试
+                    System.out.println("提取的JSON字符串: " + jsonStr);
+                    
+                    try {
+                        // 尝试解析JSON以获取更多信息
+                        // 需要处理JSON字符串，移除可能的尾部分号
+                        if (jsonStr.endsWith(";")) {
+                            jsonStr = jsonStr.substring(0, jsonStr.length() - 1);
+                        }
+                        
+                        ObjectMapper mapper = new ObjectMapper();
+                        JsonNode rootNode = mapper.readTree(jsonStr);
+                        
+                        // 获取视频URL
+                        String urlFromJson = rootNode.path("url").asText();
+                        System.out.println("通过JSON解析提取到的视频地址: " + urlFromJson);
+                        
+                        // 获取下一集URL
+                        String nextUrl = rootNode.path("url_next").asText();
+                        System.out.println("下一集视频地址: " + nextUrl);
+                        
+                        // 获取视频信息
+                        JsonNode vodData = rootNode.path("vod_data");
+                        if (!vodData.isMissingNode()) {
+                            String vodName = vodData.path("vod_name").asText();
+                            System.out.println("视频名称: " + vodName);
+                        }
+                        
+                        // 如果通过正则表达式没有获取到URL，则使用JSON解析的结果
+                        if (videoUrl == null || videoUrl.isEmpty()) {
+                            videoUrl = urlFromJson;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("JSON解析失败: " + e.getMessage());
+                    }
+                    
+                    // 找到后退出循环
+                    break;
+                }
+                
+                // 还可以检查其他可能包含视频链接的脚本
+                if (scriptContent.contains("iframeObj.contentWindow.postMessage")) {
+                    System.out.println("找到iframe消息脚本");
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"next\":\"(.*?)\"");
+                    java.util.regex.Matcher matcher = pattern.matcher(scriptContent);
+                    if (matcher.find()) {
+                        String nextUrlFromIframe = matcher.group(1);
+                        nextUrlFromIframe = nextUrlFromIframe.replace("\\/", "/");
+                        System.out.println("iframe中的下一集视频地址: " + nextUrlFromIframe);
+                    }
+                }
+            }
+            
+            // 输出最终结果
+            if (videoUrl != null && !videoUrl.isEmpty()) {
+                System.out.println("\n========== 提取结果 ==========");
+                System.out.println("最终提取到的视频播放地址: " + videoUrl);
+                System.out.println("=============================");
+                
+                // 测试访问视频URL是否有效
+                try {
+                    Connection videoConnection = Jsoup.connect(videoUrl)
+                            .timeout(5000)
+                            .method(Connection.Method.HEAD)
+                            .ignoreContentType(true);
+                    Connection.Response videoResponse = videoConnection.execute();
+                    int statusCode = videoResponse.statusCode();
+                    System.out.println("视频URL状态码: " + statusCode);
+                    if (statusCode == 200) {
+                        System.out.println("视频链接有效，可以播放");
+                    } else {
+                        System.out.println("视频链接可能无效，状态码: " + statusCode);
+                    }
+                } catch (Exception e) {
+                    System.out.println("测试视频链接时出错: " + e.getMessage());
+                }
+            } else {
+                System.out.println("未能提取到视频播放地址");
+            }
+
+        } catch (Exception e) {
+            log.error("获取播放地址发生错误: {}", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGetPlayVideo() {
+        // 先获取一个动漫的信息
+        Map<String, Object> animeInfo = animeService.searchAnime("斗罗大陆");
+        
+        // 检查是否有结果
+        if (animeInfo.isEmpty()) {
+            System.out.println("无法找到动漫信息，无法进行视频播放测试");
+            return;
+        }
+        
+        // 获取episodes信息
+        Map<String, List<Map<String, String>>> allRoutes = (Map<String, List<Map<String, String>>>) animeInfo.get("episodes");
+        if (allRoutes == null || allRoutes.isEmpty()) {
+            System.out.println("没有找到剧集信息");
+            return;
+        }
+        
+        // 获取第一个路线的第一集
+        String firstRouteName = allRoutes.keySet().iterator().next();
+        List<Map<String, String>> episodes = allRoutes.get(firstRouteName);
+        
+        if (episodes == null || episodes.isEmpty()) {
+            System.out.println("所选路线没有剧集");
+            return;
+        }
+        
+        Map<String, String> firstEpisode = episodes.get(0);
+        String playUrl = firstEpisode.get("url");
+        
+        System.out.println("测试播放地址: " + playUrl);
+        System.out.println("集数标题: " + firstEpisode.get("title"));
+        
+        // 获取视频播放链接
+        String videoUrl = animeService.getPlayVideoUrl(playUrl);
+        
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            System.out.println("成功获取视频地址: " + videoUrl);
+            // 测试视频URL的格式是否符合预期
+            if (videoUrl.startsWith("http") && (videoUrl.endsWith(".m3u8") || videoUrl.contains(".mp4"))) {
+                System.out.println("视频地址格式正确，可以播放");
+            } else {
+                System.out.println("视频地址格式可能不正确，请检查: " + videoUrl);
+            }
+        } else {
+            System.out.println("无法获取视频播放地址");
         }
     }
 }

@@ -27,8 +27,14 @@ public class AnimeController {
 
 
     @GetMapping("/Search")
-    public Result<Map<String, Object>> Search(String keyword) {
+    public Result<Map<String, Object>> getSearchList(String keyword) {
         Map<String, Object> stringObjectMap = animeService.searchAnime(keyword);
         return Result.success(200, stringObjectMap);
+    }
+
+    @GetMapping("/PlayVideo")
+    public Result<String> getPlayVideo(String url) {
+        String playVideoUrl = animeService.getPlayVideoUrl(url);
+        return Result.success(200, playVideoUrl);
     }
 }

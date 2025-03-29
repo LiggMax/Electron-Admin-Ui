@@ -13,4 +13,11 @@ public interface AnimeService {
      * @return 动漫详细信息的Map，包含标题、简介、封面图片和所有线路的所有剧集信息
      */
     Map<String, Object> searchAnime(String keyword);
+
+    /**
+     * 获取播放视频的URL
+     * @param url 播放视频的URL
+     * @return 播放视频的URL
+     */
+    String getPlayVideoUrl(String url);
 }
