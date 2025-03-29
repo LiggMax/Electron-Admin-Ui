@@ -1,5 +1,7 @@
 package com.ligg.electronservice.controller.oauth;
 
+import com.ligg.electronservice.pojo.Result;
+import com.ligg.electronservice.service.anime.AnimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 import javax.swing.text.Document;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/anime")
@@ -19,15 +22,13 @@ public class AnimeController {
 
     @Autowired
     private RestTemplate restTemplate;
-    @A
+    @Autowired
+    private AnimeService animeService;
 
 
     @GetMapping("/Search")
-    public ResponseEntity<String> Search(String keyword) {
-        ResponseEntity<String> forEntity = restTemplate.getForEntity(XFDM_SEARCH_URL + keyword, String.class);
-
-        return forEntity;
+    public Result<Map<String, Object>> Search(String keyword) {
+        Map<String, Object> stringObjectMap = animeService.searchAnime(keyword);
+        return Result.success(200, stringObjectMap);
     }
-
-
 }
