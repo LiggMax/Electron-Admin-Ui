@@ -3,6 +3,7 @@ package com.ligg.electronservice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ligg.electronservice.service.anime.AnimeService;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @SpringBootTest
@@ -23,22 +26,41 @@ class ElectronServiceApplicationTests {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private AnimeService animeService;
 
     @Test
-    void contextLoads() {
+    void search() {
+        // 测试搜索功能，获取动漫信息和所有剧集
+        String keyword = "败犬女主";
+        Map<String, Object> animeInfo = animeService.searchAnime(keyword);
+        
+        // 返回结果已经包含了所有信息，并在控制台输出
+        // 打印一下返回数据结构，不打印详细内容
+        if (!animeInfo.isEmpty()) {
+            System.out.println("\n========== 返回数据结构 ==========");
+            animeInfo.keySet().forEach(key -> {
+                Object value = animeInfo.get(key);
+                if (value instanceof List) {
+                    System.out.println(key + ": List[" + ((List<?>) value).size() + " 项]");
+                } else if (value instanceof Map) {
+                    System.out.println(key + ": Map[" + ((Map<?, ?>) value).size() + " 项]");
+                } else if (value instanceof String) {
+                    // 对于文本内容，只显示前20个字符，避免输出过长
+                    String text = (String) value;
+                    if (text.length() > 20) {
+                        System.out.println(key + ": \"" + text.substring(0, 20) + "...\"");
+                    } else {
+                        System.out.println(key + ": \"" + text + "\"");
+                    }
+                } else {
+                    System.out.println(key + ": " + value);
+                }
+            });
+        }
     }
 
-    //    @Test
-//    public void getToken() {
-//        Map<String, Object> stringObjectMap = JWTUtil.parseTokenWithValidation
-//                ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGFpbXMiOnsidXNlcklkIjoiMTIzIiwidXNlcm5hbWUiOiJsaWdnIn0sImV4cCI6MTc0MjkwNjY2NX0.4yfPVZ_gpWY1OahrZ-nGuzgi1JqJQHimdvhjhLatnoU");
-//        String userId = (String) stringObjectMap.get("userId");
-//        String username = (String) stringObjectMap.get("username");
-//        System.out.println(userId);
-//        System.out.println(username);
-//        String RedisToken = redisTemplate.opsForValue().get("Token:" + userId);
-//        log.info("Token:{}" ,RedisToken);
-//    }
+
     @Test
     public void request() {
         RestTemplate restTemplate = new RestTemplate();
@@ -63,7 +85,6 @@ class ElectronServiceApplicationTests {
      */
     @Test
     public void searchAnime() {
-        //1.获取搜索内容页面
 
         // 构建请求URL和参数
         String xfdmUrl = "https://dm1.xfdm.pro";

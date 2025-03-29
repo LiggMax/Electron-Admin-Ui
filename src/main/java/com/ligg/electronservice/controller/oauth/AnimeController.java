@@ -19,8 +19,7 @@ public class AnimeController {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    private static final String XFDM_SEARCH_URL = "https://dm1.xfdm.pro/search.html?wd=";
+    @A
 
 
     @GetMapping("/Search")
@@ -30,14 +29,5 @@ public class AnimeController {
         return forEntity;
     }
 
-    public static void main(String[] args) {
-        String keyword = "败犬女主";
-        String url = "https://dm1.xfdm.pro/search.html?wd=" + keyword;
 
-        RestTemplate restTemplate = new RestTemplate();
-
-        ResponseEntity<String> forEntity = restTemplate.getForEntity(url, String.class);
-
-        System.out.println(forEntity);
-    }
 }
