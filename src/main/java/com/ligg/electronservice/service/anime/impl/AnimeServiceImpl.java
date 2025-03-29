@@ -17,8 +17,8 @@ import java.util.*;
 public class AnimeServiceImpl implements AnimeService {
     private static final Logger log = LoggerFactory.getLogger(AnimeServiceImpl.class);
 
-    private static final String XFDM_URL = "https://www.cycani.org/";
-    private static final String XFDM_SEARCH_URL = "https://www.cycani.org/search.html?wd=";
+    private static final String XFDM_URL = "https://dm1.xfdm.pro";
+    private static final String XFDM_SEARCH_URL = "https://dm1.xfdm.pro/search.html?wd=";
     
     // HTTP请求参数
     private static final int MAX_RETRIES = 3;               // 最大重试次数
