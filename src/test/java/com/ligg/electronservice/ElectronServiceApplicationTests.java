@@ -72,8 +72,8 @@ class ElectronServiceApplicationTests {
         
         // 设置HTTP请求参数
         int maxRetries = 3;                // 最大重试次数
-        int connectionTimeout = 10000;     // 连接超时时间(毫秒)
-        int readTimeout = 30000;           // 读取超时时间(毫秒)
+        int connectionTimeout = 100000;    // 连接超时时间(毫秒)
+        int readTimeout = 300000;          // 读取超时时间(毫秒)
         
         // 可选：设置代理 (如果需要)
         // System.setProperty("http.proxyHost", "127.0.0.1");
@@ -212,9 +212,8 @@ class ElectronServiceApplicationTests {
                             
                             System.out.println("该线路包含" + episodes.size() + "个剧集");
                             
-                            // 只输出前5个剧集避免日志过长，实际应用中可以处理所有剧集
-                            int displayLimit = Math.min(5, episodes.size());
-                            for (int j = 0; j < displayLimit; j++) {
+                            // 输出所有剧集
+                            for (int j = 0; j < episodes.size(); j++) {
                                 Element episode = episodes.get(j);
                                 String episodeName = episode.text();
                                 String episodeUrl = episode.attr("href");
@@ -225,10 +224,6 @@ class ElectronServiceApplicationTests {
                                 }
                                 
                                 System.out.println("  - " + episodeName + ": " + episodeUrl);
-                            }
-                            
-                            if (episodes.size() > displayLimit) {
-                                System.out.println("  ... 还有" + (episodes.size() - displayLimit) + "个剧集 ...");
                             }
                         }
                     }
