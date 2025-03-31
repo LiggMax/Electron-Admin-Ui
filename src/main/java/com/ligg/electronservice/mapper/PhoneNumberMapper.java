@@ -1,6 +1,8 @@
 package com.ligg.electronservice.mapper;
 
+import com.ligg.electronservice.dto.PhoneDetailDTO;
 import com.ligg.electronservice.pojo.Phone;
+import com.ligg.electronservice.pojo.phoneRecords;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,7 +15,7 @@ public interface PhoneNumberMapper {
      * 条件查询卡号数据
      */
     List<Phone> phoneList(String countryCode, Integer usageStatus);
-    
+
     /**
      * 批量插入手机号
      * @param phones 手机号列表
@@ -36,5 +38,5 @@ public interface PhoneNumberMapper {
     /**
      * 根据手机号id查询详情
      */
-    List<Phone> queryByIdPhoneDetail(Integer phoneId);
+    List<PhoneDetailDTO> queryByIdPhoneDetail(Integer phoneId);
 }

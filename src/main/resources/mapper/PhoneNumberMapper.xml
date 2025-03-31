@@ -25,11 +25,19 @@
     </select>
 
     <!-- 根据手机号ID查询手机详情 -->
-    <select id="queryByIdPhoneDetail" resultType="com.ligg.electronservice.pojo.Phone">
-        select *
-        from phone_records pr
-        left join phone_project pp on pr.phone_number = pp.phone_number
-        where pr.phone_id = #{phoneId}
+    <select id="queryByIdPhoneDetail" resultType="com.ligg.electronservice.dto.PhoneDetailDTO">
+        SELECT 
+            pr.phone_id,
+            pr.phone_number,
+            pr.country_code,
+            pr.line_status,
+            pr.usage_status,
+            pr.registration_time,
+            pp.project_name,
+            pp.time_of_use
+        FROM phone_records pr
+        LEFT JOIN phone_project pp ON pr.phone_number = pp.phone_number
+        WHERE pr.phone_id = #{phoneId}
     </select>
 
     <!-- 批量插入手机号，使用INSERT IGNORE忽略唯一键冲突 -->

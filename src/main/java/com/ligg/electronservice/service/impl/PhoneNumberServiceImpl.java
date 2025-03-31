@@ -6,6 +6,7 @@ import com.ligg.electronservice.mapper.PhoneNumberMapper;
 import com.ligg.electronservice.pojo.PageBean;
 import com.ligg.electronservice.pojo.Phone;
 import com.ligg.electronservice.service.PhoneNumberService;
+import com.ligg.electronservice.dto.PhoneDetailDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,14 +104,14 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
     @Override
     public Map<String, Object> phoneDetail(Integer phoneId) {
         // 获取手机号的详细信息
-        List<Phone> phoneDetails = phoneNumberMapper.queryByIdPhoneDetail(phoneId);
+        List<PhoneDetailDTO> phoneDetails = phoneNumberMapper.queryByIdPhoneDetail(phoneId);
         
         // 构建结果
         Map<String, Object> resultMap = new HashMap<>();
         
         if (phoneDetails != null && !phoneDetails.isEmpty()) {
             // 获取第一条记录的基本信息
-            Phone baseInfo = phoneDetails.get(0);
+            PhoneDetailDTO baseInfo = phoneDetails.get(0);
 
             // 构建基本信息
             Map<String, Object> phoneInfo = new HashMap<>();
@@ -119,17 +120,20 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
             phoneInfo.put("countryCode", baseInfo.getCountryCode());
             phoneInfo.put("lineStatus", baseInfo.getLineStatus());
             phoneInfo.put("usageStatus", baseInfo.getUsageStatus());
+            phoneInfo.put("registrationTime", baseInfo.getRegistrationTime());
 
             // 添加基本信息到结果
             resultMap.put("basicInfo", phoneInfo);
 
             // 构建项目列表
-            List<Map<String, String>> projectList = new ArrayList<>();
-            for (Phone phone : phoneDetails) {
-                Map<String, String> projectMap = new HashMap<>();
-                projectMap.put("projectName", phone.getProjectName());
-                projectMap.put("registrationTime", String.valueOf(phone.getRegistrationTime()));
-                projectList.add(projectMap);
+            List<Map<String, Object>> projectList = new ArrayList<>();
+            for (PhoneDetailDTO detail : phoneDetails) {
+                if (detail.getProjectName() != null) {
+                    Map<String, Object> projectMap = new HashMap<>();
+                    projectMap.put("projectName", detail.getProjectName());
+                    projectMap.put("timeOfUse", detail.getTimeOfUse());
+                    projectList.add(projectMap);
+                }
             }
             
             // 添加项目列表到结果

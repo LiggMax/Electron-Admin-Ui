@@ -35,7 +35,6 @@ public class AnimeServiceImpl implements AnimeService {
             String detailUrl = searchAnimeAndGetDetailUrl(keyword);
             if (detailUrl == null) {
                 log.warn("未找到动漫: {}", keyword);
-                System.out.println("未找到动漫: " + keyword);
                 return Collections.emptyMap();
             }
             
@@ -43,7 +42,6 @@ public class AnimeServiceImpl implements AnimeService {
             Document detailPage = fetchDetailPage(detailUrl, keyword);
             if (detailPage == null) {
                 log.warn("无法获取详情页面: {}", detailUrl);
-                System.out.println("无法获取详情页面: " + detailUrl);
                 return Collections.emptyMap();
             }
             
@@ -59,7 +57,6 @@ public class AnimeServiceImpl implements AnimeService {
             
         } catch (Exception e) {
             log.error("搜索动漫过程中发生错误", e);
-            System.out.println("\n搜索过程发生错误: " + e.getMessage());
             e.printStackTrace();
             return Collections.emptyMap();
         }
@@ -287,8 +284,7 @@ public class AnimeServiceImpl implements AnimeService {
     @Override
     public String getPlayVideoUrl(String url) {
         log.info("开始获取视频播放地址: {}", url);
-        System.out.println("开始获取视频播放地址: " + url);
-        
+
         try {
             // 设置连接选项
             Document document = Jsoup.connect(url)

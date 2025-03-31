@@ -95,7 +95,7 @@ class ElectronServiceApplicationTests {
         
         // 设置HTTP请求参数
         int maxRetries = 3;                // 最大重试次数
-        int connectionTimeout = 100000;    // 连接超时时间(毫秒)
+        int connectionTimeout = 600000;    // 连接超时时间(毫秒)
         int readTimeout = 300000;          // 读取超时时间(毫秒)
         
         // 可选：设置代理 (如果需要)
@@ -105,7 +105,7 @@ class ElectronServiceApplicationTests {
         // System.setProperty("https.proxyPort", "7890");
 
         try {
-            System.out.println("开始搜索动漫: " + searchTerm);
+            System.out.println("开始搜索动漫: " + searchTerm + "超时时间：" + connectionTimeout);
             
             // 使用Jsoup的connect方法代替parse(URL)，提供更多配置选项
             Document searchPage = null;
