@@ -136,7 +136,7 @@ onMounted(() => {
               <el-table-column prop="projectName" label="项目名称" min-width="150" />
               <el-table-column label="注册时间" min-width="180">
                 <template #default="scope">
-                  {{ formatDate(scope.row.registrationTime) }}
+                  {{ formatDate(scope.row.timeOfUse) }}
                 </template>
               </el-table-column>
             </el-table>
