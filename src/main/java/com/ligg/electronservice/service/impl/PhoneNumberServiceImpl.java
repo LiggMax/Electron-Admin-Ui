@@ -47,13 +47,13 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
      * 
      * @param phoneNumbers 手机号列表
      * @param country 国家
-     * @param project 项目
+     * @param projects 项目列表
      * @return 成功添加的数量
      */
     @Override
     @Transactional
-    public int batchAddPhoneNumbers(List<String> phoneNumbers, String country, String project) {
-        if (phoneNumbers == null || phoneNumbers.isEmpty()) {
+    public int batchAddPhoneNumbers(List<String> phoneNumbers, String country, List<String> projects) {
+        if (phoneNumbers == null || phoneNumbers.isEmpty() || projects == null || projects.isEmpty()) {
             return 0;
         }
         // 创建Phone对象列表
@@ -74,7 +74,7 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
                 phone.setUsageStatus(1);            // 默认使用状态为正常
                 phone.setRegistrationTime(now);     // 设置注册时间
 
-                phones.add (phone);
+                phones.add(phone);
             } catch (NumberFormatException e) {
                 // 忽略无法转换为数字的手机号
                 continue;
@@ -90,7 +90,9 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
         
         // 插入项目关联信息
         for (Phone phone : phones) {
-            phoneNumberMapper.insertPhoneProject(phone.getPhoneNumber(), project);
+            for (String project : projects) {
+                phoneNumberMapper.insertPhoneProject(phone.getPhoneNumber(), project);
+            }
         }
         return result;
     }

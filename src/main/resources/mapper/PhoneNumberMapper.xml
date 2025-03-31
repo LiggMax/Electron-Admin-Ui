@@ -58,7 +58,7 @@
 
     <!-- 插入手机号和项目关联信息 -->
     <insert id="insertPhoneProject">
-        insert into phone_project(phone_number, project_name)
-        values (#{phoneNumber}, #{projectName})
+        insert into phone_project(phone_number, project_name,time_of_use)
+        values (#{phoneNumber}, #{projectName},NOW())
     </insert>
 </mapper>

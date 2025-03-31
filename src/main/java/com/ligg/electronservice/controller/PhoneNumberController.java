@@ -54,7 +54,7 @@ public class PhoneNumberController {
         try {
             // 从请求体中获取国家和项目信息
             String country = (String) uploadData.get("country");
-            String project = (String) uploadData.get("project");
+            List<String> projects = (List<String>) uploadData.get("projects");
             
             // 获取文件列表
             List<Map<String, Object>> files = (List<Map<String, Object>>) uploadData.get("files");
@@ -72,8 +72,8 @@ public class PhoneNumberController {
                 
                 if (phoneNumbers != null) {
                     totalProcessed += phoneNumbers.size();
-                      // 批量添加手机号到数据库
-                    int added = phoneNumberService.batchAddPhoneNumbers(phoneNumbers, country, project);
+                    // 批量添加手机号到数据库，并关联到所有选择的项目
+                    int added = phoneNumberService.batchAddPhoneNumbers(phoneNumbers, country, projects);
                     totalAdded += added;
                     
                     // 计算重复和无效数量
