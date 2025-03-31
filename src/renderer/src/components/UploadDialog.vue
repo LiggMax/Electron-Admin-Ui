@@ -35,7 +35,7 @@ const handleClose = () => {
   // 清除所有数据
   uploadForm.value = {
     country: '',
-    project: ''
+    projects: []
   }
   uploadedFiles.value = []
   fileStats.value = {
@@ -77,7 +77,6 @@ const countryOptions = [
 
 // 项目选项
 const projectOptions = [
-  { label: '请选择项目', value: '' },
   { label: 'Facebook', value: 'Facebook' },
   { label: 'TikTok', value: 'TikTok' },
   { label: 'Instagram', value: 'Instagram' }
@@ -86,7 +85,7 @@ const projectOptions = [
 // 表单数据
 const uploadForm = ref({
   country: '',
-  project: ''
+  projects: []
 })
 
 // 上传文件相关
@@ -274,8 +273,8 @@ const handleNext = () => {
       return
     }
 
-    if (!uploadForm.value.project) {
-      message.warning("请选择项目")
+    if (!uploadForm.value.projects.length) {
+      message.warning("请至少选择一个项目")
       // 聚焦到项目选择框并添加闪烁效果
       const projectSelect = document.querySelector('.form-item:last-child .el-select');
       if (projectSelect) {
@@ -341,8 +340,8 @@ const handleSubmit = async () => {
     return
   }
 
-  if (!uploadForm.value.project) {
-    message.warning('请选择项目')
+  if (!uploadForm.value.projects.length) {
+    message.warning('请至少选择一个项目')
     return
   }
 
@@ -361,7 +360,7 @@ const handleSubmit = async () => {
     // 构建上传数据
     const uploadData = {
       country: uploadForm.value.country,
-      project: uploadForm.value.project,
+      projects: uploadForm.value.projects,
       files: validationResults.value.valid.map(file => {
         return {
           fileName: file.name,
@@ -480,12 +479,15 @@ const handleSubmit = async () => {
           </div>
           <div class="form-item">
             <div class="form-label">
-              项目：
+              项目：<span class="required-mark">*</span>
             </div>
             <el-select
-              v-model="uploadForm.project"
+              v-model="uploadForm.projects"
               placeholder="请选择项目"
               class="form-select"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
             >
               <el-option
                 v-for="item in projectOptions"
