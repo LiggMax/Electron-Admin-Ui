@@ -26,6 +26,10 @@ public class AnimeController {
     private AnimeService animeService;
 
 
+    @GetMapping("/getAnimeList")
+    public Result<Map<String, Object>> getAnimeList() {
+            return Result.success(200, null);
+    }
     @GetMapping("/Search")
     public Result<Map<String, Object>> getSearchList(String keyword) {
         Map<String, Object> stringObjectMap = animeService.searchAnime(keyword);
