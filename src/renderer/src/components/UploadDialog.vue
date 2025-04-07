@@ -479,7 +479,7 @@ const handleSubmit = async () => {
           </div>
           <div class="form-item">
             <div class="form-label">
-              项目：<span class="required-mark">*</span>
+              项目：
             </div>
             <el-select
               v-model="uploadForm.projects"
@@ -710,7 +710,6 @@ const handleSubmit = async () => {
   }
 }
 
-/* 对话框全局样式已在App.vue中定义 */
 
 .steps-container {
   display: flex;
@@ -725,9 +724,8 @@ const handleSubmit = async () => {
   width: 100px;
   height: 1px;
   background-color: #E6E8EC;
-  margin: 0;
   align-self: flex-start;
-  margin-top: 14px;
+  margin: 14px 0 0;
 }
 
 .step-line.line-active {

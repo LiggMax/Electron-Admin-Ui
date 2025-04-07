@@ -121,6 +121,12 @@ onMounted(() => {
                   {{ formatStatus(phoneDetail.basicInfo.usageStatus, 'usage') }}
                 </el-tag>
               </el-descriptions-item>
+              <el-descriptions-item label="导入时间">
+                {{ formatDate(phoneDetail.basicInfo.registrationTime) }}
+              </el-descriptions-item>
+              <el-descriptions-item label="导出时间">
+                123.1231.123
+              </el-descriptions-item>
             </el-descriptions>
           </div>
         </div>

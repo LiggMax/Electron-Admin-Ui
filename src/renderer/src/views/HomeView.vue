@@ -31,7 +31,6 @@ const countryOptions = [
   { label: '英国', value: '英国' },
   { label: '日本', value: '日本' },
   { label: '韩国', value: '韩国' },
-  { label: '俄罗斯', value: '俄罗斯' }
 ]
 
 // 表格数据

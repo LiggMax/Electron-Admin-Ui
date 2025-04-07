@@ -8,14 +8,14 @@ const userInfoStore = useUserStore()
 const userInfo = ref({
   nickName: userInfoStore.info.nickName,
   avatar: userInfoStore.info.userAvatar,
-  balance: '¥ 10.00',
+  balance: '¥ 100000000.00',
 })
 
 // 交易记录
 const transactions = ref([
-  { type: '收入', amount: '¥1000', date: '2023-09-01 10:24' },
-  { type: '收入', amount: '¥500', date: '2023-09-02 14:18' },
-  { type: '收入', amount: '¥200', date: '2023-09-03 09:50' }
+  { type: '收入', amount: '¥1.5亿', date: '2023-09-01 10:24' },
+  { type: '收入', amount: '¥500万', date: '2023-09-02 14:18' },
+  { type: '收入', amount: '¥200万', date: '2023-09-03 09:50' }
 ])
 
 

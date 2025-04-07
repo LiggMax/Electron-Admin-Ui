@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { ElMessage } from "element-plus";
 import { userTokenStore } from '../store/token'
-import { inject } from 'vue'
 //导入路由
 import router from '../router'
+
 //定义一个变量,记录公共的前缀  ,  baseURL
 const baseURL = 'http://127.0.0.1:8866/api';
 const instance = axios.create({
@@ -47,7 +47,7 @@ instance.interceptors.response.use(
       if (err.response.status === 429) {
         ElMessage.error('请求过于频繁，请稍后再试');
       } else if (err.response.status === 401) {
-        ElMessage.error('请先登录');
+        // ElMessage.error('请先登录');
         //清除token
         userTokenStore().removeToken();
         //跳转到登录页面

@@ -6,7 +6,7 @@ import MainLayout from '@/layout/MainLayout.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/home'
   },
   {
     path: '/login',

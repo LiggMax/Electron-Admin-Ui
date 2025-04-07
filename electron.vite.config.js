@@ -26,7 +26,7 @@ export default defineConfig({
       }
     },
     plugins: [vue()],
-    assetsInclude: ['**/*.svg'],
+    // assetsInclude: ['**/*.svg'],
     build: {
       rollupOptions: {
         output: {
