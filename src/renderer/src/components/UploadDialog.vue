@@ -19,9 +19,12 @@ const message = inject('message') || ElMessage
 const dialogVisible = ref(props.visible)
 
 // 监听visible属性变化
-watch(() => props.visible, (val) => {
-  dialogVisible.value = val
-})
+watch(
+  () => props.visible,
+  (val) => {
+    dialogVisible.value = val
+  }
+)
 
 // 监听dialogVisible变化，同步回父组件
 watch(dialogVisible, (val) => {
@@ -114,17 +117,17 @@ const validateFileContent = (content) => {
   // 预处理文本内容，移除不必要的字符
   const cleanedContent = content
     .replace(/[\r\n\t\s]+/g, ',') // 将换行、制表符、空格替换为逗号
-    .replace(/,+/g, ',')          // 将多个连续逗号替换为单个逗号
-    .replace(/^,|,$/g, '')        // 移除开头和结尾的逗号
+    .replace(/,+/g, ',') // 将多个连续逗号替换为单个逗号
+    .replace(/^,|,$/g, '') // 移除开头和结尾的逗号
 
   // 分割并过滤出所有潜在的手机号
-  const phones = cleanedContent.split(',').filter(item => item.trim() !== '')
+  const phones = cleanedContent.split(',').filter((item) => item.trim() !== '')
 
   // 检查每个手机号是否符合格式
   const validPhones = []
   const invalidPhones = []
 
-  phones.forEach(phone => {
+  phones.forEach((phone) => {
     // 清理电话号码中可能的非数字字符
     const cleanPhone = phone.replace(/[^\d]/g, '')
 
@@ -168,7 +171,7 @@ const handleDrop = (event) => {
   console.log('文件已拖放:', files)
 
   // 遍历所有拖放的文件
-  Array.from(files).forEach(file => {
+  Array.from(files).forEach((file) => {
     // 检查文件扩展名
     if (!file.name.toLowerCase().endsWith('.txt')) {
       ElMessage.error(`文件 "${file.name}" 不是TXT格式，请上传TXT文件`)
@@ -210,7 +213,7 @@ const handleFileSelect = (event) => {
   console.log('选择文件:', files)
 
   // 遍历所有选择的文件
-  Array.from(files).forEach(file => {
+  Array.from(files).forEach((file) => {
     // 检查文件扩展名
     if (!file.name.toLowerCase().endsWith('.txt')) {
       ElMessage.error(`文件 "${file.name}" 不是TXT格式，请上传TXT文件`)
@@ -248,7 +251,7 @@ const handleFileSelect = (event) => {
 
 // 删除文件
 const handleDeleteFile = (fileId) => {
-  const index = uploadedFiles.value.findIndex(file => file.id === fileId)
+  const index = uploadedFiles.value.findIndex((file) => file.id === fileId)
   if (index !== -1) {
     uploadedFiles.value.splice(index, 1)
     updateFileStats()
@@ -261,27 +264,27 @@ const handleNext = () => {
   if (currentStep.value === 1 && currentStep.value < 3) {
     // 验证国家和项目选择
     if (!uploadForm.value.country) {
-      message.warning("请选择国家")
+      message.warning('请选择国家')
       // 聚焦到国家选择框并添加闪烁效果
-      const countrySelect = document.querySelector('.form-item:first-child .el-select');
+      const countrySelect = document.querySelector('.form-item:first-child .el-select')
       if (countrySelect) {
-        countrySelect.classList.add('shake-animation');
+        countrySelect.classList.add('shake-animation')
         setTimeout(() => {
-          countrySelect.classList.remove('shake-animation');
-        }, 600);
+          countrySelect.classList.remove('shake-animation')
+        }, 600)
       }
       return
     }
 
     if (!uploadForm.value.projects.length) {
-      message.warning("请至少选择一个项目")
+      message.warning('请至少选择一个项目')
       // 聚焦到项目选择框并添加闪烁效果
-      const projectSelect = document.querySelector('.form-item:last-child .el-select');
+      const projectSelect = document.querySelector('.form-item:last-child .el-select')
       if (projectSelect) {
-        projectSelect.classList.add('shake-animation');
+        projectSelect.classList.add('shake-animation')
         setTimeout(() => {
-          projectSelect.classList.remove('shake-animation');
-        }, 600);
+          projectSelect.classList.remove('shake-animation')
+        }, 600)
       }
       return
     }
@@ -297,7 +300,7 @@ const handleNext = () => {
     validationResults.value.invalid = []
 
     // 验证每个上传的文件
-    uploadedFiles.value.forEach(file => {
+    uploadedFiles.value.forEach((file) => {
       const result = validateFileContent(file.content)
 
       // 更新文件的验证状态
@@ -361,7 +364,7 @@ const handleSubmit = async () => {
     const uploadData = {
       country: uploadForm.value.country,
       projects: uploadForm.value.projects,
-      files: validationResults.value.valid.map(file => {
+      files: validationResults.value.valid.map((file) => {
         return {
           fileName: file.name,
           phoneCount: file.validationResult.validCount,
@@ -389,7 +392,7 @@ const handleSubmit = async () => {
     console.log('上传成功:', response)
 
     // 保存上传结果用于显示
-    const resultData = response.data || {};
+    const resultData = response.data || {}
     uploadResult.value = {
       success: true,
       message: resultData.message || '成功上传数据',
@@ -400,9 +403,6 @@ const handleSubmit = async () => {
         invalid: resultData.invalid || 0
       }
     }
-
-    message.success(uploadResult.value.message)
-
     // 上传完成，不再处于上传状态
     uploading.value = false
   } catch (error) {
@@ -433,22 +433,19 @@ const handleSubmit = async () => {
   >
     <!-- 步骤条 -->
     <div class="steps-container">
-      <div class="step-item"
-           :class="{ active: currentStep >= 1, 'step-done': currentStep > 1 }">
+      <div class="step-item" :class="{ active: currentStep >= 1, 'step-done': currentStep > 1 }">
         <div class="step-circle">1</div>
         <div class="step-title">上传文件</div>
         <div class="step-desc">拖拽或选取单个文件</div>
       </div>
       <div class="step-line" :class="{ 'line-active': currentStep > 1 }"></div>
-      <div class="step-item"
-           :class="{ active: currentStep >= 2, 'step-done': currentStep > 2 }">
+      <div class="step-item" :class="{ active: currentStep >= 2, 'step-done': currentStep > 2 }">
         <div class="step-circle">2</div>
         <div class="step-title">校验数据</div>
         <div class="step-desc">校验上传数据的格式</div>
       </div>
       <div class="step-line" :class="{ 'line-active': currentStep > 2 }"></div>
-      <div class="step-item"
-           :class="{ active: currentStep >= 3, 'step-done': currentStep > 3 }">
+      <div class="step-item" :class="{ active: currentStep >= 3, 'step-done': currentStep > 3 }">
         <div class="step-circle">3</div>
         <div class="step-title">写入数据</div>
         <div class="step-desc">将有效数据导入系统</div>
@@ -461,14 +458,8 @@ const handleSubmit = async () => {
       <div v-if="currentStep === 1">
         <div class="form-row">
           <div class="form-item">
-            <div class="form-label">
-              国家：
-            </div>
-            <el-select
-              v-model="uploadForm.country"
-              placeholder="请选择国家"
-              class="form-select"
-            >
+            <div class="form-label">国家：</div>
+            <el-select v-model="uploadForm.country" placeholder="请选择国家" class="form-select">
               <el-option
                 v-for="item in countryOptions"
                 :key="item.value"
@@ -478,9 +469,7 @@ const handleSubmit = async () => {
             </el-select>
           </div>
           <div class="form-item">
-            <div class="form-label">
-              项目：
-            </div>
+            <div class="form-label">项目：</div>
             <el-select
               v-model="uploadForm.projects"
               placeholder="请选择项目"
@@ -507,12 +496,20 @@ const handleSubmit = async () => {
             </div>
             <div class="upload-text">点击或拖拽TXT文件到此处上传</div>
             <div class="upload-format-hint">仅支持TXT格式</div>
-            <input type="file" class="file-input" accept=".txt" multiple @change="handleFileSelect" />
+            <input
+              type="file"
+              class="file-input"
+              accept=".txt"
+              multiple
+              @change="handleFileSelect"
+            />
           </div>
         </div>
 
         <!-- 已上传文件提示 -->
-        <div class="upload-tip-text">共{{ fileStats.count }}个文件，共{{ formatFileSize(fileStats.totalSize) }}</div>
+        <div class="upload-tip-text">
+          共{{ fileStats.count }}个文件，共{{ formatFileSize(fileStats.totalSize) }}
+        </div>
 
         <!-- 文件列表 -->
         <div class="file-list-container" v-if="uploadedFiles.length > 0">
@@ -528,21 +525,50 @@ const handleSubmit = async () => {
               <div class="file-progress">
                 <el-progress
                   :percentage="file.progress"
-                  :status="file.status === 'error' ? 'exception' : file.status === 'success' ? 'success' : ''"
+                  :status="
+                    file.status === 'error'
+                      ? 'exception'
+                      : file.status === 'success'
+                        ? 'success'
+                        : ''
+                  "
                   :stroke-width="6"
                   :show-text="false"
                 ></el-progress>
               </div>
               <div class="file-actions">
-                <el-button v-if="file.status === 'success'" type="text" size="small" class="success-text">成功</el-button>
-                <el-button v-else-if="file.status === 'error'" type="text" size="small" class="error-text">重试</el-button>
-                <el-button type="text" size="small" class="delete-text" @click="handleDeleteFile(file.id)">删除</el-button>
+                <el-button
+                  v-if="file.status === 'success'"
+                  type="text"
+                  size="small"
+                  class="success-text"
+                  >成功
+                </el-button>
+                <el-button
+                  v-else-if="file.status === 'error'"
+                  type="text"
+                  size="small"
+                  class="error-text"
+                  >重试
+                </el-button>
+                <el-button
+                  type="text"
+                  size="small"
+                  class="delete-text"
+                  @click="handleDeleteFile(file.id)"
+                  >删除
+                </el-button>
               </div>
             </div>
           </div>
         </div>
         <div class="compact-empty-list" v-else>
-          <el-empty description="暂无上传文件" :image-size="40"></el-empty>
+          <el-empty description="暂无上传文件" :image-size="40">
+            <div>
+              <p style="color: #409eff">导入数据格式提示：</p>
+              <p>（199743256432，199743256432，199743256432）</p>
+            </div>
+          </el-empty>
         </div>
       </div>
 
@@ -553,11 +579,17 @@ const handleSubmit = async () => {
           <div class="summary-content">
             <div class="summary-item success">
               <div class="summary-icon">✓</div>
-              <div class="summary-text">共验证{{ uploadedFiles.length }}个文件，{{ validationResults.valid.length }}个校验成功</div>
+              <div class="summary-text">
+                共验证{{ uploadedFiles.length }}个文件，{{
+                  validationResults.valid.length
+                }}个校验成功
+              </div>
             </div>
             <div class="summary-item error" v-if="validationResults.invalid.length > 0">
               <div class="summary-icon">!</div>
-              <div class="summary-text">发现{{ validationResults.invalid.length }}个文件格式错误</div>
+              <div class="summary-text">
+                发现{{ validationResults.invalid.length }}个文件格式错误
+              </div>
             </div>
           </div>
 
@@ -565,15 +597,27 @@ const handleSubmit = async () => {
           <div class="validation-details">
             <div v-for="file in uploadedFiles" :key="file.id" class="validation-file-item">
               <div class="file-name">{{ file.name }}</div>
-              <div :class="['validation-status', file.validationResult?.isValid ? 'status-valid' : 'status-invalid']">
+              <div
+                :class="[
+                  'validation-status',
+                  file.validationResult?.isValid ? 'status-valid' : 'status-invalid'
+                ]"
+              >
                 <span v-if="file.validationResult?.isValid">格式正确</span>
                 <span v-else>格式错误</span>
               </div>
               <div class="validation-details-content">
-                <div>共{{ file.validationResult?.totalCount || 0 }}个手机号，{{ file.validationResult?.validCount || 0 }}个有效</div>
+                <div>
+                  共{{ file.validationResult?.totalCount || 0 }}个手机号，{{
+                    file.validationResult?.validCount || 0
+                  }}个有效
+                </div>
                 <div v-if="file.validationResult?.invalidCount > 0" class="invalid-phones">
                   <div>无效手机号：</div>
-                  <div class="invalid-list">{{ file.validationResult?.invalidPhones.slice(0, 3).join(', ') }}{{ file.validationResult?.invalidPhones.length > 3 ? '...' : '' }}</div>
+                  <div class="invalid-list">
+                    {{ file.validationResult?.invalidPhones.slice(0, 3).join(', ')
+                    }}{{ file.validationResult?.invalidPhones.length > 3 ? '...' : '' }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -634,14 +678,33 @@ const handleSubmit = async () => {
             <div class="summary-item success">
               <div class="summary-icon">✓</div>
               <div class="summary-text">
-                准备导入{{ validationResults.valid.reduce((sum, file) => sum + (file.validationResult?.validCount || 0), 0) }}个手机号
+                准备导入{{
+                  validationResults.valid.reduce(
+                    (sum, file) => sum + (file.validationResult?.validCount || 0),
+                    0
+                  )
+                }}个手机号
               </div>
             </div>
-            <div class="summary-item error" v-if="validationResults.invalid.length > 0 || validationResults.valid.some(file => file.validationResult?.invalidCount > 0)">
+            <div
+              class="summary-item error"
+              v-if="
+                validationResults.invalid.length > 0 ||
+                validationResults.valid.some((file) => file.validationResult?.invalidCount > 0)
+              "
+            >
               <div class="summary-icon">!</div>
               <div class="summary-text">
-                已过滤{{ validationResults.invalid.reduce((sum, file) => sum + (file.validationResult?.totalCount || 0), 0) +
-                validationResults.valid.reduce((sum, file) => sum + (file.validationResult?.invalidCount || 0), 0) }}个无效手机号
+                已过滤{{
+                  validationResults.invalid.reduce(
+                    (sum, file) => sum + (file.validationResult?.totalCount || 0),
+                    0
+                  ) +
+                  validationResults.valid.reduce(
+                    (sum, file) => sum + (file.validationResult?.invalidCount || 0),
+                    0
+                  )
+                }}个无效手机号
               </div>
             </div>
           </div>
@@ -656,9 +719,27 @@ const handleSubmit = async () => {
             <div class="import-file-list">
               <div v-for="file in uploadedFiles" :key="file.id" class="import-file-item">
                 <span class="file-column">{{ file.name }}</span>
-                <span class="count-column">{{ file.validationResult?.validCount || 0 }}/{{ file.validationResult?.totalCount || 0 }}</span>
-                <span class="status-column" :class="{'status-success': file.validationResult?.isValid, 'status-partial': !file.validationResult?.isValid && file.validationResult?.validCount > 0, 'status-failed': file.validationResult?.validCount === 0}">
-                  {{ file.validationResult?.isValid ? '全部有效' : file.validationResult?.validCount > 0 ? '部分有效' : '全部无效' }}
+                <span class="count-column"
+                  >{{ file.validationResult?.validCount || 0 }}/{{
+                    file.validationResult?.totalCount || 0
+                  }}</span
+                >
+                <span
+                  class="status-column"
+                  :class="{
+                    'status-success': file.validationResult?.isValid,
+                    'status-partial':
+                      !file.validationResult?.isValid && file.validationResult?.validCount > 0,
+                    'status-failed': file.validationResult?.validCount === 0
+                  }"
+                >
+                  {{
+                    file.validationResult?.isValid
+                      ? '全部有效'
+                      : file.validationResult?.validCount > 0
+                        ? '部分有效'
+                        : '全部无效'
+                  }}
                 </span>
               </div>
             </div>
@@ -680,11 +761,9 @@ const handleSubmit = async () => {
           :loading="uploading"
           :disabled="uploading && uploadProgress >= 100"
         >
-          <template v-if="uploading">
-            上传中 {{ uploadProgress }}%
-          </template>
+          <template v-if="uploading"> 上传中 {{ uploadProgress }}%</template>
           <template v-else>
-            {{ currentStep < 3 ? '下一步' : (uploadResult ? '关闭' : '提交') }}
+            {{ currentStep < 3 ? '下一步' : uploadResult ? '关闭' : '提交' }}
           </template>
         </el-button>
       </div>
@@ -710,7 +789,6 @@ const handleSubmit = async () => {
   }
 }
 
-
 .steps-container {
   display: flex;
   justify-content: center;
@@ -723,13 +801,13 @@ const handleSubmit = async () => {
 .step-line {
   width: 100px;
   height: 1px;
-  background-color: #E6E8EC;
+  background-color: #e6e8ec;
   align-self: flex-start;
   margin: 14px 0 0;
 }
 
 .step-line.line-active {
-  background-color: #409EFF;
+  background-color: #409eff;
 }
 
 .step-item {
@@ -746,25 +824,25 @@ const handleSubmit = async () => {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background-color: #E6E8EC;
+  background-color: #e6e8ec;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   margin-bottom: 4px;
-  border: 1px solid #E6E8EC;
+  border: 1px solid #e6e8ec;
   color: #909399;
 }
 
 .step-item.active .step-circle {
   background-color: #fff;
-  border-color: #409EFF;
-  color: #409EFF;
+  border-color: #409eff;
+  color: #409eff;
 }
 
 .step-item.step-done .step-circle {
-  background-color: #409EFF;
-  border-color: #409EFF;
+  background-color: #409eff;
+  border-color: #409eff;
   color: #fff;
 }
 
@@ -777,7 +855,7 @@ const handleSubmit = async () => {
 
 .step-item.active .step-title,
 .step-item.step-done .step-title {
-  color: #409EFF;
+  color: #409eff;
 }
 
 .step-desc {
@@ -923,7 +1001,8 @@ const handleSubmit = async () => {
     background-color: #6366f1;
     border-color: #6366f1;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background-color: #7477f5;
       border-color: #7477f5;
     }
@@ -1286,16 +1365,25 @@ const handleSubmit = async () => {
 
     .stat-value {
       font-weight: 600;
-      color: #409EFF;
+      color: #409eff;
     }
   }
 }
 
 /* 必填项动画效果 */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 .shake-animation {

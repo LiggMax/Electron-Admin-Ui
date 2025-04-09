@@ -125,7 +125,7 @@ onMounted(() => {
                 {{ formatDate(phoneDetail.basicInfo.registrationTime) }}
               </el-descriptions-item>
               <el-descriptions-item label="导出时间">
-                123.1231.123
+                {{ formatDate(phoneDetail.basicInfo.registrationTime) }}
               </el-descriptions-item>
             </el-descriptions>
           </div>
