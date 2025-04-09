@@ -37,6 +37,7 @@ const countryOptions = [
 const tableData = ref([])
 const countryCode = ref('') // 国家地区
 const usageStatus = ref('') // 使用状态
+const searchKeyword = ref('') // 搜索关键字
 
 // 状态
 const statusOptions = [
@@ -61,7 +62,6 @@ const handleView = (row) => {
 }
 
 const pageNum = ref(1) // 当前页码
-const total = ref(22) // 总数
 const pageSize = ref(10) // 每页条数
 
 // 防抖函数
@@ -101,6 +101,7 @@ const resetSearch = debounce(() => {
   selectedProject.value = 'all'
   countryCode.value = ''
   usageStatus.value = ''
+  searchKeyword.value = '' // 清空搜索关键字
   pageNum.value = 1
   getCardDataList()
 })
@@ -134,15 +135,15 @@ const formatDate = (dateStr) => {
 // 数据加载状态
 const loading = ref(false)
 
+// 获取卡号数据列表
 const getCardDataList = async () => {
   try {
     // 获取卡号数据列表的逻辑
     let params = {
-      pageNum: pageNum.value,
-      pageSize: pageSize.value,
       countryCode: countryCode.value || '',
       usageStatus: usageStatus.value === undefined ? '' : usageStatus.value,
-      project: selectedProject.value === 'all' ? '' : selectedProject.value
+      project: selectedProject.value === 'all' ? '' : selectedProject.value,
+      keyword: searchKeyword.value || '' // 添加搜索关键字参数
     }
 
     // 移除所有undefined或null的参数
@@ -164,8 +165,7 @@ const getCardDataList = async () => {
     // 如果加载太快，则等待一段时间再更新UI，避免闪烁
     setTimeout(() => {
       // 先更新数据
-      total.value = result.data.total
-      tableData.value = result.data.items
+      tableData.value = result.data
 
       // 数据更新后再关闭loading状态
       nextTick(() => {
@@ -242,79 +242,103 @@ onUnmounted(() => {
       <div class="global-loading-mask" v-if="loading">
         <div class="global-loading-indicator">
           <div class="spinner-icon"></div>
-          <span class="loading-text">正在加载数据中...</span>
+          <span class="loading-text">加载数据中...</span>
         </div>
       </div>
 
       <!-- 接码项目独立一栏 -->
       <div class="project-selector-bar">
-        <div class="project-item">
-          <span class="label project-label">接码项目：</span>
-          <el-select
-            v-model="selectedProject"
-            placeholder="请选择项目"
-            clearable
-            size="small"
-            class="select-with-width"
-          >
-            <el-option
-              v-for="item in projectOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
+        <div class="project-selector-content">
+          <div class="project-item">
+            <span class="label project-label">接码项目：</span>
+            <el-select
+              v-model="selectedProject"
+              placeholder="请选择项目"
+              clearable
+              size="small"
+              class="select-with-width"
+            >
+              <el-option
+                v-for="item in projectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+
+          <!--上传按钮-->
+          <div class="upload-button">
+            <el-button type="primary" size="small" @click="handleUpload" class="custom-upload-btn">
+              <img src="../assets/svg/add.svg" alt="" class="uploadIcon"> 上传
+            </el-button>
+          </div>
         </div>
       </div>
 
       <!-- 搜索筛选区 -->
       <div class="filter-bar">
         <div class="filter-items">
-          <div class="filter-item">
-            <span class="label">国家：</span>
-            <el-select
-              v-model="countryCode"
-              placeholder="请选择"
-              clearable
-              size="small"
-              class="select-with-width"
-            >
-              <el-option
-                v-for="item in countryOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
+          <div class="left-filters">
+            <div class="filter-item">
+              <span class="label">国家：</span>
+              <el-select
+                v-model="countryCode"
+                placeholder="请选择"
+                clearable
+                size="small"
+                class="select-with-width"
+              >
+                <el-option
+                  v-for="item in countryOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </div>
+
+            <div class="filter-item">
+              <span class="label">状态：</span>
+              <el-select
+                v-model="usageStatus"
+                placeholder="请选择"
+                clearable
+                size="small"
+                class="select-with-width"
+              >
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </div>
+
+            <!--搜索输入框-->
+            <div class="filter-item search-item">
+              <span class="label">搜索：</span>
+              <el-input
+                v-model="searchKeyword"
+                placeholder="请输入搜索内容"
+                clearable
+                size="small"
+                class="input-with-width"
+                @keyup.enter="handleSearch"
+              ></el-input>
+            </div>
+            <div class="search-icon-wrapper" @click="handleSearch">
+              <img src="../assets/svg/iocn/Search.svg" width="20px" alt="搜索">
+            </div>
           </div>
 
-          <div class="filter-item">
-            <span class="label">状态：</span>
-            <el-select
-              v-model="usageStatus"
-              placeholder="请选择"
-              clearable
-              size="small"
-              class="select-with-width"
-            >
-              <el-option
-                v-for="item in statusOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
+          <div class="right-aligned-controls">
+            <div class="filter-buttons">
+              <el-button size="small" @click="resetSearch">重置</el-button>
+            </div>
 
-          <div class="filter-buttons">
-            <el-button type="primary" size="small" @click="handleSearch">搜索</el-button>
-            <el-button size="small" @click="resetSearch">重置</el-button>
-          </div>
-          <!--上传按钮-->
-          <div class="upload-button">
-            <el-button type="custom-green" size="small" @click="handleUpload" class="custom-upload-btn">
-              <img src="../assets/svg/add.svg" alt="" class="uploadIcon"> 上传
-            </el-button>
+
           </div>
         </div>
       </div>
@@ -380,20 +404,20 @@ onUnmounted(() => {
       </div>
 
       <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          popper-class="pagination-popper"
-          background
-          :disabled="loading"
-        ></el-pagination>
-      </div>
+<!--      <div class="pagination-container">-->
+<!--        <el-pagination-->
+<!--          v-model:current-page="pageNum"-->
+<!--          v-model:page-size="pageSize"-->
+<!--          @size-change="handleSizeChange"-->
+<!--          @current-change="handleCurrentChange"-->
+<!--          :page-sizes="[10, 20, 50, 100]"-->
+<!--          layout="total, sizes, prev, pager, next, jumper"-->
+<!--          :total="total"-->
+<!--          popper-class="pagination-popper"-->
+<!--          background-->
+<!--          :disabled="loading"-->
+<!--        ></el-pagination>-->
+<!--      </div>-->
 
       <!-- 上传弹窗 -->
       <UploadDialog v-model:visible="uploadDialogVisible" />
@@ -523,28 +547,70 @@ onUnmounted(() => {
     max-width: 1200px;
     will-change: transform;
 
-    .project-item {
+    .project-selector-content {
       display: flex;
       align-items: center;
-      height: 32px;
+      width: 100%;
+      justify-content: space-between;
 
-      .label {
-        font-size: 14px;
-        color: #606266;
-        white-space: nowrap;
-        margin-right: 8px;
-        font-weight: bold;
+      .project-item {
+        display: flex;
+        align-items: center;
         height: 32px;
-        line-height: 32px;
+        margin-right: 20px;
+
+        .label {
+          font-size: 14px;
+          color: #606266;
+          white-space: nowrap;
+          margin-right: 8px;
+          font-weight: bold;
+          height: 32px;
+          line-height: 32px;
+        }
+
+        .project-label {
+          font-size: 15px;
+          color: #303133;
+        }
+
+        .select-with-width {
+          width: 180px;
+          flex-shrink: 0;
+        }
       }
 
-      .project-label {
-        font-size: 15px;
-        color: #303133;
-      }
-
-      .select-with-width {
-        width: 180px;
+      .upload-button {
+        height: 32px;
+        margin-left: auto;
+        
+        .custom-upload-btn {
+          background-color: #1890ff;
+          border-color: #1890ff;
+          color: white;
+          padding: 6px 16px;
+          font-size: 14px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s;
+          
+          &:hover {
+            background-color: rgba(24, 144, 255, 0.9);
+            transform: translateY(-1px);
+          }
+          
+          &:active {
+            transform: translateY(0);
+          }
+          
+          .uploadIcon {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+          }
+        }
       }
     }
   }
@@ -563,49 +629,116 @@ onUnmounted(() => {
     max-width: 1200px;
     contain: layout style;
     will-change: transform;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 
     .filter-items {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       width: 100%;
       height: 100%;
+      position: relative;
 
-      .filter-item {
+      .left-filters {
         display: flex;
         align-items: center;
-        flex-shrink: 0;
-        height: 32px;
-        margin-right: 20px;
 
-        .label {
-          font-size: 14px;
-          color: #606266;
-          white-space: nowrap;
-          margin-right: 8px;
-          display: inline-flex;
+        .filter-item {
+          display: flex;
           align-items: center;
-          height: 32px;
-        }
-
-        .select-with-width {
-          width: 180px;
           flex-shrink: 0;
+          height: 32px;
+          margin-right: 20px;
+
+          &:last-of-type {
+            margin-right: 15px;
+          }
+
+          .label {
+            font-size: 14px;
+            color: #606266;
+            white-space: nowrap;
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+            height: 32px;
+          }
+
+          .select-with-width {
+            width: 100px;
+            flex-shrink: 0;
+          }
+
+          .input-with-width {
+            width: 180px;
+            flex-shrink: 0;
+          }
         }
-      }
 
-      .filter-buttons {
-        display: flex;
-        flex-shrink: 0;
-        height: 32px;
+        .search-item {
+          display: flex;
+          align-items: center;
+          position: relative;
+        }
 
-        .el-button {
+        .search-icon-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          padding: 5px 8px;
+          margin-left: 10px;
           margin-right: 10px;
+          border-radius: 4px;
+          transition: all 0.2s ease;
+
+          img {
+            display: block;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+          }
+
+          &:hover {
+            background-color: rgba(24, 144, 255, 0.1);
+
+            img {
+              opacity: 1;
+            }
+          }
+
+          &:active {
+            transform: scale(0.95);
+          }
         }
       }
 
-      .upload-button {
+      .right-aligned-controls {
+        display: flex;
+        align-items: center;
         margin-left: auto;
         height: 32px;
+
+        .filter-buttons {
+          display: flex;
+          margin-right: 15px;
+
+          .el-button {
+            transition: all 0.3s;
+
+            &:hover {
+              transform: translateY(-1px);
+              box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            &:active {
+              transform: translateY(0);
+            }
+          }
+        }
+
+        .upload-button {
+          height: 32px;
+        }
       }
     }
   }
@@ -849,6 +982,16 @@ onUnmounted(() => {
   :deep(.el-input__wrapper) {
     line-height: 1;
     padding: 1px 11px;
+    box-shadow: 0 0 0 1px #dcdfe6 inset;
+    transition: all 0.2s;
+
+    &:hover {
+      box-shadow: 0 0 0 1px #c0c4cc inset;
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 1px #409EFF inset !important;
+    }
   }
 
   :deep(.el-input__inner) {
