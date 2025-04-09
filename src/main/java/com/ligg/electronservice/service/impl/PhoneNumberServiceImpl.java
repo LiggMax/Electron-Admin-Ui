@@ -30,16 +30,8 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
      * 3.调用mapper方法查询数据
      */
     @Override
-    public PageBean<Phone> phoneList(Integer pageNum, Integer pageSize, String countryCode, Integer usageStatus) {
-        PageBean<Phone> pageBean = new PageBean<>();
-        PageHelper.startPage(pageNum, pageSize);
-        List<Phone> phoneList = phoneNumberMapper.phoneList(countryCode, usageStatus);
-
-        Page<Phone> page = (Page<Phone>) phoneList;
-
-        pageBean.setTotal(page.getTotal());
-        pageBean.setItems(page.getResult());
-        return pageBean;
+    public List<Phone> phoneList(String countryCode, Integer usageStatus, String keyword) {
+        return phoneNumberMapper.phoneList(countryCode, usageStatus, keyword);
     }
     
     /**
@@ -71,7 +63,7 @@ public class PhoneNumberServiceImpl implements PhoneNumberService {
                 phone.setPhoneNumber(phoneNumber);
                 phone.setCountryCode(country);      // 设置国家
                 phone.setLineStatus(1);             // 默认在线状态
-                phone.setUsageStatus(1);            // 默认使用状态为正常
+                phone.setUsageStatus("已使用");            // 默认使用状态为正常
                 phone.setRegistrationTime(now);     // 设置注册时间
 
                 phones.add(phone);

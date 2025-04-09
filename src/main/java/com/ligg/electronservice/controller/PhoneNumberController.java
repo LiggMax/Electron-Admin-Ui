@@ -25,13 +25,12 @@ public class PhoneNumberController {
      * 分页查询卡号数据
      */
     @GetMapping("/phoneList")
-    public Result<PageBean<Phone>> phoneList(
-            Integer pageNum,//当前页码
-            Integer pageSize,//每页显示条数
+    public Result<List<Phone>> phoneList(
+            @RequestParam(required = false) String keyword ,//关键字
             @RequestParam(required = false) String countryCode,//号码归属地
             @RequestParam(required = false) Integer usageStatus //号码状态
     ) {
-        PageBean<Phone> pageBean = phoneNumberService.phoneList(pageNum, pageSize, countryCode, usageStatus);
+        List<Phone> pageBean = phoneNumberService.phoneList( countryCode, usageStatus,keyword);
         return Result.success(200, pageBean);
     }
 

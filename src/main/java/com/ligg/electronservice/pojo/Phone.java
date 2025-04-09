@@ -15,6 +15,5 @@ public class Phone {
     private Integer lineStatus;//线路状态 1.在线、2.离线
     private String countryCode;//号码归属地
     private LocalDateTime registrationTime;//注册时间
-    private Integer usageStatus;//状态 1.正常、2.停用
-    private String projectName;        // 项目名称
+    private String usageStatus;//状态
 }

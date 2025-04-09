@@ -14,6 +14,11 @@
             <if test="usageStatus != null">
                 and usage_status = #{usageStatus}
             </if>
+            <if test="keyword != ''">
+                and phone_number  like concat('%', #{keyword}, '%')
+                or country_code like concat('%', #{keyword}, '%')
+                or usage_status like concat('%', #{keyword}, '%')
+            </if>
         </where>
     </select>
     

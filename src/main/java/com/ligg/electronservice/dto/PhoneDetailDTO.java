@@ -12,7 +12,7 @@ public class PhoneDetailDTO {
     private Long phoneNumber;
     private String countryCode;
     private Integer lineStatus;
-    private Integer usageStatus;
+    private String usageStatus;
     private LocalDateTime registrationTime;
     // 项目相关字段
     private String projectName;

@@ -10,13 +10,11 @@ public interface PhoneNumberService {
 
     /**
      * 分页查询卡号列表
-     * @param pageNum 当前页码
-     * @param pageSize 每页显示条数
      * @param countryCode 号码归属地
      * @param usageStatus 号码状态
      * @return 分页对象
      */
-    PageBean<Phone> phoneList(Integer pageNum, Integer pageSize, String countryCode, Integer usageStatus);
+    List<Phone> phoneList( String countryCode, Integer usageStatus,String keyword);
     
     /**
      * 批量添加手机号
