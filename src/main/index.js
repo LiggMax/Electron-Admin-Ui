@@ -23,7 +23,7 @@ if (!gotTheLock) {
     // Create the browser window.
     mainWindow = new BrowserWindow({
       width: 1000,
-      height: 670,
+      height: 700,
       minHeight: 500,
       minWidth: 800,
       show: false,

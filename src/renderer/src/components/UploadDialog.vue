@@ -564,10 +564,6 @@ const handleSubmit = async () => {
         </div>
         <div class="compact-empty-list" v-else>
           <el-empty description="暂无上传文件" :image-size="40">
-            <div>
-              <p style="color: #409eff">导入数据格式提示：</p>
-              <p>（199743256432，199743256432，199743256432）</p>
-            </div>
           </el-empty>
         </div>
       </div>

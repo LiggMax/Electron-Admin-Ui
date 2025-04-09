@@ -77,18 +77,18 @@ const debounce = (fn, delay = 300) => {
   }
 }
 
-// 分页切换 - 使用防抖
-const handleCurrentChange = debounce((page) => {
-  pageNum.value = page
-  getCardDataList()
-})
-
-// 每页条数切换 - 使用防抖
-const handleSizeChange = debounce((size) => {
-  pageSize.value = size
-  pageNum.value = 1
-  getCardDataList()
-})
+// // 分页切换 - 使用防抖
+// const handleCurrentChange = debounce((page) => {
+//   pageNum.value = page
+//   getCardDataList()
+// })
+//
+// // 每页条数切换 - 使用防抖
+// const handleSizeChange = debounce((size) => {
+//   pageSize.value = size
+//   pageNum.value = 1
+//   getCardDataList()
+// })
 
 // 搜索 - 使用防抖
 const handleSearch = debounce(() => {
@@ -329,7 +329,7 @@ onUnmounted(() => {
               ></el-input>
             </div>
             <div class="search-icon-wrapper" @click="handleSearch">
-              <img src="../assets/svg/iocn/Search.svg" width="20px" alt="搜索">
+              <img src="../assets/svg/iocn/search.svg" width="25px" alt="搜索">
             </div>
           </div>
 
@@ -378,13 +378,7 @@ onUnmounted(() => {
               {{ formatDate(scope.row.registrationTime) }}
             </template>
           </el-table-column>
-          <el-table-column label="状态" min-width="80" align="center">
-            <template #default="scope">
-              <span :class="[ scope.row.usageStatus === 1 ? 'used' : 'unused']">
-                {{ formatStatus(scope.row.usageStatus, 'usage') }}
-              </span>
-            </template>
-          </el-table-column>
+          <el-table-column prop="usageStatus" label="状态" min-width="80" align="center"></el-table-column>
           <el-table-column label="操作" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button
@@ -583,7 +577,7 @@ onUnmounted(() => {
       .upload-button {
         height: 32px;
         margin-left: auto;
-        
+
         .custom-upload-btn {
           background-color: #1890ff;
           border-color: #1890ff;
@@ -595,16 +589,16 @@ onUnmounted(() => {
           align-items: center;
           justify-content: center;
           transition: all 0.3s;
-          
+
           &:hover {
             background-color: rgba(24, 144, 255, 0.9);
             transform: translateY(-1px);
           }
-          
+
           &:active {
             transform: translateY(0);
           }
-          
+
           .uploadIcon {
             width: 16px;
             height: 16px;

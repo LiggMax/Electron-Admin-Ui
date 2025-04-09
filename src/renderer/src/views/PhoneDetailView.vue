@@ -116,11 +116,7 @@ onMounted(() => {
                   {{ formatStatus(phoneDetail.basicInfo.lineStatus, 'line') }}
                 </el-tag>
               </el-descriptions-item>
-              <el-descriptions-item label="使用状态">
-                <el-tag :type="phoneDetail.basicInfo.usageStatus === 1 ? 'primary' : 'info'">
-                  {{ formatStatus(phoneDetail.basicInfo.usageStatus, 'usage') }}
-                </el-tag>
-              </el-descriptions-item>
+              <el-descriptions-item label="使用状态"> {{phoneDetail.basicInfo.usageStatus}}</el-descriptions-item>
               <el-descriptions-item label="导入时间">
                 {{ formatDate(phoneDetail.basicInfo.registrationTime) }}
               </el-descriptions-item>
