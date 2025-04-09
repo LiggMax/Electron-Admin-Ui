@@ -32,6 +32,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         if (rateLimiter.acquirePermission()) {
             return true;
         }else {
+            //使用枚举设置响应码
             response.setStatus(429);
             response.getWriter().write("请求频繁");
             return false;

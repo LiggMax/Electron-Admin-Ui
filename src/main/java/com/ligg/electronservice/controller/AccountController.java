@@ -5,7 +5,6 @@ import com.ligg.electronservice.pojo.Result;
 import com.ligg.electronservice.pojo.User;
 import com.ligg.electronservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
