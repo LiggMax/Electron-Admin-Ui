@@ -1,7 +1,6 @@
-package com.ligg.electronservice.service;
+package com.ligg.electronservice.service.admin;
 
-import com.ligg.electronservice.pojo.PageBean;
-import com.ligg.electronservice.pojo.Phone;
+import com.ligg.electronservice.pojo.admin.Phone;
 
 import java.util.List;
 import java.util.Map;

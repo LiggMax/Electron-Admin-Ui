@@ -1,18 +1,18 @@
-package com.ligg.electronservice.controller;
+package com.ligg.electronservice.controller.admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ligg.electronservice.pojo.Result;
-import com.ligg.electronservice.pojo.User;
-import com.ligg.electronservice.service.UserService;
+import com.ligg.electronservice.utils.Result;
+import com.ligg.electronservice.pojo.admin.AdminUser;
+import com.ligg.electronservice.service.admin.AdminUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/account")
-public class AccountController {
+@RequestMapping("/api/admin/account")
+public class AdminAccountController {
 
     @Autowired
-    private UserService userService;
+    private AdminUserService userService;
 
     /**
      * 登录
@@ -21,7 +21,7 @@ public class AccountController {
     @PostMapping("/login")
     public Result<?> login(@RequestParam String account,
                            @RequestParam String password) throws JsonProcessingException {
-       User userInfo = userService.findByUser(account,password);
+       AdminUser userInfo = userService.findByUser(account,password);
        if (userInfo == null){
            return Result.error(400,"账号或密码错误");
        }

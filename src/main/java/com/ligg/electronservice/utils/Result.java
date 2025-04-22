@@ -1,4 +1,4 @@
-package com.ligg.electronservice.pojo;
+package com.ligg.electronservice.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

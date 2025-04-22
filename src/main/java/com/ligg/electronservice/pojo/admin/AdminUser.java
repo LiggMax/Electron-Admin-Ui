@@ -1,4 +1,4 @@
-package com.ligg.electronservice.pojo;
+package com.ligg.electronservice.pojo.admin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class AdminUser {
     private String userId;
     private String account;//账号
     private String nickName;

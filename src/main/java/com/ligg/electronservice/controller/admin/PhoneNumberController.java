@@ -1,10 +1,8 @@
-package com.ligg.electronservice.controller;
+package com.ligg.electronservice.controller.admin;
 
-import com.ligg.electronservice.anno.Status;
-import com.ligg.electronservice.pojo.PageBean;
-import com.ligg.electronservice.pojo.Phone;
-import com.ligg.electronservice.pojo.Result;
-import com.ligg.electronservice.service.PhoneNumberService;
+import com.ligg.electronservice.pojo.admin.Phone;
+import com.ligg.electronservice.utils.Result;
+import com.ligg.electronservice.service.admin.PhoneNumberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/phone")
+@RequestMapping("/api/admin/phone")
 public class PhoneNumberController {
 
     @Autowired

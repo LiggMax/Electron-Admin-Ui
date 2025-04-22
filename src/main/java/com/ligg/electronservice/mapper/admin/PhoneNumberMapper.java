@@ -1,8 +1,7 @@
-package com.ligg.electronservice.mapper;
+package com.ligg.electronservice.mapper.admin;
 
 import com.ligg.electronservice.dto.PhoneDetailDTO;
-import com.ligg.electronservice.pojo.Phone;
-import com.ligg.electronservice.pojo.phoneRecords;
+import com.ligg.electronservice.pojo.admin.Phone;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

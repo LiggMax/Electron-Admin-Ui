@@ -1,10 +1,10 @@
-package com.ligg.electronservice.controller;
+package com.ligg.electronservice.controller.admin;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ligg.electronservice.pojo.Result;
-import com.ligg.electronservice.pojo.User;
-import com.ligg.electronservice.service.UserService;
+import com.ligg.electronservice.utils.Result;
+import com.ligg.electronservice.pojo.admin.AdminUser;
+import com.ligg.electronservice.service.admin.AdminUserService;
 import com.ligg.electronservice.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
-public class UserController {
+@RequestMapping("/api/admin/user")
+public class AdminUserController {
 
     @Autowired
-    private UserService userService;
+    private AdminUserService userService;
 
     /**
      * 获取用户信息
      */
     @GetMapping("/userInfo")
-    public Result<User> getUserInfo() throws JsonProcessingException {
+    public Result<AdminUser> getUserInfo() throws JsonProcessingException {
         Map<String,Object> map = ThreadLocalUtil.get();
         String userId = (String) map.get("userId");
-        User userInfo = userService.findByUserInfo(userId);
+        AdminUser userInfo = userService.findByUserInfo(userId);
         return Result.success(200, userInfo);
     }
     /**

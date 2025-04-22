@@ -21,6 +21,8 @@ public class LoginInterceptors implements HandlerInterceptor {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private JWTUtil jwtUtil;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -30,14 +32,14 @@ public class LoginInterceptors implements HandlerInterceptor {
 
         try {
             //解析请求头token获取用户信息
-            Map<String, Object> stringObjectMap = JWTUtil.parseTokenWithValidation(Token);
+            Map<String, Object> stringObjectMap = jwtUtil.parseToken(Token);
             String userId = (String) stringObjectMap.get("userId");
             //从Redis中获取用户token
             String redisUserToken = redisTemplate.opsForValue().get("Token:" + userId);
             if (redisUserToken == null){
                 throw new RuntimeException();
             }
-            Map<String, Object> claims = JWTUtil.parseTokenWithValidation(Token);
+            Map<String, Object> claims = jwtUtil.parseToken(Token);
             ThreadLocalUtil.set(claims);
             return true;
         } catch (Exception e) {
