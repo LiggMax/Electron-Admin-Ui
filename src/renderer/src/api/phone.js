@@ -8,7 +8,7 @@ export const getPhoneList = (paramsData) => {
   for (let key in paramsData) {
     params.append(key, paramsData[key])
   }
-  return request.get('/phone/phoneList', { params: params })
+  return request.get('/admin/phone/list', { params: params })
 }
 
 /**
@@ -17,7 +17,7 @@ export const getPhoneList = (paramsData) => {
  * @returns {Promise} - 返回手机号详情的Promise
  */
 export const getPhoneDetail = (phoneId) => {
-  return request.get(`/phone/phoneDetail?phoneId=${phoneId}`)
+  return request.get(`/admin/phone/phoneDetail?phoneId=${phoneId}`)
 }
 
 /**
@@ -26,5 +26,5 @@ export const getPhoneDetail = (phoneId) => {
  * @returns {Promise} - 返回上传结果的Promise
  */
 export const uploadPhoneNumbers = (data) => {
-  return request.post('/phone/upload', data)
+  return request.post('/admin/phone/upload', data)
 }

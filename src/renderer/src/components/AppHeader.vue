@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfoService, userLogoutService } from '../api/userLogin'
+import { getUserInfoService, userLogoutService } from '../api/user'
 import defaultAvatar from '../assets/images/user.png'
 import useUserInfoStore from '../store/userInfo'
 import message from '../utils/message'

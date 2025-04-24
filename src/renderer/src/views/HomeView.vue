@@ -30,7 +30,7 @@ const countryOptions = [
   { label: '美国', value: '美国' },
   { label: '英国', value: '英国' },
   { label: '日本', value: '日本' },
-  { label: '韩国', value: '韩国' },
+  { label: '韩国', value: '韩国' }
 ]
 
 // 表格数据
@@ -67,7 +67,7 @@ const pageSize = ref(10) // 每页条数
 // 防抖函数
 const debounce = (fn, delay = 300) => {
   let timer = null
-  return function(...args) {
+  return function (...args) {
     if (timer) clearTimeout(timer)
     // 立即设置加载状态
     loading.value = true
@@ -124,12 +124,12 @@ const formatStatus = (status, type) => {
  * @returns {string} 格式化后的日期
  */
 const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${year}/${month}/${day}`;
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  return `${year}/${month}/${day}`
 }
 
 // 数据加载状态
@@ -147,7 +147,7 @@ const getCardDataList = async () => {
     }
 
     // 移除所有undefined或null的参数
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       if (params[key] === undefined || params[key] === null) {
         params[key] = ''
       }
@@ -270,7 +270,7 @@ onUnmounted(() => {
           <!--上传按钮-->
           <div class="upload-button">
             <el-button type="primary" size="small" @click="handleUpload" class="custom-upload-btn">
-              <img src="../assets/svg/add.svg" alt="" class="uploadIcon"> 上传
+              <img src="../assets/svg/add.svg" alt="" class="uploadIcon" /> 上传
             </el-button>
           </div>
         </div>
@@ -329,16 +329,13 @@ onUnmounted(() => {
               ></el-input>
             </div>
             <div class="search-icon-wrapper" @click="handleSearch">
-              <img src="../assets/svg/iocn/search.svg" width="25px" alt="搜索">
+              <img src="../assets/svg/iocn/search.svg" width="25px" alt="搜索" />
             </div>
           </div>
-
           <div class="right-aligned-controls">
             <div class="filter-buttons">
               <el-button size="small" @click="resetSearch">重置</el-button>
             </div>
-
-
           </div>
         </div>
       </div>
@@ -364,21 +361,36 @@ onUnmounted(() => {
               {{ (pageNum - 1) * pageSize + scope.$index + 1 }}
             </template>
           </el-table-column>
-          <el-table-column prop="phoneNumber" label="手机号码" min-width="120" show-overflow-tooltip></el-table-column>
+          <el-table-column
+            prop="phoneNumber"
+            label="手机号码"
+            min-width="120"
+            show-overflow-tooltip
+          ></el-table-column>
           <el-table-column label="线路状态" min-width="90" align="center">
             <template #default="scope">
-              <span :class="[ scope.row.lineStatus === 1 ? 'online' : 'offline']">
+              <span :class="[scope.row.lineStatus === 1 ? 'online' : 'offline']">
                 {{ formatStatus(scope.row.lineStatus, 'line') }}
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="countryCode" label="号码归属国家" min-width="100" show-overflow-tooltip></el-table-column>
+          <el-table-column
+            prop="countryCode"
+            label="号码归属国家"
+            min-width="100"
+            show-overflow-tooltip
+          ></el-table-column>
           <el-table-column label="注册时间" min-width="160" show-overflow-tooltip>
             <template #default="scope">
               {{ formatDate(scope.row.registrationTime) }}
             </template>
           </el-table-column>
-          <el-table-column prop="usageStatus" label="状态" min-width="80" align="center"></el-table-column>
+          <el-table-column
+            prop="usageStatus"
+            label="状态"
+            min-width="80"
+            align="center"
+          ></el-table-column>
           <el-table-column label="操作" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button
@@ -398,20 +410,20 @@ onUnmounted(() => {
       </div>
 
       <!-- 分页 -->
-<!--      <div class="pagination-container">-->
-<!--        <el-pagination-->
-<!--          v-model:current-page="pageNum"-->
-<!--          v-model:page-size="pageSize"-->
-<!--          @size-change="handleSizeChange"-->
-<!--          @current-change="handleCurrentChange"-->
-<!--          :page-sizes="[10, 20, 50, 100]"-->
-<!--          layout="total, sizes, prev, pager, next, jumper"-->
-<!--          :total="total"-->
-<!--          popper-class="pagination-popper"-->
-<!--          background-->
-<!--          :disabled="loading"-->
-<!--        ></el-pagination>-->
-<!--      </div>-->
+      <!--      <div class="pagination-container">-->
+      <!--        <el-pagination-->
+      <!--          v-model:current-page="pageNum"-->
+      <!--          v-model:page-size="pageSize"-->
+      <!--          @size-change="handleSizeChange"-->
+      <!--          @current-change="handleCurrentChange"-->
+      <!--          :page-sizes="[10, 20, 50, 100]"-->
+      <!--          layout="total, sizes, prev, pager, next, jumper"-->
+      <!--          :total="total"-->
+      <!--          popper-class="pagination-popper"-->
+      <!--          background-->
+      <!--          :disabled="loading"-->
+      <!--        ></el-pagination>-->
+      <!--      </div>-->
 
       <!-- 上传弹窗 -->
       <UploadDialog v-model:visible="uploadDialogVisible" />
@@ -446,6 +458,7 @@ onUnmounted(() => {
   }
 
   /* 全局加载状态样式 */
+
   .global-loading-mask {
     position: fixed;
     left: 0;
@@ -516,6 +529,7 @@ onUnmounted(() => {
   }
 
   /* 顶部标题区 */
+
   .header-title {
     height: 50px;
     background-color: rgb(255, 255, 255);
@@ -528,6 +542,7 @@ onUnmounted(() => {
   }
 
   /* 接码项目选择栏 */
+
   .project-selector-bar {
     height: 50px;
     min-height: 50px;
@@ -610,6 +625,7 @@ onUnmounted(() => {
   }
 
   /* 筛选栏样式 */
+
   .filter-bar {
     height: 50px;
     min-height: 50px;
@@ -623,7 +639,7 @@ onUnmounted(() => {
     max-width: 1200px;
     contain: layout style;
     will-change: transform;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
     .filter-items {
       display: flex;
@@ -721,7 +737,7 @@ onUnmounted(() => {
 
             &:hover {
               transform: translateY(-1px);
-              box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
 
             &:active {
@@ -738,6 +754,7 @@ onUnmounted(() => {
   }
 
   /* 表格容器 */
+
   .table-container {
     background-color: #fff;
     margin: 10px 0;
@@ -835,6 +852,7 @@ onUnmounted(() => {
     }
 
     /* 状态标签样式 */
+
     .status-tag {
       display: inline-block;
       padding: 2px 8px;
@@ -881,6 +899,7 @@ onUnmounted(() => {
   }
 
   /* 分页区域 */
+
   .pagination-container {
     margin: 10px 0;
     padding: 10px 15px;
@@ -899,7 +918,7 @@ onUnmounted(() => {
     contain: layout style;
     transition: opacity 0.3s;
 
-    &:has(> .el-pagination[disabled="true"]) {
+    &:has(> .el-pagination[disabled='true']) {
       opacity: 0.6;
       pointer-events: none;
     }
@@ -911,7 +930,7 @@ onUnmounted(() => {
       height: 32px;
       transition: opacity 0.3s;
 
-      &[disabled="true"] {
+      &[disabled='true'] {
         opacity: 0.7;
         pointer-events: none;
       }
@@ -967,6 +986,7 @@ onUnmounted(() => {
   }
 
   /* 控制表单元素大小不随页面缩放而改变 */
+
   :deep(.el-select),
   :deep(.el-input),
   :deep(.el-button) {
@@ -984,7 +1004,7 @@ onUnmounted(() => {
     }
 
     &.is-focus {
-      box-shadow: 0 0 0 1px #409EFF inset !important;
+      box-shadow: 0 0 0 1px #409eff inset !important;
     }
   }
 
@@ -1000,12 +1020,13 @@ onUnmounted(() => {
   }
 
   /* 表格操作按钮下拉菜单样式 */
+
   :deep(.el-dropdown) {
     vertical-align: middle;
   }
 
   .text-button {
-    color: #409EFF;
+    color: #409eff;
     cursor: pointer;
     font-size: 14px;
   }

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, inject, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { userLoginService1 } from '../api/userLogin'
+import { userLoginService1 } from '../api/user'
 import { userTokenStore } from '../store/token'
 import CountdownTimer from '../utils/countdownTimer'
 

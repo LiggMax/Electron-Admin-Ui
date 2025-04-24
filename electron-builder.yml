@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: app
+productName: "卡商端"
 directories:
   buildResources: build
 files:

@@ -8,19 +8,19 @@ export const userLoginService1 = (loginData) => {
   for (let key in loginData){
     params.append(key, loginData[key]);
   }
-  return request.post('/account/login', params)
+  return request.post('/admin/account/login', params)
 }
 
 /**
  * 获取用户基本信息
  */
 export const getUserInfoService = () => {
-  return request.get('/user/userInfo')
+  return request.get('/admin/user/info')
 }
 
 /**
  * 退出登录
  */
 export const userLogoutService = () => {
-  return request.get('/user/logout')
+  return request.get('/admin/user/logout')
 }
