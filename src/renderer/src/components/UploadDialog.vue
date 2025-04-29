@@ -1,7 +1,7 @@
 <script setup>
-import { ref, watch, inject } from 'vue'
+import { ref, watch, inject, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { uploadPhoneNumbers } from '../api/phone'
+import { uploadPhoneNumbers, getProjectAndRegionData } from '../api/phone'
 
 const props = defineProps({
   visible: {
@@ -69,26 +69,76 @@ const currentStep = ref(1)
 // }
 
 // 国家选项
-const countryOptions = [
-  { label: '请选择国家', value: '' },
-  { label: '中国', value: '中国' },
-  { label: '美国', value: '美国' },
-  { label: '英国', value: '英国' },
-  { label: '日本', value: '日本' },
-  { label: '韩国', value: '韩国' }
-]
+const countryOptions = ref([
+  { label: '请选择国家', value: '' }
+])
 
 // 项目选项
-const projectOptions = [
-  { label: 'Facebook', value: 'Facebook' },
-  { label: 'TikTok', value: 'TikTok' },
-  { label: 'Instagram', value: 'Instagram' }
-]
+const projectOptions = ref([])
 
 // 表单数据
 const uploadForm = ref({
   country: '',
   projects: []
+})
+
+// 加载国家和项目数据
+const loadProjectAndRegionData = async () => {
+  try {
+    const response = await getProjectAndRegionData()
+    if (response && response.data) {
+      // 设置国家选项
+      const regions = response.data.region || []
+      countryOptions.value = [
+        { label: '请选择国家', value: '' },
+        ...regions.map(region => ({ 
+          label: region.regionName, 
+          value: region.regionId.toString(),
+          mark: region.regionMark
+        }))
+      ]
+      
+      // 设置项目选项
+      const projects = response.data.project || []
+      projectOptions.value = projects.map(project => ({ 
+        label: project.projectName, 
+        value: project.projectId.toString(),
+        price: project.projectPrice
+      }))
+    }
+  } catch (error) {
+    console.error('获取项目和地区数据失败:', error)
+    message.error('获取项目和地区数据失败')
+  }
+}
+
+// 项目全选状态
+const allProjectsSelected = ref(false)
+
+// 监听项目选择变化
+watch(() => uploadForm.value.projects, (newVal) => {
+  // 如果选中的项目数量等于可选项目总数
+  if (newVal.length === projectOptions.value.length) {
+    allProjectsSelected.value = true
+  } else {
+    allProjectsSelected.value = false
+  }
+}, { deep: true })
+
+// 项目全选功能
+const handleAllProjectsChange = (val) => {
+  if (val) {
+    // 选中全部
+    uploadForm.value.projects = projectOptions.value.map(item => item.value)
+  } else {
+    // 取消全部
+    uploadForm.value.projects = []
+  }
+}
+
+// 组件挂载时加载数据
+onMounted(() => {
+  loadProjectAndRegionData()
 })
 
 // 上传文件相关
@@ -360,10 +410,22 @@ const handleSubmit = async () => {
   uploadResult.value = null
 
   try {
+    // 获取选中的国家和项目信息
+    const selectedCountry = countryOptions.value.find(option => option.value === uploadForm.value.country)
+    const selectedProjects = uploadForm.value.projects.map(projectId => {
+      const project = projectOptions.value.find(option => option.value === projectId)
+      return {
+        projectId: Number(projectId),
+        projectName: project ? project.label : ''
+      }
+    })
+
     // 构建上传数据
     const uploadData = {
-      country: uploadForm.value.country,
-      projects: uploadForm.value.projects,
+      countryId: Number(uploadForm.value.country),
+      countryName: selectedCountry ? selectedCountry.label : '',
+      countryMark: selectedCountry ? selectedCountry.mark : '',
+      projects: selectedProjects,
       files: validationResults.value.valid.map((file) => {
         return {
           fileName: file.name,
@@ -478,6 +540,15 @@ const handleSubmit = async () => {
               collapse-tags
               collapse-tags-tooltip
             >
+              <div style="padding: 5px 12px; border-bottom: 1px solid #EBEEF5">
+                <el-checkbox 
+                  v-model="allProjectsSelected"
+                  @change="handleAllProjectsChange"
+                  :indeterminate="uploadForm.projects.length > 0 && uploadForm.projects.length < projectOptions.length"
+                >
+                  全选
+                </el-checkbox>
+              </div>
               <el-option
                 v-for="item in projectOptions"
                 :key="item.value"

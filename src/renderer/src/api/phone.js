@@ -12,6 +12,13 @@ export const getPhoneList = (paramsData) => {
 }
 
 /**
+ * 获取项目和地区数据
+ */
+export const getProjectAndRegionData = () => {
+  return request.get('/admin/phone/projectsAndRegion')
+}
+
+/**
  * 获取手机号详情信息
  * @param {Number} phoneId - 手机号ID
  * @returns {Promise} - 返回手机号详情的Promise
