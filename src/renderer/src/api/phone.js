@@ -29,7 +29,7 @@ export const getPhoneDetail = (phoneId) => {
 
 /**
  * 上传手机号码批量导入
- * @param {Object} data - 上传数据，包括国家、项目和文件数据
+ * @param {Object} data - 上传数据，包括地区ID、项目ID和文件数据
  * @returns {Promise} - 返回上传结果的Promise
  */
 export const uploadPhoneNumbers = (data) => {
