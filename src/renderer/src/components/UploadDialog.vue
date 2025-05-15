@@ -91,24 +91,23 @@ const loadProjectAndRegionData = async () => {
       const regions = response.data.region || []
       countryOptions.value = [
         { label: '请选择国家', value: '' },
-        ...regions.map(region => ({ 
-          label: region.regionName, 
+        ...regions.map(region => ({
+          label: region.regionName,
           value: region.regionId.toString(),
           mark: region.regionMark
         }))
       ]
-      
+
       // 设置项目选项
       const projects = response.data.project || []
-      projectOptions.value = projects.map(project => ({ 
-        label: project.projectName, 
+      projectOptions.value = projects.map(project => ({
+        label: project.projectName,
         value: project.projectId.toString(),
         price: project.projectPrice
       }))
     }
   } catch (error) {
     console.error('获取项目和地区数据失败:', error)
-    message.error('获取项目和地区数据失败')
   }
 }
 
@@ -541,7 +540,7 @@ const handleSubmit = async () => {
               collapse-tags-tooltip
             >
               <div style="padding: 5px 12px; border-bottom: 1px solid #EBEEF5">
-                <el-checkbox 
+                <el-checkbox
                   v-model="allProjectsSelected"
                   @change="handleAllProjectsChange"
                   :indeterminate="uploadForm.projects.length > 0 && uploadForm.projects.length < projectOptions.length"
