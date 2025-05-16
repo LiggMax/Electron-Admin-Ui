@@ -105,6 +105,9 @@ const loadProjectAndRegionData = async () => {
         value: project.projectId.toString(),
         price: project.projectPrice
       }))
+      
+      // 默认选中所有项目
+      uploadForm.value.projects = projectOptions.value.map(item => item.value)
     }
   } catch (error) {
     console.error('获取项目和地区数据失败:', error)
@@ -112,7 +115,7 @@ const loadProjectAndRegionData = async () => {
 }
 
 // 项目全选状态
-const allProjectsSelected = ref(false)
+const allProjectsSelected = ref(true)
 
 // 监听项目选择变化
 watch(() => uploadForm.value.projects, (newVal) => {
