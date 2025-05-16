@@ -10,7 +10,13 @@ const router = useRouter()
 const phoneId = ref(route.query.phoneId)
 const loading = ref(true)
 const phoneDetail = reactive({
-  basicInfo: {},
+  phoneId: null,
+  phoneNumber: null,
+  lineStatus: null,
+  usageStatus: null,
+  registrationTime: '',
+  countryCode: '',
+  regionName: '',
   projects: []
 })
 
@@ -26,8 +32,15 @@ const fetchPhoneDetail = async () => {
   try {
     const response = await getPhoneDetail(phoneId.value)
     if (response.code === 200 && response.data) {
+      // 直接使用返回的数据格式
       const data = response.data
-      phoneDetail.basicInfo = data.basicInfo || {}
+      phoneDetail.phoneId = data.phoneId
+      phoneDetail.phoneNumber = data.phoneNumber
+      phoneDetail.lineStatus = data.lineStatus
+      phoneDetail.usageStatus = data.usageStatus
+      phoneDetail.registrationTime = data.registrationTime
+      phoneDetail.countryCode = data.countryCode
+      phoneDetail.regionName = data.regionName
       phoneDetail.projects = data.projects || []
     } else {
       ElMessage.warning('获取手机号详情失败')
@@ -105,23 +118,25 @@ onMounted(() => {
           </div>
           <div class="card-body">
             <el-descriptions :column="2" border>
-              <el-descriptions-item label="手机号码"
-                >{{ phoneDetail.basicInfo.phoneNumber }}
-              </el-descriptions-item>
-              <el-descriptions-item label="归属国家"
-                >{{ phoneDetail.basicInfo.countryCode }}
+              <el-descriptions-item label="手机号码">{{ phoneDetail.phoneNumber }}</el-descriptions-item>
+              <el-descriptions-item label="归属国家/地区">
+                {{ phoneDetail.countryCode || phoneDetail.regionName || '未知' }}
               </el-descriptions-item>
               <el-descriptions-item label="线路状态">
-                <el-tag :type="phoneDetail.basicInfo.lineStatus === 1 ? 'success' : 'danger'">
-                  {{ formatStatus(phoneDetail.basicInfo.lineStatus, 'line') }}
+                <el-tag :type="phoneDetail.lineStatus === 1 ? 'success' : 'danger'">
+                  {{ formatStatus(phoneDetail.lineStatus, 'line') }}
                 </el-tag>
               </el-descriptions-item>
-              <el-descriptions-item label="使用状态"> {{phoneDetail.basicInfo.usageStatus}}</el-descriptions-item>
+              <el-descriptions-item label="使用状态">
+                <el-tag :type="phoneDetail.usageStatus === 1 ? 'warning' : 'info'">
+                  {{ formatStatus(phoneDetail.usageStatus, 'usage') }}
+                </el-tag>
+              </el-descriptions-item>
               <el-descriptions-item label="导入时间">
-                {{ formatDate(phoneDetail.basicInfo.registrationTime) }}
+                {{ formatDate(phoneDetail.registrationTime) }}
               </el-descriptions-item>
               <el-descriptions-item label="导出时间">
-                {{ formatDate(phoneDetail.basicInfo.registrationTime) }}
+                {{ formatDate(phoneDetail.registrationTime) }}
               </el-descriptions-item>
             </el-descriptions>
           </div>
@@ -136,9 +151,14 @@ onMounted(() => {
             <el-table :data="phoneDetail.projects" style="width: 100%" border stripe>
               <el-table-column type="index" label="序号" width="80" align="center" />
               <el-table-column prop="projectName" label="项目名称" min-width="150" />
-              <el-table-column label="注册时间" min-width="180">
+              <el-table-column prop="projectPrice" label="项目价格" min-width="100">
                 <template #default="scope">
-                  {{ formatDate(scope.row.timeOfUse) }}
+                  {{ scope.row.projectPrice ? `￥${scope.row.projectPrice}` : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="创建时间" min-width="180">
+                <template #default="scope">
+                  {{ formatDate(scope.row.projectCreatedAt) }}
                 </template>
               </el-table-column>
             </el-table>
