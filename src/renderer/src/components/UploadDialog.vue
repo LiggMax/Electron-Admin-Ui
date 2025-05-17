@@ -105,7 +105,7 @@ const loadProjectAndRegionData = async () => {
         value: project.projectId.toString(),
         price: project.projectPrice
       }))
-      
+
       // 默认选中所有项目
       uploadForm.value.projects = projectOptions.value.map(item => item.value)
     }
@@ -120,11 +120,7 @@ const allProjectsSelected = ref(true)
 // 监听项目选择变化
 watch(() => uploadForm.value.projects, (newVal) => {
   // 如果选中的项目数量等于可选项目总数
-  if (newVal.length === projectOptions.value.length) {
-    allProjectsSelected.value = true
-  } else {
-    allProjectsSelected.value = false
-  }
+  allProjectsSelected.value = newVal.length === projectOptions.value.length;
 }, { deep: true })
 
 // 项目全选功能
@@ -163,9 +159,6 @@ const uploadResult = ref(null)
 
 // 校验文件内容格式
 const validateFileContent = (content) => {
-  // 手机号码格式正则表达式 - 以1开头的11位数字
-  const phonePattern = /^1\d{10}$/
-
   // 预处理文本内容，移除不必要的字符
   const cleanedContent = content
     .replace(/[\r\n\t\s]+/g, ',') // 将换行、制表符、空格替换为逗号
@@ -183,11 +176,10 @@ const validateFileContent = (content) => {
     // 清理电话号码中可能的非数字字符
     const cleanPhone = phone.replace(/[^\d]/g, '')
 
-    // 检查是否符合手机号格式
-    if (phonePattern.test(cleanPhone)) {
+    if (cleanPhone.length > 0) {
       validPhones.push(cleanPhone)
     } else {
-      // 原始号码可能带有前缀或后缀，记录原始号码以便显示
+      // 如果清理后没有数字，则视为无效
       invalidPhones.push(phone)
     }
   })
@@ -522,7 +514,7 @@ const handleSubmit = async () => {
       <div v-if="currentStep === 1">
         <div class="form-row">
           <div class="form-item">
-            <div class="form-label">国家：</div>
+            <div class="form-label">地区：</div>
             <el-select v-model="uploadForm.country" placeholder="请选择国家" class="form-select">
               <el-option
                 v-for="item in countryOptions"
