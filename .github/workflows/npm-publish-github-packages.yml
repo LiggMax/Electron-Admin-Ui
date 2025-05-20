@@ -37,6 +37,26 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@YOUR_USERNAME'  # 替换为你的 GitHub 用户名或组织名称
       - run: npm ci
+      - name: 配置发布信息
+        run: |
+          # 获取仓库所有者名称
+          OWNER=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f 1)
+          # 更新 package.json
+          if [ -f "package.json" ]; then
+            # 检查是否存在 name 字段，如不存在或不以 @ 开头，则添加作用域
+            if ! grep -q '"name"' package.json || ! grep -q '"name": *"@' package.json; then
+              PKG_NAME=$(node -p "require('./package.json').name || ''")
+              if [ -n "$PKG_NAME" ] && [[ $PKG_NAME != @* ]]; then
+                npm pkg set name="@$OWNER/$PKG_NAME"
+              elif [ -z "$PKG_NAME" ]; then
+                REPO_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f 2)
+                npm pkg set name="@$OWNER/$REPO_NAME"
+              fi
+            fi
+            # 添加发布配置
+            npm pkg set publishConfig.registry=https://npm.pkg.github.com/
+            npm pkg set publishConfig.access=restricted
+          fi
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
