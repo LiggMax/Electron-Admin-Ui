@@ -1,112 +1,79 @@
-# 此工作流将构建项目，发布包到GitHub Packages，并创建可下载的打包文件
-# 更多信息参见: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: 构建与发布
+# 这个工作流允许手动触发构建并发布Electron应用程序
+
+name: Build and Publish Electron App
 
 on:
-  release:
-    types: [created]
-  push:
-    tags:
-      - 'v*'  # 推送标签如 v1.0, v1.1, v20.15.10 时触发
-  workflow_dispatch:  # 允许手动触发工作流
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (例如: 1.0.0)'
+        required: true
+        default: '1.0.0'
+      release_notes:
+        description: '发布说明'
+        required: false
+        default: '新版本发布'
 
 jobs:
-  build-and-package:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js环境
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'  # 缓存 npm 依赖加速构建
-      - run: npm ci
-      - run: npm run test --if-present || echo "没有测试脚本，跳过测试"
-      
-      # 构建项目
-      - name: 构建项目
-        run: |
-          npm run build --if-present || echo "没有构建脚本，尝试其他常见构建命令"
-          # 如果没有build脚本，尝试其他常见命令
-          if [ ! -d "dist" ] && [ ! -d "build" ]; then
-            npm run prod --if-present || npm run production --if-present || echo "无法找到合适的构建命令，跳过自动构建"
-          fi
-      
-      # 创建项目压缩包（包含dist或build或整个项目）
-      - name: 创建项目压缩包
-        run: |
-          VERSION=$(node -p "require('./package.json').version || 'latest'")
-          REPO_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f 2)
-          if [ -d "dist" ]; then
-            tar -czf "${REPO_NAME}-${VERSION}.tar.gz" dist
-            zip -r "${REPO_NAME}-${VERSION}.zip" dist
-          elif [ -d "build" ]; then
-            tar -czf "${REPO_NAME}-${VERSION}.tar.gz" build
-            zip -r "${REPO_NAME}-${VERSION}.zip" build
-          else
-            # 排除node_modules和.git目录
-            tar -czf "${REPO_NAME}-${VERSION}.tar.gz" --exclude=node_modules --exclude=.git .
-            zip -r "${REPO_NAME}-${VERSION}.zip" . -x "node_modules/*" -x ".git/*"
-          fi
-          echo "压缩包已创建："
-          ls -la *.tar.gz *.zip
-      
-      # 上传打包文件到GitHub Release
-      - name: 上传到Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
-        with:
-          files: |
-            *.tar.gz
-            *.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      # 上传构建产物作为工作流的Artifacts（可在Actions页面下载）
-      - name: 上传构建产物
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: |
-            *.tar.gz
-            *.zip
-          retention-days: 30
+          cache: 'npm'
 
-  publish-gpr:
-    needs: build-and-package
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建应用程序
+        run: npm run build:win
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-windows
+          path: |
+            dist/*.exe
+          retention-days: 5
+
+  publish-release:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
         with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com/
-          scope: '@YOUR_USERNAME'  # 替换为你的 GitHub 用户名或组织名称
-      - run: npm ci
-      # 确保 package.json 中包含正确的发布配置
-      - name: 配置发布信息
+          name: electron-app-windows
+          path: dist
+
+      - name: 显示构建产物结构
         run: |
-          # 获取仓库所有者名称
-          OWNER=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f 1)
-          # 更新 package.json
-          if [ -f "package.json" ]; then
-            # 检查是否存在 name 字段，如不存在或不以 @ 开头，则添加作用域
-            if ! grep -q '"name"' package.json || ! grep -q '"name": *"@' package.json; then
-              PKG_NAME=$(node -p "require('./package.json').name || ''")
-              if [ -n "$PKG_NAME" ] && [[ $PKG_NAME != @* ]]; then
-                npm pkg set name="@$OWNER/$PKG_NAME"
-              elif [ -z "$PKG_NAME" ]; then
-                REPO_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f 2)
-                npm pkg set name="@$OWNER/$REPO_NAME"
-              fi
-            fi
-            # 添加发布配置
-            npm pkg set publishConfig.registry=https://npm.pkg.github.com/
-            npm pkg set publishConfig.access=restricted
-          fi
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          ls -la dist/
+
+      - name: 创建发布
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*.exe"
+          tag: v${{ github.event.inputs.version }}
+          name: 版本 ${{ github.event.inputs.version }}
+          body: |
+            ${{ github.event.inputs.release_notes }}
+
+            构建时间: ${{ github.event.created_at }}
+            提交: ${{ github.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          draft: false
+          prerelease: false
