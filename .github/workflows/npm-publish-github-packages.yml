@@ -1,7 +1,7 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# 此工作流将构建项目，发布包到GitHub Packages，并创建可下载的打包文件
+# 更多信息参见: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: 发布 Node.js 包
+name: 构建与发布
 
 on:
   release:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:  # 允许手动触发工作流
 
 jobs:
-  build:
+  build-and-package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,9 +22,58 @@ jobs:
           cache: 'npm'  # 缓存 npm 依赖加速构建
       - run: npm ci
       - run: npm run test --if-present || echo "没有测试脚本，跳过测试"
+      
+      # 构建项目
+      - name: 构建项目
+        run: |
+          npm run build --if-present || echo "没有构建脚本，尝试其他常见构建命令"
+          # 如果没有build脚本，尝试其他常见命令
+          if [ ! -d "dist" ] && [ ! -d "build" ]; then
+            npm run prod --if-present || npm run production --if-present || echo "无法找到合适的构建命令，跳过自动构建"
+          fi
+      
+      # 创建项目压缩包（包含dist或build或整个项目）
+      - name: 创建项目压缩包
+        run: |
+          VERSION=$(node -p "require('./package.json').version || 'latest'")
+          REPO_NAME=$(echo "$GITHUB_REPOSITORY" | cut -d '/' -f 2)
+          if [ -d "dist" ]; then
+            tar -czf "${REPO_NAME}-${VERSION}.tar.gz" dist
+            zip -r "${REPO_NAME}-${VERSION}.zip" dist
+          elif [ -d "build" ]; then
+            tar -czf "${REPO_NAME}-${VERSION}.tar.gz" build
+            zip -r "${REPO_NAME}-${VERSION}.zip" build
+          else
+            # 排除node_modules和.git目录
+            tar -czf "${REPO_NAME}-${VERSION}.tar.gz" --exclude=node_modules --exclude=.git .
+            zip -r "${REPO_NAME}-${VERSION}.zip" . -x "node_modules/*" -x ".git/*"
+          fi
+          echo "压缩包已创建："
+          ls -la *.tar.gz *.zip
+      
+      # 上传打包文件到GitHub Release
+      - name: 上传到Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'release'
+        with:
+          files: |
+            *.tar.gz
+            *.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # 上传构建产物作为工作流的Artifacts（可在Actions页面下载）
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            *.tar.gz
+            *.zip
+          retention-days: 30
 
   publish-gpr:
-    needs: build
+    needs: build-and-package
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -37,6 +86,7 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@YOUR_USERNAME'  # 替换为你的 GitHub 用户名或组织名称
       - run: npm ci
+      # 确保 package.json 中包含正确的发布配置
       - name: 配置发布信息
         run: |
           # 获取仓库所有者名称
