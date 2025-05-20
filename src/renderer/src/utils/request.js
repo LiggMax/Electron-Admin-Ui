@@ -5,10 +5,10 @@ import { userTokenStore } from '../store/token'
 import router from '../router'
 
 //定义一个变量,记录公共的前缀  ,  baseURL
-const baseURL = 'http://127.0.0.1:8899/api';
+const baseURL = 'http://123.51.208.249:8563/api';
 const instance = axios.create({
   baseURL,
-  timeout: 20000 // 设置20秒超时
+  timeout: 30000 // 设置30秒超时
 })
 //添加请求拦截器
 instance.interceptors.request.use(
