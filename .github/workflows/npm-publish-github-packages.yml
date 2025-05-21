@@ -18,7 +18,7 @@ on:
         default: '新版本发布'
   push:
     branches:
-      - main
+      - APP
     tags:
       - 'v*'  # 匹配所有以v开头的标签，例如v1.0.0
 
