@@ -4,8 +4,8 @@ import { userTokenStore } from '../store/token'
 //导入路由
 import router from '../router'
 
-//定义一个变量,记录公共的前缀  ,  baseURL
-const baseURL = 'http://ka.kydb.vip/api';
+// 从环境变量中获取API基础URL
+const baseURL = 'http://ka.kydb.vip/api/'
 const instance = axios.create({
   baseURL,
   timeout: 20000 // 设置20秒超时

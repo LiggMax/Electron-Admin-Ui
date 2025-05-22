@@ -17,14 +17,6 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    server: {
-      "proxy": {
-        "/api": {
-          target: 'http://127.0.0.1:8866',
-          changeOrigin: true
-        }
-      }
-    },
     plugins: [vue()],
     // assetsInclude: ['**/*.svg'],
     build: {

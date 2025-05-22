@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: com.ligg.ks
 productName: "卡商端"
 directories:
   buildResources: build
