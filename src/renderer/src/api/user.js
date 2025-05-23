@@ -17,6 +17,12 @@ export const userLoginService1 = (loginData) => {
 export const getUserInfoService = () => {
   return request.get('/admin/user/info')
 }
+/**
+ * 获取交易记录
+ */
+export const getTransactionRecordService = () => {
+  return request.get('/admin/user/order')
+}
 
 /**
  * 退出登录

@@ -1,31 +1,52 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import userAvatar from '../assets/images/user.png'
 import useUserStore from '../store/userInfo'
+import { format } from '../utils/DateFormatter'
+import { getTransactionRecordService } from '../api/user'
+
 const userInfoStore = useUserStore()
 // 用户信息
 const userInfo = ref({
   nickName: userInfoStore.info.nickName,
   avatar: userInfoStore.info.userAvatar,
-  balance: '¥ 100000000.00',
+  money: userInfoStore.info.money
 })
 
 // 交易记录
 const transactions = ref([
-  { type: '收入', amount: '¥1.5亿', date: '2023-09-01 10:24' },
-  { type: '收入', amount: '¥500万', date: '2023-09-02 14:18' },
-  { type: '收入', amount: '¥200万', date: '2023-09-03 09:50' }
+  {
+    id: '',
+    amount: '',
+    date: '',
+    phoneNumber: '',
+    status: ''
+  }
 ])
 
-
+//获取交易记录
+const getTransactions = async () => {
+  const response = await getTransactionRecordService()
+  //数据转换
+  transactions.value = response.data.map((item) => {
+    return {
+      id: item.id,
+      amount: item.phoneMoney,
+      date: format(item.createdAt),
+      phoneNumber: item.phoneNumber,
+      status: item.state
+    }
+  })
+}
 // 充值余额
 const handleRecharge = () => {
   // 充值逻辑
   console.log('充值余额')
 }
-//从pinia中获取用户信息
-
+onMounted(() => {
+  getTransactions()
+})
 </script>
 
 <template>
@@ -36,13 +57,19 @@ const handleRecharge = () => {
       <!-- 用户信息卡片 -->
       <div class="user-card">
         <div class="avatar-section">
-          <img :src="userInfo.avatar ? userInfo.avatar : userAvatar " alt="用户头像" class="avatar" />
+          <img
+            :src="userInfo.avatar ? userInfo.avatar : userAvatar"
+            alt="用户头像"
+            class="avatar"
+          />
           <h2 class="username">用户昵称：{{ userInfo.nickName }}</h2>
         </div>
         <div class="balance-section">
           <div class="balance-label">余额:</div>
-          <div class="balance-value">{{ userInfo.balance }}</div>
-          <el-button type="primary" class="recharge-btn" @click="handleRecharge">余额充值</el-button>
+          <div class="balance-value">{{ userInfo.money }}</div>
+          <el-button type="primary" class="recharge-btn" @click="handleRecharge"
+            >余额充值</el-button
+          >
         </div>
       </div>
 
@@ -50,12 +77,21 @@ const handleRecharge = () => {
       <div class="transaction-card">
         <div class="card-header">
           <h3>交易记录</h3>
-          <el-button type="success" size="small" plain>筛选</el-button>
         </div>
         <el-table :data="transactions" stripe style="width: 100%">
-          <el-table-column prop="type" label="交易类型" width="120" />
-          <el-table-column prop="amount" label="交易金额" width="120" />
+          <el-table-column prop="id" label="订单号"  />
+          <el-table-column prop="amount" label="交易金额" />
           <el-table-column prop="date" label="交易时间" />
+          <el-table-column prop="phoneNumber" label="手机号" />
+          <!--状态 0=未使用 1=带结算 2=已结算-->
+          <el-table-column prop="status" label="状态">
+            <template v-slot="scope">
+              <el-tag v-if="scope.row.status === 0" type="info">未使用</el-tag>
+              <el-tag v-else-if="scope.row.status === 1" type="warning">待结算</el-tag>
+              <el-tag v-else type="success">已结算</el-tag>
+            </template>
+          </el-table-column>
+
         </el-table>
       </div>
     </div>
