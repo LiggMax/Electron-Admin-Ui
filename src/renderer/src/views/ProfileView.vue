@@ -77,10 +77,15 @@ onMounted(() => {
       <div class="transaction-card">
         <div class="card-header">
           <h3>交易记录</h3>
+          <span class="order-count">共 {{ transactions.length }} 笔订单</span>
         </div>
         <el-table :data="transactions" stripe style="width: 100%">
           <el-table-column prop="id" label="订单号"  />
-          <el-table-column prop="amount" label="交易金额" />
+          <el-table-column prop="amount" label="交易金额">
+            <template v-slot="scope">
+              <span class="amount-value">+{{ scope.row.amount }}￥</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="date" label="交易时间" />
           <el-table-column prop="phoneNumber" label="手机号" />
           <!--状态 0=未使用 1=带结算 2=已结算-->
@@ -187,6 +192,16 @@ onMounted(() => {
         font-size: 18px;
         color: #303133;
       }
+      
+      .order-count {
+        color: #909399;
+        font-size: 14px;
+      }
+    }
+
+    .amount-value {
+      color: #ff4d4f;
+      font-weight: bold;
     }
   }
 
