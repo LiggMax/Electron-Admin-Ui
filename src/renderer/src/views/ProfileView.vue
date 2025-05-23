@@ -9,9 +9,9 @@ import { getTransactionRecordService } from '../api/user'
 const userInfoStore = useUserStore()
 // 用户信息
 const userInfo = ref({
-  nickName: userInfoStore.info.nickName,
-  avatar: userInfoStore.info.userAvatar,
-  money: userInfoStore.info.money
+  nickName: userInfoStore.info?.nickName || '未设置',
+  avatar: userInfoStore.info?.userAvatar || '',
+  money: userInfoStore.info?.money || 0
 })
 
 // 交易记录
