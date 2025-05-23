@@ -8,12 +8,10 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 获取完整历史记录，用于生成变更日志
 
       - name: 设置Node.js环境
         uses: actions/setup-node@v4
@@ -47,59 +45,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 获取完整历史记录，用于生成变更日志
-        
+
       - name: 获取项目版本号
         id: package_version
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
           echo "版本号: $VERSION"
-
-      - name: 生成变更日志
-        id: changelog
-        run: |
-          # 获取上一个标签
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 --match "v*" HEAD^ 2>/dev/null || echo "")
-          
-          if [ -z "$PREVIOUS_TAG" ]; then
-            # 如果没有找到上一个标签，获取所有提交
-            echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-            git log --pretty=format:"- %s (%h)" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          else
-            # 获取从上一个标签到当前标签的所有提交
-            echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-            git log --pretty=format:"- %s (%h)" ${PREVIOUS_TAG}..HEAD >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          fi
-          
-          # 按提交类型分类
-          FEATURES=$(git log --pretty=format:"- %s (%h)" ${PREVIOUS_TAG:-HEAD}..HEAD | grep -i "^feat" || echo "")
-          FIXES=$(git log --pretty=format:"- %s (%h)" ${PREVIOUS_TAG:-HEAD}..HEAD | grep -i "^fix" || echo "")
-          CHORES=$(git log --pretty=format:"- %s (%h)" ${PREVIOUS_TAG:-HEAD}..HEAD | grep -i "^chore" || echo "")
-          DOCS=$(git log --pretty=format:"- %s (%h)" ${PREVIOUS_TAG:-HEAD}..HEAD | grep -i "^docs" || echo "")
-          
-          echo "FEATURES<<EOF" >> $GITHUB_ENV
-          echo "$FEATURES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          echo "FIXES<<EOF" >> $GITHUB_ENV
-          echo "$FIXES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          echo "CHORES<<EOF" >> $GITHUB_ENV
-          echo "$CHORES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
-          echo "DOCS<<EOF" >> $GITHUB_ENV
-          echo "$DOCS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
 
       - name: 下载构建产物
         uses: actions/download-artifact@v4
@@ -119,23 +75,10 @@ jobs:
           name: 长虹国际管理介面 v${{ env.APP_VERSION }}
           body: |
             ### 版本 ${{ env.APP_VERSION }} 发布
-            
-            #### ✨ 新功能
-            ${{ env.FEATURES }}
-            
-            #### 🐛 修复
-            ${{ env.FIXES }}
-            
-            #### 🔧 维护
-            ${{ env.CHORES }}
-            
-            #### 📝 文档
-            ${{ env.DOCS }}
-            
-            ---
+            更新内容: test
             发布时间: ${{ github.event.head_commit.timestamp }}
             提交: ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           draft: false
-          prerelease: false 
+          prerelease: false
