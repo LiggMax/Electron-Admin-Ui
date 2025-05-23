@@ -159,17 +159,12 @@ onMounted(() => {
       }
 
       .recharge-btn {
-        background-color: white;
-        color: #1890ff;
+        background-color: #fc5b4c;
         border: none;
         padding: 8px 16px;
-        border-radius: 4px;
+        border-radius: 15px;
         cursor: pointer;
         font-weight: bold;
-
-        &:hover {
-          background-color: #f5f5f5;
-        }
       }
     }
   }
