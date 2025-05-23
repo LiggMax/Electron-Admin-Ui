@@ -2,6 +2,77 @@ import { app, shell, BrowserWindow, ipcMain, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from './assets/icon.png?asset'
+import axios from 'axios'
+
+// 配置API基础URL，只使用生产环境配置
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://ka.kydb.vip/api';  // 生产环境API服务器地址
+console.log(`[主进程] API基础URL: ${API_BASE_URL}`);
+
+// 是否启用API请求日志
+const ENABLE_API_LOGS = process.env.VITE_ENABLE_API_LOGS === 'true';
+
+/**
+ * 主进程代理转发API请求
+ */
+ipcMain.handle("http-request", async (_event, { url, method = "GET", data, headers }) => {
+  try {
+    // 处理URL路径
+    let apiUrl = url;
+    if (!url.startsWith('http')) {
+      // 如果不是完整URL，添加基础URL
+      apiUrl = `${API_BASE_URL}${url.startsWith('/') ? url : '/' + url}`;
+    }
+    
+    if (ENABLE_API_LOGS) {
+      console.log(`[主进程API代理] 请求: ${method} ${apiUrl}`);
+      console.log(`[主进程API代理] 数据:`, data);
+    }
+    
+    // 构建请求配置
+    const requestConfig = {
+      url: apiUrl,
+      method,
+      headers,
+      timeout: 30000
+    };
+    
+    // 根据请求方法处理数据
+    if (method.toUpperCase() === 'GET' && data) {
+      // GET请求，将数据作为URL参数
+      requestConfig.params = data;
+      if (ENABLE_API_LOGS) {
+        console.log(`[主进程API代理] GET参数:`, requestConfig.params);
+      }
+    } else if (data) {
+      // 其他请求方法，将数据放在请求体中
+      requestConfig.data = data;
+    }
+    
+    // 发送请求
+    const response = await axios(requestConfig);
+    
+    if (ENABLE_API_LOGS) {
+      console.log(`[主进程API代理] 响应状态: ${response.status}`);
+      console.log(`[主进程API代理] 响应数据:`, response.data);
+    }
+    
+    return { 
+      success: true, 
+      data: response.data, 
+      status: response.status 
+    };
+  } catch (error) {
+    console.error("[主进程API代理] 错误:", error);
+    
+    // 构造错误响应
+    return {
+      success: false,
+      message: error.message,
+      status: error.response?.status || 500,
+      data: error.response?.data || { message: "请求失败" }
+    };
+  }
+});
 
 // 确保只有一个实例在运行
 const gotTheLock = app.requestSingleInstanceLock()

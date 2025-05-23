@@ -5,11 +5,81 @@ import { userTokenStore } from '../store/token'
 import router from '../router'
 
 // 从环境变量中获取API基础URL
-const baseURL = 'http://ka.kydb.vip/api/'
+const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+console.log(`[渲染进程] API基础URL: ${baseURL}`);
+
+// 判断是否为生产环境
+const isProd = import.meta.env.PROD;
+// 是否启用API日志
+const enableLogs = isProd 
+  ? import.meta.env.VITE_ENABLE_API_LOGS === 'true'
+  : true;
+
 const instance = axios.create({
   baseURL,
   timeout: 20000 // 设置20秒超时
 })
+
+// 创建适配器，用于在生产环境中通过主进程代理发送请求
+const electronAdapter = async (config) => {
+  // 开发环境直接使用axios默认适配器
+  if (!isProd) {
+    return axios.defaults.adapter(config);
+  }
+
+  try {
+    // 从config中提取需要的参数
+    const { url, method, data, params, headers } = config;
+    
+    if (enableLogs) {
+      console.log(`[请求] ${method} ${url}`);
+      console.log(`[请求数据]`, method.toUpperCase() === 'GET' ? params : data);
+    }
+    
+    // 通过预加载脚本暴露的API发送请求
+    const response = await window.api.http.request({
+      url: url,
+      method,
+      // 对于GET请求，使用params作为data传递
+      data: method.toUpperCase() === 'GET' ? params : data,
+      headers
+    });
+    
+    if (enableLogs) {
+      console.log(`[响应]`, response);
+    }
+    
+    if (!response.success) {
+      // 请求失败
+      return Promise.reject({
+        response: {
+          status: response.status,
+          data: response.data
+        },
+        message: response.message
+      });
+    }
+    
+    // 构造axios响应格式
+    return {
+      data: response.data,
+      status: response.status,
+      statusText: 'OK',
+      headers: {},
+      config,
+      request: {}
+    };
+  } catch (error) {
+    console.error(`[请求错误]`, error);
+    return Promise.reject(error);
+  }
+};
+
+// 仅在生产环境中设置适配器
+if (isProd) {
+  instance.defaults.adapter = electronAdapter;
+}
+
 //添加请求拦截器
 instance.interceptors.request.use(
   config => {
