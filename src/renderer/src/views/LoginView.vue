@@ -108,7 +108,7 @@ onUnmounted(() => {
         <img src="../assets/images/login.png" alt="登录插图" class="login-image" />
       </div>
       <div class="login-right">
-        <h1 class="login-title">欢迎使用卡商平台</h1>
+        <h1 class="login-title">长虹国际卡商平台</h1>
 
         <div class="login-form">
           <div class="form-item">
