@@ -298,23 +298,23 @@ onUnmounted(() => {
               </el-select>
             </div>
 
-            <div class="filter-item">
-              <span class="label">状态：</span>
-              <el-select
-                v-model="usageStatus"
-                placeholder="请选择"
-                clearable
-                size="small"
-                class="select-with-width"
-              >
-                <el-option
-                  v-for="item in statusOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </div>
+<!--            <div class="filter-item">-->
+<!--              <span class="label">状态：</span>-->
+<!--              <el-select-->
+<!--                v-model="usageStatus"-->
+<!--                placeholder="请选择"-->
+<!--                clearable-->
+<!--                size="small"-->
+<!--                class="select-with-width"-->
+<!--              >-->
+<!--                <el-option-->
+<!--                  v-for="item in statusOptions"-->
+<!--                  :key="item.value"-->
+<!--                  :label="item.label"-->
+<!--                  :value="item.value"-->
+<!--                ></el-option>-->
+<!--              </el-select>-->
+<!--            </div>-->
 
             <!--搜索输入框-->
             <div class="filter-item search-item">
@@ -367,30 +367,30 @@ onUnmounted(() => {
             min-width="120"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="线路状态" min-width="90" align="center">
-            <template #default="scope">
-              <span :class="[scope.row.lineStatus === 1 ? 'online' : 'offline']">
-                {{ formatStatus(scope.row.lineStatus, 'line') }}
-              </span>
-            </template>
-          </el-table-column>
+<!--          <el-table-column label="线路状态" min-width="90" align="center">-->
+<!--            <template #default="scope">-->
+<!--              <span :class="[scope.row.lineStatus === 1 ? 'online' : 'offline']">-->
+<!--                {{ formatStatus(scope.row.lineStatus, 'line') }}-->
+<!--              </span>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
           <el-table-column
-            prop="countryCode"
+            prop="regionName"
             label="号码归属国家"
             min-width="100"
             show-overflow-tooltip
           ></el-table-column>
-          <el-table-column label="注册时间" min-width="160" show-overflow-tooltip>
+          <el-table-column label="注册时间" min-width="110" show-overflow-tooltip>
             <template #default="scope">
               {{ formatDate(scope.row.registrationTime) }}
             </template>
           </el-table-column>
-          <el-table-column
-            prop="usageStatus"
-            label="状态"
-            min-width="80"
-            align="center"
-          ></el-table-column>
+<!--          <el-table-column-->
+<!--            prop="usageStatus"-->
+<!--            label="状态"-->
+<!--            min-width="80"-->
+<!--            align="center"-->
+<!--          ></el-table-column>-->
           <el-table-column label="操作" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button

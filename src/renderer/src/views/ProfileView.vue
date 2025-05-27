@@ -68,7 +68,7 @@ onMounted(() => {
           <div class="balance-label">余额:</div>
           <div class="balance-value">{{ userInfo.money }}</div>
           <el-button type="primary" class="recharge-btn" @click="handleRecharge"
-            >余额充值</el-button
+            >余额提现</el-button
           >
         </div>
       </div>
@@ -192,7 +192,7 @@ onMounted(() => {
         font-size: 18px;
         color: #303133;
       }
-      
+
       .order-count {
         color: #909399;
         font-size: 14px;
