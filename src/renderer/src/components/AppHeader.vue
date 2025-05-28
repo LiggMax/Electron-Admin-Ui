@@ -10,7 +10,7 @@ const userInfoStore = useUserInfoStore()
 const props = defineProps({
   title: {
     type: String,
-    default: '卡商端-首页'
+    default: '长hong-首页'
   }
 })
 

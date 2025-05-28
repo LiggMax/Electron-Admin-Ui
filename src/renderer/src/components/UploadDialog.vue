@@ -10,7 +10,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close', 'uploadSuccess'])
 
 // 获取全局消息服务
 const message = inject('message') || ElMessage
@@ -33,6 +33,9 @@ watch(dialogVisible, (val) => {
 
 // 关闭弹窗
 const handleClose = () => {
+  // 检查是否上传成功
+  const wasUploadSuccessful = uploadResult.value && uploadResult.value.success
+  
   dialogVisible.value = false
 
   // 清除所有数据
@@ -54,7 +57,12 @@ const handleClose = () => {
   uploadResult.value = null
   currentStep.value = 1
 
-  emit('close')
+  // 如果上传成功，触发uploadSuccess事件，否则触发普通close事件
+  if (wasUploadSuccessful) {
+    emit('uploadSuccess')
+  } else {
+    emit('close')
+  }
 }
 
 // 步骤状态

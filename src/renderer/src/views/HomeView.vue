@@ -39,12 +39,6 @@ const countryCode = ref('') // 国家地区
 const usageStatus = ref('') // 使用状态
 const searchKeyword = ref('') // 搜索关键字
 
-// 状态
-const statusOptions = [
-  { label: '未使用', value: 0 },
-  { label: '已使用', value: 1 }
-]
-
 // 表格多选
 const multipleSelection = ref([])
 const handleSelectionChange = (selection) => {
@@ -107,18 +101,6 @@ const resetSearch = debounce(() => {
 })
 
 /**
- * 获取卡号数据列表
- */
-const formatStatus = (status, type) => {
-  if (type === 'line') {
-    return status === 1 ? '在线' : '离线'
-  }
-  if (type === 'usage') {
-    return status === 1 ? '已使用' : '未使用'
-  }
-}
-
-/**
  * 格式化日期
  * @param {string} dateStr - 日期字符串
  * @returns {string} 格式化后的日期
@@ -135,7 +117,9 @@ const formatDate = (dateStr) => {
 // 数据加载状态
 const loading = ref(false)
 
-// 获取卡号数据列表
+/**
+ * 获取卡号数据列表
+ */
 const getCardDataList = async () => {
   try {
     // 获取卡号数据列表的逻辑
@@ -189,6 +173,17 @@ const handleUpload = () => {
       // 不再使用message
     }
   }, 1000)
+}
+
+// 处理上传成功事件
+const handleUploadSuccess = () => {
+  // 设置加载状态
+  loading.value = true
+
+  // 重新加载数据
+  setTimeout(() => {
+    getCardDataList()
+  }, 100)
 }
 
 // 窗口大小调整防抖
@@ -426,7 +421,10 @@ onUnmounted(() => {
       <!--      </div>-->
 
       <!-- 上传弹窗 -->
-      <UploadDialog v-model:visible="uploadDialogVisible" />
+      <UploadDialog
+        v-model:visible="uploadDialogVisible"
+        @uploadSuccess="handleUploadSuccess"
+      />
     </div>
   </div>
 </template>
