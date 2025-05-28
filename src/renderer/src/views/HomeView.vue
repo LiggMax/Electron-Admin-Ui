@@ -233,14 +233,6 @@ onUnmounted(() => {
     <AppHeader title="卡商端-首页" />
     <!-- 内容区 -->
     <div class="content-area">
-      <!-- 全局加载状态指示器 -->
-      <div class="global-loading-mask" v-if="loading">
-        <div class="global-loading-indicator">
-          <div class="spinner-icon"></div>
-          <span class="loading-text">加载数据中...</span>
-        </div>
-      </div>
-
       <!-- 接码项目独立一栏 -->
       <div class="project-selector-bar">
         <div class="project-selector-content">
@@ -293,24 +285,6 @@ onUnmounted(() => {
               </el-select>
             </div>
 
-<!--            <div class="filter-item">-->
-<!--              <span class="label">状态：</span>-->
-<!--              <el-select-->
-<!--                v-model="usageStatus"-->
-<!--                placeholder="请选择"-->
-<!--                clearable-->
-<!--                size="small"-->
-<!--                class="select-with-width"-->
-<!--              >-->
-<!--                <el-option-->
-<!--                  v-for="item in statusOptions"-->
-<!--                  :key="item.value"-->
-<!--                  :label="item.label"-->
-<!--                  :value="item.value"-->
-<!--                ></el-option>-->
-<!--              </el-select>-->
-<!--            </div>-->
-
             <!--搜索输入框-->
             <div class="filter-item search-item">
               <span class="label">搜索：</span>
@@ -337,6 +311,14 @@ onUnmounted(() => {
 
       <!-- 表格区域 -->
       <div class="table-container">
+        <!-- 表格加载状态指示器 -->
+        <div class="table-loading-mask" v-if="loading">
+          <div class="table-loading-indicator">
+            <div class="spinner-icon"></div>
+            <span class="loading-text">加载数据中...</span>
+          </div>
+        </div>
+
         <el-table
           :data="tableData"
           border
@@ -362,13 +344,6 @@ onUnmounted(() => {
             min-width="120"
             show-overflow-tooltip
           ></el-table-column>
-<!--          <el-table-column label="线路状态" min-width="90" align="center">-->
-<!--            <template #default="scope">-->
-<!--              <span :class="[scope.row.lineStatus === 1 ? 'online' : 'offline']">-->
-<!--                {{ formatStatus(scope.row.lineStatus, 'line') }}-->
-<!--              </span>-->
-<!--            </template>-->
-<!--          </el-table-column>-->
           <el-table-column
             prop="regionName"
             label="号码归属国家"
@@ -380,12 +355,6 @@ onUnmounted(() => {
               {{ formatDate(scope.row.registrationTime) }}
             </template>
           </el-table-column>
-<!--          <el-table-column-->
-<!--            prop="usageStatus"-->
-<!--            label="状态"-->
-<!--            min-width="80"-->
-<!--            align="center"-->
-<!--          ></el-table-column>-->
           <el-table-column label="操作" min-width="100" fixed="right" align="center">
             <template #default="scope">
               <el-button
@@ -403,22 +372,6 @@ onUnmounted(() => {
           <el-empty description="暂无数据"></el-empty>
         </div>
       </div>
-
-      <!-- 分页 -->
-      <!--      <div class="pagination-container">-->
-      <!--        <el-pagination-->
-      <!--          v-model:current-page="pageNum"-->
-      <!--          v-model:page-size="pageSize"-->
-      <!--          @size-change="handleSizeChange"-->
-      <!--          @current-change="handleCurrentChange"-->
-      <!--          :page-sizes="[10, 20, 50, 100]"-->
-      <!--          layout="total, sizes, prev, pager, next, jumper"-->
-      <!--          :total="total"-->
-      <!--          popper-class="pagination-popper"-->
-      <!--          background-->
-      <!--          :disabled="loading"-->
-      <!--        ></el-pagination>-->
-      <!--      </div>-->
 
       <!-- 上传弹窗 -->
       <UploadDialog
@@ -455,23 +408,23 @@ onUnmounted(() => {
     scroll-behavior: smooth;
   }
 
-  /* 全局加载状态样式 */
-
-  .global-loading-mask {
-    position: fixed;
+  /* 表格加载状态样式 */
+  .table-loading-mask {
+    position: absolute;
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(255, 255, 255, 0.8);
-    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: opacity 0.3s;
+    border-radius: 4px;
   }
 
-  .global-loading-indicator {
+  .table-loading-indicator {
     display: flex;
     flex-direction: row;
     align-items: center;
