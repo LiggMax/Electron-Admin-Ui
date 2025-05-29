@@ -61,7 +61,7 @@ const handleClose = () => {
   if (wasUploadSuccessful) {
     emit('uploadSuccess')
   } else {
-    emit('close')
+  emit('close')
   }
 }
 
