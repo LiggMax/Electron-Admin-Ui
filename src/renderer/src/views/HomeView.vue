@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { getPhoneList } from '../api/phone'
 import UploadDialog from '../components/UploadDialog.vue'
 import AppHeader from '../components/AppHeader.vue'
-
+import {format} from '../utils/DateFormatter'
 // 路由
 const router = useRouter()
 
@@ -99,22 +99,6 @@ const resetSearch = debounce(() => {
   pageNum.value = 1
   getCardDataList()
 })
-
-/**
- * 格式化日期
- * @param {string} dateStr - 日期字符串
- * @returns {string} 格式化后的日期
- */
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  return `${year}/${month}/${day}`
-}
-
-// 数据加载状态
 const loading = ref(false)
 
 /**
@@ -352,7 +336,7 @@ onUnmounted(() => {
           ></el-table-column>
           <el-table-column label="注册时间" min-width="110" show-overflow-tooltip>
             <template #default="scope">
-              {{ formatDate(scope.row.registrationTime) }}
+              {{ format(scope.row.registrationTime) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" min-width="100" fixed="right" align="center">

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getPhoneDetail } from '../api/phone'
 import AppHeader from '../components/AppHeader.vue'
+import {format} from '../utils/DateFormatter'
 
 const route = useRoute()
 const router = useRouter()
@@ -41,11 +42,20 @@ const fetchPhoneDetail = async () => {
       phoneDetail.registrationTime = data.registrationTime
       phoneDetail.countryCode = data.countryCode
       phoneDetail.regionName = data.regionName
-      phoneDetail.projects = data.projects || []
+      
+      // 确保 projects 数组有效，过滤掉无效数据
+      phoneDetail.projects = (data.projects || []).filter(project => 
+        project && typeof project === 'object'
+      ).map(project => ({
+        projectId: project.projectId || null,
+        projectName: project.projectName || '未知项目',
+        projectPrice: Number(project.projectPrice) || 0
+      }))
     } else {
       ElMessage.warning('获取手机号详情失败')
     }
   } catch (error) {
+    console.error('获取手机号详情出错:', error)
     ElMessage.error('获取手机号详情出错')
   } finally {
     loading.value = false
@@ -54,32 +64,8 @@ const fetchPhoneDetail = async () => {
 
 // 返回列表页
 const goBack = () => {
-  router.push('/home')
-}
-
-// 格式化状态
-const formatStatus = (status, type) => {
-  if (type === 'line') {
-    return status === 1 ? '在线' : '离线'
-  }
-  if (type === 'usage') {
-    return status === 1 ? '已使用' : '未使用'
-  }
-  return status
-}
-
-// 格式化日期
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
+  // 返回上一页
+  router.go(-1)
 }
 
 onMounted(() => {
@@ -93,13 +79,12 @@ onMounted(() => {
     <div class="content-area">
       <!-- 返回按钮 -->
       <div class="back-button-container">
-        <el-button type="text" size="small">
+        <el-button type="text" size="small" @click="goBack">
           <img
             src="../assets/svg/return.svg"
             alt=""
             style="height: 20px"
             width="40px"
-            @click="goBack"
           />
         </el-button>
       </div>
@@ -122,21 +107,8 @@ onMounted(() => {
               <el-descriptions-item label="归属国家/地区">
                 {{ phoneDetail.countryCode || phoneDetail.regionName || '未知' }}
               </el-descriptions-item>
-              <el-descriptions-item label="线路状态">
-                <el-tag :type="phoneDetail.lineStatus === 1 ? 'success' : 'danger'">
-                  {{ formatStatus(phoneDetail.lineStatus, 'line') }}
-                </el-tag>
-              </el-descriptions-item>
-              <el-descriptions-item label="使用状态">
-                <el-tag :type="phoneDetail.usageStatus === 1 ? 'warning' : 'info'">
-                  {{ formatStatus(phoneDetail.usageStatus, 'usage') }}
-                </el-tag>
-              </el-descriptions-item>
               <el-descriptions-item label="导入时间">
-                {{ formatDate(phoneDetail.registrationTime) }}
-              </el-descriptions-item>
-              <el-descriptions-item label="导出时间">
-                {{ formatDate(phoneDetail.registrationTime) }}
+                {{ format(phoneDetail.registrationTime) }}
               </el-descriptions-item>
             </el-descriptions>
           </div>
@@ -148,21 +120,25 @@ onMounted(() => {
             <h3>关联项目</h3>
           </div>
           <div class="card-body">
-            <el-table :data="phoneDetail.projects" style="width: 100%" border stripe>
+            <el-table 
+              v-if="phoneDetail.projects && phoneDetail.projects.length > 0" 
+              :data="phoneDetail.projects" 
+              style="width: 100%" 
+              border 
+              stripe>
               <el-table-column type="index" label="序号" width="80" align="center" />
-              <el-table-column prop="projectName" label="项目名称" min-width="150" />
-              <el-table-column prop="projectPrice" label="项目价格" min-width="100">
+              <el-table-column prop="projectName" label="项目名称" min-width="150">
                 <template #default="scope">
-                  {{ scope.row.projectPrice ? `￥${scope.row.projectPrice}` : '-' }}
+                  {{ scope.row?.projectName || '未知项目' }}
                 </template>
               </el-table-column>
-              <el-table-column label="创建时间" min-width="180">
+              <el-table-column prop="projectPrice" label="项目价格" min-width="100">
                 <template #default="scope">
-                  {{ formatDate(scope.row.projectCreatedAt) }}
+                  ￥{{ scope.row?.projectPrice ?? 0 }}
                 </template>
               </el-table-column>
             </el-table>
-            <div v-if="phoneDetail.projects.length === 0" class="empty-placeholder">
+            <div v-if="!phoneDetail.projects || phoneDetail.projects.length === 0" class="empty-placeholder">
               <el-empty description="暂无关联项目"></el-empty>
             </div>
           </div>
@@ -188,6 +164,26 @@ onMounted(() => {
 
   .back-button-container {
     margin-bottom: 15px;
+
+    .el-button {
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #f5f7fa;
+        transform: translateX(-2px);
+      }
+
+      img {
+        display: block;
+        transition: all 0.3s ease;
+      }
+
+      &:hover img {
+        opacity: 0.8;
+      }
+    }
   }
 
   .loading-container {
