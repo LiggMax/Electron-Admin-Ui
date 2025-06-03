@@ -1,5 +1,6 @@
 <script setup>
 import TitleBar from './components/TitleBar.vue'
+import SimpleUpdateNotification from './components/SimpleUpdateNotification.vue'
 import { ref, onMounted, provide } from 'vue'
 import zhCn from 'element-plus/dist/locale/zh-cn.min'
 import message from './utils/message'
@@ -32,6 +33,9 @@ const config = {}
       </div>
       <!-- 边缘遮罩 -->
       <div class="edge-mask" :class="{ hidden: isMaximized }"></div>
+      
+      <!-- 自动更新通知组件 -->
+      <SimpleUpdateNotification />
     </div>
   </el-config-provider>
 </template>
