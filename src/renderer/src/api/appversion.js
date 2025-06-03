@@ -16,7 +16,11 @@ export function triggerUpdateCheck() {
 export function startDownloadUpdate(versionInfo) {
   if (window.api && window.api.update) {
     console.log('开始下载更新:', versionInfo)
-    window.api.update.startDownloadUpdate(versionInfo)
+
+    // 将Proxy对象转换为普通对象，避免IPC传输错误
+    const plainVersionInfo = JSON.parse(JSON.stringify(versionInfo))
+
+    window.api.update.startDownloadUpdate(plainVersionInfo)
   } else {
     console.error('更新API不可用')
   }
@@ -48,4 +52,4 @@ export function setupUpdateListeners() {
   // 这里可以设置全局的更新事件监听器
   // 具体的监听逻辑应该在组件中实现
   console.log('更新API已就绪')
-} 
+}

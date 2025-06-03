@@ -111,7 +111,6 @@ jobs:
           echo "版本号: ${{ env.APP_VERSION }}"
           echo "更新信息: ${{ env.RELEASE_NOTES }}"
           echo "上传文件: $upload_file"
-          echo "应用类型: 管理端 (app=1)"
 
           # 使用curl上传文件到后端接口，增加超时时间
           response=$(curl -s -w "%{http_code}" \
