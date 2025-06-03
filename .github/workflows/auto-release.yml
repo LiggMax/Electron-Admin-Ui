@@ -1,4 +1,4 @@
-name: 自动构建与发布
+name: 版本更新
 
 on:
   push:
@@ -40,8 +40,117 @@ jobs:
             dist/*.exe
           retention-days: 5
 
-  publish-release:
+  upload-to-backend:
     needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 获取项目版本号和更新信息
+        id: get_info
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "版本号: $VERSION"
+          
+          # 获取最新的提交信息作为更新内容
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          # 限制长度并处理特殊字符
+          RELEASE_NOTES=$(echo "$COMMIT_MESSAGE" | head -c 100 | tr -d '"' | tr -d "'")
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "更新信息: $RELEASE_NOTES"
+
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: electron-app-windows
+          path: dist
+
+      - name: 显示构建产物结构
+        run: |
+          ls -la dist/
+          # 获取exe文件名
+          EXE_FILE=$(find dist/ -name "*.exe" -type f | head -n 1)
+          echo "EXE_FILE=$EXE_FILE" >> $GITHUB_ENV
+          echo "找到的执行文件: $EXE_FILE"
+
+      - name: 上传到后端服务器
+        run: |
+          if [ -z "${{ env.EXE_FILE }}" ]; then
+            echo "错误: 未找到exe文件"
+            exit 1
+          fi
+          
+          echo "开始准备上传文件..."
+          echo "原文件: ${{ env.EXE_FILE }}"
+          
+          # 检查文件大小
+          file_size=$(stat -f%z "${{ env.EXE_FILE }}" 2>/dev/null || stat -c%s "${{ env.EXE_FILE }}")
+          echo "文件大小: $file_size bytes ($(($file_size / 1024 / 1024)) MB)"
+          
+          # 如果文件大于100MB，进行压缩
+          if [ $file_size -gt 104857600 ]; then
+            echo "文件较大，正在压缩..."
+            original_file="${{ env.EXE_FILE }}"
+            compressed_file="${original_file}.gz"
+            gzip -c "$original_file" > "$compressed_file"
+            upload_file="$compressed_file"
+            echo "压缩后文件: $upload_file"
+            
+            # 检查压缩后大小
+            compressed_size=$(stat -f%z "$compressed_file" 2>/dev/null || stat -c%s "$compressed_file")
+            echo "压缩后大小: $compressed_size bytes ($(($compressed_size / 1024 / 1024)) MB)"
+          else
+            upload_file="${{ env.EXE_FILE }}"
+          fi
+          
+          echo "开始上传管理端应用到后端服务器..."
+          echo "服务器地址: ${{ vars.BACKEND_SERVER_URL }}"
+          echo "版本号: ${{ env.APP_VERSION }}"
+          echo "更新信息: ${{ env.RELEASE_NOTES }}"
+          echo "上传文件: $upload_file"
+          echo "应用类型: 管理端 (app=1)"
+          
+          # 使用curl上传文件到后端接口，增加超时时间
+          response=$(curl -s -w "%{http_code}" \
+            --connect-timeout 30 \
+            --max-time 600 \
+            -X POST \
+            -H "Authorization: ${{ secrets.BACKEND_AUTH_TOKEN }}" \
+            -F "appFile=@$upload_file" \
+            -F "app=1" \
+            -F "version=${{ env.APP_VERSION }}" \
+            -F "releaseNotes=${{ env.RELEASE_NOTES }}" \
+            "${{ vars.BACKEND_SERVER_URL }}/api/version/upload")
+          
+          http_code="${response: -3}"
+          response_body="${response%???}"
+          
+          echo "HTTP状态码: $http_code"
+          echo "响应内容: $response_body"
+          
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ 管理端应用上传成功！"
+          else
+            echo "❌ 管理端应用上传失败，HTTP状态码: $http_code"
+            echo "响应内容: $response_body"
+            
+            # 如果是413错误，给出详细说明
+            if [ "$http_code" -eq 413 ]; then
+              echo ""
+              echo "📋 413错误解决方案："
+              echo "1. 检查nginx配置中的client_max_body_size设置"
+              echo "2. 确保服务器支持大文件上传"
+              echo "3. 文件大小: $(($file_size / 1024 / 1024)) MB"
+            fi
+            
+            exit 1
+          fi
+
+  publish-release:
+    needs: [build, upload-to-backend]
     runs-on: ubuntu-latest
     permissions:
       contents: write
