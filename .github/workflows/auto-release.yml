@@ -106,7 +106,7 @@ jobs:
             upload_file="${{ env.EXE_FILE }}"
           fi
 
-          echo "开始上传管理端应用到后端服务器..."
+          echo "开始上传应用到后端服务器..."
           echo "服务器地址: ${{ vars.BACKEND_SERVER_URL }}"
           echo "版本号: ${{ env.APP_VERSION }}"
           echo "更新信息: ${{ env.RELEASE_NOTES }}"

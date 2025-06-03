@@ -1,3 +1,158 @@
+
+
+<template>
+  <div class="home-container">
+    <AppHeader title="卡商端-首页" />
+    <!-- 内容区 -->
+    <div class="content-area">
+      <!-- 接码项目独立一栏 -->
+      <div class="project-selector-bar">
+        <div class="project-selector-content">
+          <div class="project-item">
+            <span class="label project-label">接码项目：</span>
+            <el-select
+              v-model="selectedProject"
+              placeholder="请选择项目"
+              clearable
+              size="small"
+              class="select-with-width"
+            >
+              <el-option
+                v-for="item in projectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </div>
+
+          <!--上传按钮-->
+          <div class="upload-button">
+            <el-button type="primary" size="small" @click="handleUpload" class="custom-upload-btn">
+              <img src="../assets/svg/add.svg" alt="" class="uploadIcon" /> 上传
+            </el-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 搜索筛选区 -->
+      <div class="filter-bar">
+        <div class="filter-items">
+          <div class="left-filters">
+            <div class="filter-item">
+              <span class="label">国家：</span>
+              <el-select
+                v-model="countryCode"
+                placeholder="请选择"
+                clearable
+                size="small"
+                class="select-with-width"
+              >
+                <el-option
+                  v-for="item in countryOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </div>
+
+            <!--搜索输入框-->
+            <div class="filter-item search-item">
+              <span class="label">搜索：</span>
+              <el-input
+                v-model="searchKeyword"
+                placeholder="请输入搜索内容"
+                clearable
+                size="small"
+                class="input-with-width"
+                @keyup.enter="handleSearch"
+              ></el-input>
+            </div>
+            <div class="search-icon-wrapper" @click="handleSearch">
+              <img src="../assets/svg/iocn/search.svg" width="25px" alt="搜索" />
+            </div>
+          </div>
+          <div class="right-aligned-controls">
+            <div class="filter-buttons">
+              <el-button size="small" @click="resetSearch">重置</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 表格区域 -->
+      <div class="table-container">
+        <!-- 表格加载状态指示器 -->
+        <div class="table-loading-mask" v-if="loading">
+          <div class="table-loading-indicator">
+            <div class="spinner-icon"></div>
+            <span class="loading-text">加载数据中...</span>
+          </div>
+        </div>
+
+        <el-table
+          :data="tableData"
+          border
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+          class="data-table"
+          height="100%"
+          v-bind="{ 'scroll-wheel-enabled': true }"
+          :row-class-name="tableRowClassName"
+          :virtual-scrolling="true"
+          :estimate-row-height="48"
+          :cache="200"
+        >
+          <el-table-column type="selection" width="40"></el-table-column>
+          <el-table-column label="序号" width="60" align="center">
+            <template #default="scope">
+              {{ (pageNum - 1) * pageSize + scope.$index + 1 }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="phoneNumber"
+            label="手机号码"
+            min-width="120"
+            show-overflow-tooltip
+          ></el-table-column>
+          <el-table-column
+            prop="regionName"
+            label="号码归属国家"
+            min-width="100"
+            show-overflow-tooltip
+          ></el-table-column>
+          <el-table-column label="注册时间" min-width="110" show-overflow-tooltip>
+            <template #default="scope">
+              {{ format(scope.row.registrationTime) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" min-width="100" fixed="right" align="center">
+            <template #default="scope">
+              <el-button
+                type="text"
+                size="small"
+                @click="handleView(scope.row)"
+                class="text-button"
+              >
+                查看
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="empty-placeholder" v-if="!loading && tableData.length === 0">
+          <el-empty description="暂无数据"></el-empty>
+        </div>
+      </div>
+
+      <!-- 上传弹窗 -->
+      <UploadDialog
+        v-model:visible="uploadDialogVisible"
+        @uploadSuccess="handleUploadSuccess"
+      />
+    </div>
+  </div>
+</template>
 <script setup>
 import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -24,14 +179,15 @@ const projectOptions = [
 const selectedProject = ref('all')
 
 // 国家选项
-const countryOptions = [
-  { label: '全部地区', value: '' },
-  { label: '中国', value: '中国' },
-  { label: '美国', value: '美国' },
-  { label: '英国', value: '英国' },
-  { label: '日本', value: '日本' },
-  { label: '韩国', value: '韩国' }
-]
+const countryOptions = (ref([]))
+//   [
+//   { label: '全部地区', value: '' },
+//   { label: '中国', value: '中国' },
+//   { label: '美国', value: '美国' },
+//   { label: '英国', value: '英国' },
+//   { label: '日本', value: '日本' },
+//   { label: '韩国', value: '韩国' }
+// ]
 
 // 表格数据
 const tableData = ref([])
@@ -211,160 +367,6 @@ onUnmounted(() => {
   if (resizeTimer) clearTimeout(resizeTimer)
 })
 </script>
-
-<template>
-  <div class="home-container">
-    <AppHeader title="卡商端-首页" />
-    <!-- 内容区 -->
-    <div class="content-area">
-      <!-- 接码项目独立一栏 -->
-      <div class="project-selector-bar">
-        <div class="project-selector-content">
-          <div class="project-item">
-            <span class="label project-label">接码项目：</span>
-            <el-select
-              v-model="selectedProject"
-              placeholder="请选择项目"
-              clearable
-              size="small"
-              class="select-with-width"
-            >
-              <el-option
-                v-for="item in projectOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </div>
-
-          <!--上传按钮-->
-          <div class="upload-button">
-            <el-button type="primary" size="small" @click="handleUpload" class="custom-upload-btn">
-              <img src="../assets/svg/add.svg" alt="" class="uploadIcon" /> 上传
-            </el-button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 搜索筛选区 -->
-      <div class="filter-bar">
-        <div class="filter-items">
-          <div class="left-filters">
-            <div class="filter-item">
-              <span class="label">国家：</span>
-              <el-select
-                v-model="countryCode"
-                placeholder="请选择"
-                clearable
-                size="small"
-                class="select-with-width"
-              >
-                <el-option
-                  v-for="item in countryOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </div>
-
-            <!--搜索输入框-->
-            <div class="filter-item search-item">
-              <span class="label">搜索：</span>
-              <el-input
-                v-model="searchKeyword"
-                placeholder="请输入搜索内容"
-                clearable
-                size="small"
-                class="input-with-width"
-                @keyup.enter="handleSearch"
-              ></el-input>
-            </div>
-            <div class="search-icon-wrapper" @click="handleSearch">
-              <img src="../assets/svg/iocn/search.svg" width="25px" alt="搜索" />
-            </div>
-          </div>
-          <div class="right-aligned-controls">
-            <div class="filter-buttons">
-              <el-button size="small" @click="resetSearch">重置</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 表格区域 -->
-      <div class="table-container">
-        <!-- 表格加载状态指示器 -->
-        <div class="table-loading-mask" v-if="loading">
-          <div class="table-loading-indicator">
-            <div class="spinner-icon"></div>
-            <span class="loading-text">加载数据中...</span>
-          </div>
-        </div>
-
-        <el-table
-          :data="tableData"
-          border
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-          class="data-table"
-          height="100%"
-          v-bind="{ 'scroll-wheel-enabled': true }"
-          :row-class-name="tableRowClassName"
-          :virtual-scrolling="true"
-          :estimate-row-height="48"
-          :cache="200"
-        >
-          <el-table-column type="selection" width="40"></el-table-column>
-          <el-table-column label="序号" width="60" align="center">
-            <template #default="scope">
-              {{ (pageNum - 1) * pageSize + scope.$index + 1 }}
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="phoneNumber"
-            label="手机号码"
-            min-width="120"
-            show-overflow-tooltip
-          ></el-table-column>
-          <el-table-column
-            prop="regionName"
-            label="号码归属国家"
-            min-width="100"
-            show-overflow-tooltip
-          ></el-table-column>
-          <el-table-column label="注册时间" min-width="110" show-overflow-tooltip>
-            <template #default="scope">
-              {{ format(scope.row.registrationTime) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" min-width="100" fixed="right" align="center">
-            <template #default="scope">
-              <el-button
-                type="text"
-                size="small"
-                @click="handleView(scope.row)"
-                class="text-button"
-              >
-                查看
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="empty-placeholder" v-if="!loading && tableData.length === 0">
-          <el-empty description="暂无数据"></el-empty>
-        </div>
-      </div>
-
-      <!-- 上传弹窗 -->
-      <UploadDialog
-        v-model:visible="uploadDialogVisible"
-        @uploadSuccess="handleUploadSuccess"
-      />
-    </div>
-  </div>
-</template>
 
 <style lang="less" scoped>
 .home-container {
