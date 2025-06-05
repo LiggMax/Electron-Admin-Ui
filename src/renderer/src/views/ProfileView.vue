@@ -5,6 +5,7 @@ import userAvatar from '../assets/images/user.png'
 import useUserStore from '../store/userInfo'
 import { format } from '../utils/DateFormatter'
 import { getTransactionRecordService } from '../api/user'
+import { ElMessageBox } from 'element-plus'
 
 const userInfoStore = useUserStore()
 // 用户信息
@@ -32,7 +33,7 @@ const getTransactions = async () => {
   transactions.value = response.data.map((item) => {
     return {
       id: item.id,
-      amount: item.phoneMoney,
+      amount: item.projectMoney,
       date: format(item.createdAt),
       phoneNumber: item.phoneNumber,
       status: item.state
@@ -42,6 +43,15 @@ const getTransactions = async () => {
 // 充值余额
 const handleRecharge = () => {
   // 充值逻辑
+  ElMessageBox.confirm(
+    '客服：✈+886917446962',
+    '提现联系',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
   console.log('充值余额')
 }
 onMounted(() => {
@@ -68,8 +78,8 @@ onMounted(() => {
           <div class="balance-label">余额:</div>
           <div class="balance-value">{{ userInfo.money }}</div>
           <el-button type="primary" class="recharge-btn" @click="handleRecharge"
-            >余额提现</el-button
-          >
+            >余额提现
+          </el-button>
         </div>
       </div>
 
@@ -80,10 +90,21 @@ onMounted(() => {
           <span class="order-count">共 {{ transactions.length }} 笔订单</span>
         </div>
         <el-table :data="transactions" stripe style="width: 100%">
-          <el-table-column prop="id" label="订单号"  />
+          <el-table-column label="订单号" >
+            <template v-slot="scope">
+              <el-tooltip effect="dark" :content="scope.row.id" placement="top">
+                <span>{{scope.row.id.slice(0, 8) + '....' + scope.row.id.slice(-8)}}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
           <el-table-column prop="amount" label="交易金额">
             <template v-slot="scope">
-              <span class="amount-value">+{{ scope.row.amount }}￥</span>
+              <span v-if="scope.row.status === 0" class="amount-value"
+                >{{ scope.row.amount }}￥</span
+              >
+              <span v-else-if="scope.row.status === 2" class="amount-value"
+                >+{{ scope.row.amount }}￥</span
+              >
             </template>
           </el-table-column>
           <el-table-column prop="date" label="交易时间" />
@@ -96,7 +117,6 @@ onMounted(() => {
               <el-tag v-else type="success">已结算</el-tag>
             </template>
           </el-table-column>
-
         </el-table>
       </div>
     </div>
