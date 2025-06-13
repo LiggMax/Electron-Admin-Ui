@@ -8,8 +8,9 @@ import axios from 'axios'
 const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://ka.kydb.vip/api'  // 生产环境API服务器地址
 console.log(`[主进程] API基础URL: ${API_BASE_URL}`)
 
-// 是否启用API请求日志
-const ENABLE_API_LOGS = process.env.VITE_ENABLE_API_LOGS === 'true'
+// 是否启用API请求日志 - 生产环境下默认启用
+const ENABLE_API_LOGS = process.env.VITE_ENABLE_API_LOGS !== 'false' // 默认启用，只有明确设置为false才禁用
+console.log(`[主进程] API日志状态: ${ENABLE_API_LOGS ? '启用' : '禁用'}`)
 
 /**
  * 主进程代理转发API请求
@@ -25,7 +26,9 @@ ipcMain.handle('http-request', async (_event, { url, method = 'GET', data, heade
 
     if (ENABLE_API_LOGS) {
       console.log(`[主进程API代理] 请求: ${method} ${apiUrl}`)
-      console.log(`[主进程API代理] 数据:`, data)
+      if (data) {
+        console.log(`[主进程API代理] 请求数据:`, JSON.stringify(data, null, 2))
+      }
     }
 
     // 构建请求配置
@@ -41,7 +44,7 @@ ipcMain.handle('http-request', async (_event, { url, method = 'GET', data, heade
       // GET请求，将数据作为URL参数
       requestConfig.params = data
       if (ENABLE_API_LOGS) {
-        console.log(`[主进程API代理] GET参数:`, requestConfig.params)
+        console.log(`[主进程API代理] GET参数:`, JSON.stringify(requestConfig.params, null, 2))
       }
     } else if (data) {
       // 其他请求方法，将数据放在请求体中
@@ -53,7 +56,7 @@ ipcMain.handle('http-request', async (_event, { url, method = 'GET', data, heade
 
     if (ENABLE_API_LOGS) {
       console.log(`[主进程API代理] 响应状态: ${response.status}`)
-      console.log(`[主进程API代理] 响应数据:`, response.data)
+      console.log(`[主进程API代理] 响应数据:`, JSON.stringify(response.data, null, 2))
     }
 
     return {
@@ -62,7 +65,10 @@ ipcMain.handle('http-request', async (_event, { url, method = 'GET', data, heade
       status: response.status
     }
   } catch (error) {
-    console.error('[主进程API代理] 错误:', error)
+    console.error('[主进程API代理] 错误:', error.message)
+    if (error.response && ENABLE_API_LOGS) {
+      console.error('[主进程API代理] 错误响应数据:', JSON.stringify(error.response.data, null, 2))
+    }
 
     // 构造错误响应
     return {

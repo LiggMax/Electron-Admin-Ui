@@ -10,10 +10,10 @@ console.log(`[渲染进程] API基础URL: ${baseURL}`);
 
 // 判断是否为生产环境
 const isProd = import.meta.env.PROD;
-// 是否启用API日志
-const enableLogs = isProd 
-  ? import.meta.env.VITE_ENABLE_API_LOGS === 'true'
-  : true;
+// 是否启用API日志 - 生产环境下默认启用
+const enableLogs = import.meta.env.VITE_ENABLE_API_LOGS !== 'false'; // 默认启用，只有明确设置为false才禁用
+console.log(`[渲染进程] 当前环境: ${isProd ? '生产' : '开发'}`);
+console.log(`[渲染进程] API日志状态: ${enableLogs ? '启用' : '禁用'}`);
 
 const instance = axios.create({
   baseURL,
@@ -32,8 +32,11 @@ const electronAdapter = async (config) => {
     const { url, method, data, params, headers } = config;
     
     if (enableLogs) {
-      console.log(`[请求] ${method} ${url}`);
-      console.log(`[请求数据]`, method.toUpperCase() === 'GET' ? params : data);
+      console.log(`[渲染进程请求] ${method.toUpperCase()} ${url}`);
+      const requestData = method.toUpperCase() === 'GET' ? params : data;
+      if (requestData) {
+        console.log(`[渲染进程请求数据]`, JSON.stringify(requestData, null, 2));
+      }
     }
     
     // 通过预加载脚本暴露的API发送请求
@@ -46,7 +49,7 @@ const electronAdapter = async (config) => {
     });
     
     if (enableLogs) {
-      console.log(`[响应]`, response);
+      console.log(`[渲染进程响应]`, JSON.stringify(response, null, 2));
     }
     
     if (!response.success) {
@@ -70,7 +73,7 @@ const electronAdapter = async (config) => {
       request: {}
     };
   } catch (error) {
-    console.error(`[请求错误]`, error);
+    console.error(`[渲染进程请求错误]`, error);
     return Promise.reject(error);
   }
 };
