@@ -15,18 +15,18 @@ export const userLoginService1 = (loginData) => {
  * 获取用户基本信息
  */
 export const getUserInfoService = () => {
-  return request.get('/admin/user/info')
+  return request.get('/merchant/user/info')
 }
 /**
  * 获取交易记录
  */
 export const getTransactionRecordService = () => {
-  return request.get('/admin/user/order')
+  return request.get('/merchant/user/order')
 }
 
 /**
  * 退出登录
  */
 export const userLogoutService = () => {
-  return request.get('/admin/user/logout')
+  return request.get('/merchant/user/logout')
 }

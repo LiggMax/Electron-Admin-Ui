@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="home-container">
     <AppHeader title="卡商端-首页" />
@@ -40,7 +38,7 @@
         <div class="filter-items">
           <div class="left-filters">
             <div class="filter-item">
-              <span class="label">国家：</span>
+              <span class="label">地区：</span>
               <el-select
                 v-model="countryCode"
                 placeholder="请选择"
@@ -148,15 +146,17 @@
       <!-- 上传弹窗 -->
       <UploadDialog
         v-model:visible="uploadDialogVisible"
+        :project-options="uploadDialogProjectOptions"
+        :country-options="uploadDialogCountryOptions"
         @uploadSuccess="handleUploadSuccess"
       />
     </div>
   </div>
 </template>
 <script setup>
-import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { getPhoneList } from '../api/phone'
+import { getPhoneList, getProjectAndRegionData } from '../api/phone'
 import UploadDialog from '../components/UploadDialog.vue'
 import AppHeader from '../components/AppHeader.vue'
 import {format} from '../utils/DateFormatter'
@@ -167,27 +167,17 @@ const router = useRouter()
 const uploadDialogVisible = ref(false)
 
 // 顶部接码项目选项
-const projectOptions = [
-  { label: '全部项目', value: 'all' },
-  { label: 'Facebook', value: 'Facebook' },
-  { label: 'TikTok', value: 'TikTok' },
-  { label: 'Instagram', value: 'Instagram' },
-  { label: 'YouTube', value: 'YouTube' }
-]
+const projectOptions = ref([
+  { label: '全部项目', value: 'all' }
+])
 
 // 选中的接码项目
 const selectedProject = ref('all')
 
 // 国家选项
-const countryOptions = (ref([]))
-//   [
-//   { label: '全部地区', value: '' },
-//   { label: '中国', value: '中国' },
-//   { label: '美国', value: '美国' },
-//   { label: '英国', value: '英国' },
-//   { label: '日本', value: '日本' },
-//   { label: '韩国', value: '韩国' }
-// ]
+const countryOptions = ref([
+  { label: '全部地区', value: '' }
+])
 
 // 表格数据
 const tableData = ref([])
@@ -264,9 +254,9 @@ const getCardDataList = async () => {
   try {
     // 获取卡号数据列表的逻辑
     let params = {
-      countryCode: countryCode.value || '',
+      regionId: countryCode.value || '', // 改为regionId
       usageStatus: usageStatus.value === undefined ? '' : usageStatus.value,
-      project: selectedProject.value === 'all' ? '' : selectedProject.value,
+      projectId: selectedProject.value === 'all' ? '' : selectedProject.value, // 改为projectId
       keyword: searchKeyword.value || '' // 添加搜索关键字参数
     }
 
@@ -303,6 +293,66 @@ const getCardDataList = async () => {
     console.error('获取数据失败', error)
   }
 }
+
+/**
+ * 获取项目和地区数据
+ */
+const getProjectAndRegionDataList = async () => {
+  try {
+    const result = await getProjectAndRegionData()
+    
+    if (result.data) {
+      // 处理项目数据 - 为HomeView.vue下拉框
+      if (result.data.project && Array.isArray(result.data.project)) {
+        const projectList = result.data.project.map(item => ({
+          label: item.projectName,
+          value: item.projectId
+        }))
+        projectOptions.value = [
+          { label: '全部项目', value: 'all' },
+          ...projectList
+        ]
+      }
+
+      // 处理地区数据 - 为HomeView.vue下拉框
+      if (result.data.region && Array.isArray(result.data.region)) {
+        const regionList = result.data.region.map(item => ({
+          label: item.regionName,
+          value: item.regionId
+        }))
+        countryOptions.value = [
+          { label: '全部地区', value: '' },
+          ...regionList
+        ]
+      }
+    }
+  } catch (error) {
+    console.error('获取项目和地区数据失败', error)
+  }
+}
+
+// 为UploadDialog组件准备数据
+const uploadDialogProjectOptions = computed(() => {
+  return projectOptions.value.map(item => ({
+    label: item.label,
+    value: item.value.toString(), // 确保value是字符串
+    price: 0 // 如果需要价格信息，可以从原始数据中获取
+  }))
+})
+
+const uploadDialogCountryOptions = computed(() => {
+  // 为UploadDialog转换数据格式，添加"请选择国家"选项
+  const baseOptions = [{ label: '请选择国家', value: '' }]
+  const regionOptions = countryOptions.value
+    .filter(item => item.value !== '') // 过滤掉"全部地区"选项
+    .map(item => ({
+      label: item.label,
+      value: item.value.toString(), // 确保value是字符串
+      mark: '' // 如果需要地区标记，可以从原始数据中获取
+    }))
+  
+  return [...baseOptions, ...regionOptions]
+})
 
 // 上传
 const handleUpload = () => {
@@ -347,14 +397,17 @@ const tableRowClassName = ({ rowIndex }) => {
 const tableRef = ref(null)
 
 // 组件挂载和卸载时的事件处理
-onMounted(() => {
+onMounted(async () => {
   // 添加窗口大小变化监听
   window.addEventListener('resize', handleResize)
 
   // 设置初始加载状态
   loading.value = true
 
-  // 延迟加载数据，避免初始渲染压力
+  // 先获取项目和地区数据
+  await getProjectAndRegionDataList()
+
+  // 延迟加载表格数据，避免初始渲染压力
   setTimeout(() => {
     getCardDataList()
   }, 100)

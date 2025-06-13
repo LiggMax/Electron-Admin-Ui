@@ -1,12 +1,20 @@
 <script setup>
-import { ref, watch, inject, onMounted } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { ElMessage } from 'element-plus'
-import { uploadPhoneNumbers, getProjectAndRegionData } from '../api/phone'
+import { uploadPhoneNumbers } from '../api/phone'
 
 const props = defineProps({
   visible: {
     type: Boolean,
     default: false
+  },
+  projectOptions: {
+    type: Array,
+    default: () => []
+  },
+  countryOptions: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -68,84 +76,44 @@ const handleClose = () => {
 // 步骤状态
 const currentStep = ref(1)
 
-// 切换步骤
-// const changeStep = (step) => {
-//   // 只允许点击已完成的步骤或下一个步骤
-//   if(step <= currentStep.value + 1) {
-//     currentStep.value = step
-//   }
-// }
-
-// 国家选项
-const countryOptions = ref([
-  { label: '请选择国家', value: '' }
-])
-
-// 项目选项
-const projectOptions = ref([])
-
 // 表单数据
 const uploadForm = ref({
   country: '',
   projects: []
 })
 
-// 加载国家和项目数据
-const loadProjectAndRegionData = async () => {
-  try {
-    const response = await getProjectAndRegionData()
-    if (response && response.data) {
-      // 设置国家选项
-      const regions = response.data.region || []
-      countryOptions.value = [
-        { label: '请选择国家', value: '' },
-        ...regions.map(region => ({
-          label: region.regionName,
-          value: region.regionId.toString(),
-          mark: region.regionMark
-        }))
-      ]
-
-      // 设置项目选项
-      const projects = response.data.project || []
-      projectOptions.value = projects.map(project => ({
-        label: project.projectName,
-        value: project.projectId.toString(),
-        price: project.projectPrice
-      }))
-
-      // 默认选中所有项目
-      uploadForm.value.projects = projectOptions.value.map(item => item.value)
-    }
-  } catch (error) {
-    console.error('获取项目和地区数据失败:', error)
+// 监听项目选项变化，默认选中所有项目
+watch(() => props.projectOptions, (newOptions) => {
+  if (newOptions && newOptions.length > 0) {
+    // 过滤掉"全部项目"选项，只选择实际的项目
+    const actualProjects = newOptions.filter(option => option.value !== 'all')
+    uploadForm.value.projects = actualProjects.map(item => item.value.toString())
   }
-}
+}, { immediate: true })
 
 // 项目全选状态
 const allProjectsSelected = ref(true)
 
 // 监听项目选择变化
 watch(() => uploadForm.value.projects, (newVal) => {
-  // 如果选中的项目数量等于可选项目总数
-  allProjectsSelected.value = newVal.length === projectOptions.value.length;
+  // 计算实际可选的项目数量（排除"全部项目"选项）
+  const actualProjectCount = props.projectOptions.filter(option => option.value !== 'all').length
+  allProjectsSelected.value = newVal.length === actualProjectCount;
 }, { deep: true })
 
 // 项目全选功能
 const handleAllProjectsChange = (val) => {
+  // 过滤掉"全部项目"选项
+  const actualProjects = props.projectOptions.filter(option => option.value !== 'all')
+  
   if (val) {
     // 选中全部
-    uploadForm.value.projects = projectOptions.value.map(item => item.value)
+    uploadForm.value.projects = actualProjects.map(item => item.value.toString())
   } else {
     // 取消全部
     uploadForm.value.projects = []
   }
 }
-
-// 组件挂载时加载数据
-onMounted(() => {
-  loadProjectAndRegionData()
-})
 
 // 上传文件相关
 const uploadedFiles = ref([]) // 已上传的文件列表
@@ -413,9 +381,9 @@ const handleSubmit = async () => {
 
   try {
     // 获取选中的国家和项目信息
-    const selectedCountry = countryOptions.value.find(option => option.value === uploadForm.value.country)
+    const selectedCountry = props.countryOptions.find(option => option.value === uploadForm.value.country)
     const selectedProjects = uploadForm.value.projects.map(projectId => {
-      const project = projectOptions.value.find(option => option.value === projectId)
+      const project = props.projectOptions.find(option => option.value === projectId)
       return {
         projectId: Number(projectId),
         projectName: project ? project.label : ''
@@ -525,7 +493,7 @@ const handleSubmit = async () => {
             <div class="form-label">地区：</div>
             <el-select v-model="uploadForm.country" placeholder="请选择国家" class="form-select">
               <el-option
-                v-for="item in countryOptions"
+                v-for="item in props.countryOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -546,13 +514,13 @@ const handleSubmit = async () => {
                 <el-checkbox
                   v-model="allProjectsSelected"
                   @change="handleAllProjectsChange"
-                  :indeterminate="uploadForm.projects.length > 0 && uploadForm.projects.length < projectOptions.length"
+                  :indeterminate="uploadForm.projects.length > 0 && uploadForm.projects.length < props.projectOptions.filter(option => option.value !== 'all').length"
                 >
                   全选
                 </el-checkbox>
               </div>
               <el-option
-                v-for="item in projectOptions"
+                v-for="item in props.projectOptions.filter(option => option.value !== 'all')"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"

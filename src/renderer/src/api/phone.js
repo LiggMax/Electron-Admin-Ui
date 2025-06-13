@@ -8,14 +8,14 @@ export const getPhoneList = (paramsData) => {
   for (let key in paramsData) {
     params.append(key, paramsData[key])
   }
-  return request.get('/admin/phone/list', { params: params })
+  return request.get('/merchant/phone/list', { params: params })
 }
 
 /**
  * 获取项目和地区数据
  */
 export const getProjectAndRegionData = () => {
-  return request.get('/admin/phone/projectsAndRegion')
+  return request.get('/merchant/phone/projectsAndRegion')
 }
 
 /**
@@ -24,7 +24,7 @@ export const getProjectAndRegionData = () => {
  * @returns {Promise} - 返回手机号详情的Promise
  */
 export const getPhoneDetail = (phoneId) => {
-  return request.get(`/admin/phone/phoneDetail?phoneId=${phoneId}`)
+  return request.get(`/merchant/phone/phoneDetail?phoneId=${phoneId}`)
 }
 
 /**
@@ -33,5 +33,5 @@ export const getPhoneDetail = (phoneId) => {
  * @returns {Promise} - 返回上传结果的Promise
  */
 export const uploadPhoneNumbers = (data) => {
-  return request.post('/admin/phone/upload', data)
+  return request.post('/merchant/phone/upload', data)
 }
